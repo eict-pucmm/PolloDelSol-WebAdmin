@@ -392,9 +392,9 @@
 .ti-shift-left:before {
 	content: "\e67a";
 }
-.ti-shield:before {
+/* .ti-shield:before {
 	content: "\e67b";
-}
+} */
 .ti-notepad:before {
 	content: "\e67c";
 }
