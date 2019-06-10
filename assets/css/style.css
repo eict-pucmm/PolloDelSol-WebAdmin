@@ -11905,7 +11905,7 @@ input[type="button"].btn-block {
 .input-group-text {
   display: flex;
   align-items: center;
-  padding: 0.875rem 1.375rem;
+  /* padding: 0.875rem 1.375rem; */
   margin-bottom: 0;
   font-size: 0.875rem;
   font-weight: 400;
@@ -20810,7 +20810,7 @@ dl li {
 }
 
 .sidebar .nav.sub-menu .nav-item .nav-link {
-  color: #56595a;
+  color: #363636;
   padding: 0.7rem 1rem;
   position: relative;
   font-size: 0.875rem;
@@ -20819,17 +20819,13 @@ dl li {
   border-top: 0;
 }
 
-.sidebar .nav.sub-menu .nav-item .nav-link:hover {
-  color: #56595a;
-}
-
-.sidebar .nav.sub-menu .nav-item .nav-link.active {
-  color: #000;
+.sidebar .nav.sub-menu > .nav-item .nav-link.active {
+  color: #363636;
   background: transparent;
 }
 
 .sidebar .nav.sub-menu .nav-item:hover {
-  background: transparent;
+  background: #e6e6e6;
 }
 
 /* style for off-canvas menu*/
