@@ -168,6 +168,22 @@
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">Items</h4>
+                  <form>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="tipo-item">Filtrar por tipo</label>
+                          <select onchange="this.form.submit()" class="form-control col-sm-10" id="tipo-item" name="filtro-tipo">
+                            <option value=''>Todos</option>
+                            <option value='Plato'>Plato</option>
+                            <option value='Bebida'>Bebida</option>
+                            <option value='Guarnicion'>Guarnicion</option>
+                            <option value='Combo'>Combo</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
                   <div class="table-responsive pt-3">
                     <table class="table table-bordered">
                       <thead>
@@ -190,14 +206,22 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <?php 
+                        <?php
+
+                          $where = "";
+
+                          if(isset($_GET['filtro-tipo'])) {
+                            $filtro_tipo = $_GET['filtro-tipo'];
+                            $where = "WHERE tipo = '$filtro_tipo'";
+                          }
+                          
                           $host = "us-cdbr-iron-east-02.cleardb.net";
                           $dbusername = "b0ccbe5cbcfbd1";
                           $dbpassword = "9e38a45c";
                           $dbname = "heroku_7fdb4fe0285393e";
                       
                           $conn = new mysqli($host, $dbusername, $dbpassword, $dbname);
-                          $sql = mysqli_query($conn, "SELECT * FROM item");
+                          $sql = mysqli_query($conn, "SELECT * FROM item" . " " . $where);
                           while ($row = $sql->fetch_assoc()){
                             echo "
                               <tr>

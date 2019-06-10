@@ -212,7 +212,7 @@
                       </div>
                       <div class="col-md-3">
                           <div class="form-group">
-                          <label for="tipo-item">Tipo</label>
+                            <label for="tipo-item">Tipo</label>
                             <select class="form-control col-sm-10" id="tipo-item" name="tipo">
                               <option>Plato</option>
                               <option>Bebida</option>
