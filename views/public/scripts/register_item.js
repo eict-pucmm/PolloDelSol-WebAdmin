@@ -10,3 +10,11 @@
     });
   });
 })(jQuery);
+
+(
+  $.ajax({
+    resultado: function(response) {
+      alert('prueba alert');
+    }
+   }) 
+) (jQuery);
