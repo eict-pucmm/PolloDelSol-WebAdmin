@@ -1,20 +1,7 @@
-(function($) {
-  'use strict';
-  $(function() {
-    $('.file-upload-browse').on('click', function() {
-      var file = $(this).parent().parent().parent().find('.file-upload-default');
-      file.trigger('click');
-    });
-    $('.file-upload-default').on('change', function() {
-      $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
-    });
-  });
-})(jQuery);
+let messageP = document.getElementById('result-message');
+let message = messageP.innerHTML;
 
-(
-  $.ajax({
-    resultado: function(response) {
-      alert('prueba alert');
-    }
-   }) 
-) (jQuery);
+if (message.includes('ER_DUP_ENTRY')) {
+    messageP.innerHTML = 'ERROR: Ya existe un item con el Id "' + 
+        message.substring(message.indexOf("'") + 1, message.indexOf("'", message.indexOf("'") + 1)) + '"';
+}

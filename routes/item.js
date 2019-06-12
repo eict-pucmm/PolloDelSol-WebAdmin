@@ -3,8 +3,9 @@ let app = express();
 
 app.get('/', function (req, res, next) {
     req.getConnection(function (error, conn) {
-        conn.query('SELECT * FROM item', function (err, rows, fields) {
+        conn.query('SELECT * FROM item WHERE eliminado = 0', function (err, rows, fields) {
             if (err) {
+                req.flash('error', err);
                 res.render(
                     'item/list', {
                         title: 'Lista de items',
@@ -29,53 +30,52 @@ app.get('/register', function (req, res, next) {
             id_item: '',
             nombre: '',
             descripcion: '',
-            precio: '0',
+            precio: '',
             tipo: ''
         }
     );
 });
 
 app.post('/register', function(req, res, next){    
-    req.assert('id-item', 'Id is required').notEmpty()           //Validar id
-    req.assert('nombre', 'Nombre is required').notEmpty()           //Validar nombre
-    req.assert('descripcion', 'Descripcion is required').notEmpty()           //Validar descripcion
- 
+    req.assert('id-item', 'El Id no puede estar vacío').notEmpty();
+    req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
+    req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
+    req.assert('precio', 'El precio no puede estar vacío').notEmpty();
+
     let errors = req.validationErrors()
     
     if( !errors ) {   //No errors were found.  Passed Validation!
         
-        // let item = {
-        //     id_item: req.sanitize('id-item').escape().trim(),
-        //     nombre: req.sanitize('nombre').escape().trim(),
-        //     descripcion: req.sanitize('descripcion').escape().trim(),
-        //     tipo: req.sanitize('tipo-item').escape().trim(),
-        //     precio: req.sanitize('precio').escape().trim()
-        // }
+        let item = {
+            id: req.sanitize('id-item').escape().trim(),
+            nombre: req.sanitize('nombre').escape().trim(),
+            descripcion: req.sanitize('descripcion').escape().trim(),
+            tipo: req.sanitize('tipo-item').escape().trim(),
+            precio: req.sanitize('precio').escape().trim()
+        };
 
         let sql_query = "INSERT INTO item VALUES ('" +
-            req.sanitize('id-item').escape().trim() + "', '" +
-            req.sanitize('nombre').escape().trim() + "', '" +
-            req.sanitize('descripcion').escape().trim() + "', " +
-            req.sanitize('precio').escape().trim() + ", '" +
-            req.sanitize('tipo-item').escape().trim() + "');";
+            item.id + "', '" +
+            item.nombre + "', '" +
+            item.descripcion + "', " +
+            item.precio + ", '" +
+            item.tipo + "', 0);";
         
         req.getConnection(function(error, conn) {
             conn.query(sql_query, function(err, result) {
                 if (err) {
-                    res.json({resultado: err});
-                    
+                    req.flash('error', err);
                     res.render(
                         'item/register', {
-                            id_item: id_item,
-                            nombre: nombre,
-                            descripcion: descripcion,
-                            precio: precio,
-                            tipo: tipo
+                            id_item: item.id,
+                            nombre: item.nombre,
+                            descripcion: item.descripcion,
+                            precio: item.precio,
+                            tipo: item.tipo
                         }
                     );
-                } else {                
-                    res.json({resultado: "Item registrado"});
-
+                } else {
+                    req.flash('success', "Item registrado exitosamente!");
                     res.render(
                         'item/register', {
                             id_item: '',
@@ -90,19 +90,15 @@ app.post('/register', function(req, res, next){
         })
     }
     else {
-        var error_msg = ''
-        errors.forEach(function(error) {
-            error_msg += error.msg + '<br>'
-        })                
-        res.json({resultado: error_msg});       
-        
+        req.flash('error', errors[0].msg);
+
         res.render(
             'item/register', {
-                id_item: id_item,
-                nombre: nombre,
-                descripcion: descripcion,
-                precio: precio,
-                tipo: tipo
+                id_item: '',
+                nombre: '',
+                descripcion: '',
+                precio: '',
+                tipo: ''
             }
         );
     }

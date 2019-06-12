@@ -1,17 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="shortcut icon" href="/images/favicon.png" />
-  <title>Pollo del Sol</title>
-
-  <link rel="stylesheet" href="/vendors/ti-icons/css/themify-icons.css">
-  <link rel="stylesheet" href="/vendors/base/vendor.bundle.base.css">
-  <link rel="stylesheet" href="/css/style.css">
-</head>
+<% include ../public/layouts/header.ejs %>
 
 <body>
   <div class="container-scroller">
@@ -26,6 +16,12 @@
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">Registrar item</h4>
+                  <% if (messages.error) { %>
+                      <p id="result-message" style="color:red"><%- messages.error %></p>
+                  <% } %>
+                  <% if (messages.success) { %>
+                      <p id="result-message" style="color:green"><%- messages.success %></p>
+                  <% } %>
                   <form class="forms-sample" method="POST" action="/item/register">
                   <div class="row">
                       <div class="col-md-3">

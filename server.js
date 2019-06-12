@@ -4,6 +4,9 @@ const expressValidator  = require('express-validator');     //used for form vali
 const bodyParser        = require('body-parser');           //read http POST data
 const methodOverride    = require('method-override');       //use http verbs (POST, DELETE) where they are not supported
 const mysql             = require('mysql');                 //MYSQL database API
+const expressFlash      = require('express-flash')
+const cookieParser      = require('cookie-parser');
+const expressSession    = require('express-session');
 const config            = require('./config');              //config values for server and database
 const indexRoute        = require('./routes/index');
 const itemRoute         = require('./routes/item');
@@ -21,6 +24,14 @@ app.use(myConnection(mysql, dbOptions, 'pool'));
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(expressFlash())
+app.use(cookieParser('molena'))
+app.use(expressSession({ 
+    secret: 'molena',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 }
+}))
 app.use(methodOverride(function (req, res) {
     if ((req.body) && (typeof req.body === 'object') && ('_method' in req.body)) {
         let method = req.body._method;
