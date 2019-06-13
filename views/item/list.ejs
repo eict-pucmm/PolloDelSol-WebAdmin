@@ -15,17 +15,17 @@
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">Items</h4>
-                  <form>
+                  <form action="/item?tipo=">
                     <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="tipo-item">Filtrar por tipo</label>
-                          <select onchange="this.form.submit()" class="form-control col-sm-10" id="tipo-item" name="filtro-tipo">
-                            <option value=''>Todos</option>
-                            <option value='Plato'>Plato</option>
-                            <option value='Bebida'>Bebida</option>
-                            <option value='Guarnicion'>Guarnicion</option>
-                            <option value='Combo'>Combo</option>
+                          <select onchange="this.form.submit()" class="form-control col-sm-10" id="tipo-item" name="tipo">
+                            <option value="Todos" <% if (filtro_tipo == 'Todos') { %>selected<% } %>>Todos</option>
+                            <option value="Plato" <% if (filtro_tipo == 'Plato') { %>selected<% } %>>Plato</option>
+                            <option value="Bebida" <% if (filtro_tipo == 'Bebida') { %>selected<% } %>>Bebida</option>
+                            <option value="Guarnicion" <% if (filtro_tipo == 'Guarnicion') { %>selected<% } %>>Guarnicion</option>
+                            <option value="Combo" <% if (filtro_tipo == 'Combo') { %>selected<% } %>>Combo</option>
                           </select>
                         </div>
                       </div>
@@ -38,21 +38,12 @@
                     <table class="table table-bordered">
                       <thead>
                         <tr>
-                          <th>
-                            Id
-                          </th>
-                          <th>
-                            Nombre
-                          </th>
-                          <th>
-                            Descripcion
-                          </th>
-                          <th>
-                            Precio (DOP$)
-                          </th>
-                          <th>
-                            Tipo
-                          </th>
+                          <th>Id</th>
+                          <th>Nombre</th>
+                          <th>Descripcion</th>
+                          <th>Precio (DOP$)</th>
+                          <th>Tipo</th>
+                          <th>Cancelado</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -64,6 +55,16 @@
                                 <td><%= item.descripcion %></td>
                                 <td><%= item.precio %></td>
                                 <td><%= item.tipo %></td>
+                                <td>
+                                  <div class="form-check">
+                                    <label class="form-check-label">
+                                      <input type="checkbox" class="form-check-input" disabled <% if (item.eliminado) { %> checked <% } %>/>
+                                    </label>
+                                  </div>
+                                </td>
+                                <td class="image"> 
+                                  <a href='/item/edit/<%= item.id_item %>'> <img src="/images/icons/edit.svg" /> </a>
+                                </td>
                               </tr>
                          <% }) %>
                        <% } %>

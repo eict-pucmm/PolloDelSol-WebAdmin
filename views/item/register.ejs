@@ -15,14 +15,18 @@
             <div class="col-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Registrar item</h4>
+                  <h4 class="card-title"><%= action%> item</h4>
                   <% if (messages.error) { %>
                       <p id="result-message" style="color:red"><%- messages.error %></p>
                   <% } %>
                   <% if (messages.success) { %>
                       <p id="result-message" style="color:green"><%- messages.success %></p>
                   <% } %>
-                  <form class="forms-sample" method="POST" action="/item/register">
+                  <% if (action === 'Registrar') {%>
+                      <form class="forms-sample" method="POST" action="/item/register">
+                  <% } else if (action === 'Modificar') { %>
+                      <form class="forms-sample" method="POST" action="/item/edit/<%= id_item %>">
+                  <% } %>
                   <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
@@ -75,7 +79,7 @@
                         </div>
                       </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mr-2 reg-item" >Registrar</button>
+                    <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-item" ><%= action %></button>
                   </form>
                 </div>
               </div>
