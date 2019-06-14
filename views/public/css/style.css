@@ -9207,8 +9207,8 @@ pre code {
 .col-xl-auto {
   position: relative;
   width: 100%;
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 0.653rem;
+  padding-left: 1rem;
 }
 
 .col {
@@ -20226,6 +20226,14 @@ select.form-control.border-dark:focus {
   background: transparent;
 }
 
+.form-group .register-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10%;
+  margin: 1.5rem 0;
+  object-fit: fill;
+}
+
 /* Icons */
 .icons-list {
   border-left: 1px solid #c9ccd7;
@@ -21384,4 +21392,8 @@ dl li {
   outline: 1px solid slategrey;
 }
 
-/*# sourceMappingURL=maps/style.css.map */
+.separator {
+  width: 1.5rem;
+}
+
+/* # sourceMappingURL=maps/style.css.map */
