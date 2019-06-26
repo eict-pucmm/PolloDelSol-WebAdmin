@@ -4,6 +4,7 @@
 <% include ../public/layouts/header.ejs %>
 
 <body>
+  <% let cat_padre_id = 0; %>
   <div class="container-scroller">
   <% include ../public/layouts/navbar.ejs %>
   <div class="container-fluid page-body-wrapper">
@@ -15,22 +16,36 @@
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">Items</h4>
-                  <form action="/item?tipo=">
                     <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label for="tipo-item">Filtrar por tipo</label>
-                          <select onchange="this.form.submit()" class="form-control col-sm-10" id="tipo-item" name="tipo">
-                            <option value="Todos" <% if (filtro_tipo == 'Todos') { %>selected<% } %>>Todos</option>
-                            <option value="Plato" <% if (filtro_tipo == 'Plato') { %>selected<% } %>>Plato</option>
-                            <option value="Bebida" <% if (filtro_tipo == 'Bebida') { %>selected<% } %>>Bebida</option>
-                            <option value="Guarnicion" <% if (filtro_tipo == 'Guarnicion') { %>selected<% } %>>Guarnicion</option>
-                            <option value="Combo" <% if (filtro_tipo == 'Combo') { %>selected<% } %>>Combo</option>
+                          <label for="categoria-item">Categoria</label>
+                          <select onchange="updateSubcategorias()" class="form-control col-sm-10" id="categoria-cbx" name="categoria">
+                            <option value="" selected>Todas</option>
+                          <%categorias.forEach(cat => {%>
+                            <option value="<%=cat.id_categoria%>"><%=cat.nombre%></option>
+                          <%})%>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="subcategoria-item">Subcategoria</label>
+                          <select onchange="updateList()" class="form-control col-sm-10" id="subcategoria-cbx" name="subcategoria">
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="cancelado-item">Cancelado</label>
+                          <select onchange="updateList()" class="form-control col-sm-10" id="cancelado-cbx" name="cancelado">
+                            <option value="" selected>Todos</option>
+                            <option value="0" >En operacion</option>
+                            <option value="1" >Cancelados</option>
                           </select>
                         </div>
                       </div>
                     </div>
-                  </form>
                   <% if (data == '') { %>
                     <p id="result-message" style="color:red">No hay items registrados</p>
                   <% } %>
@@ -42,19 +57,21 @@
                           <th>Nombre</th>
                           <th>Descripcion</th>
                           <th>Precio (DOP$)</th>
-                          <th>Tipo</th>
+                          <th>Categoria</th>
+                          <th>Subcategoria</th>
                           <th>Cancelado</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody id="item-list">
                        <% if (data !== '') { %>
                          <% data.forEach(function (item) { %>
-                              <tr>
+                              <tr title="<%=item.categoria%> <%=item.subcategoria%> <%=item.eliminado%>">
                                 <td><%= item.id_item %></td>
                                 <td><%= item.nombre %></td>
                                 <td><%= item.descripcion %></td>
                                 <td><%= item.precio %></td>
-                                <td><%= item.tipo %></td>
+                                <td><%= item.categoria %></td>
+                                <td><%= item.subcategoria %></td>
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">
@@ -85,11 +102,15 @@
       </div>
     </div>
   </div>
+  <script>
+    let categorias = <%- JSON.stringify(categorias)%>;
+    let subcategorias = <%- JSON.stringify(subcategorias)%>;
+    let items = <%- JSON.stringify(data)%>;
+  </script>
   <script src="/vendors/base/vendor.bundle.base.js"></script>
   <script src="/scripts/off-canvas.js"></script>
   <script src="/scripts/hoverable-collapse.js"></script>
   <script src="/scripts/template.js"></script>
-  <script src="/scripts/todolist.js"></script>
+  <script src="/scripts/list_item.js"></script>
 </body>
-
 </html>

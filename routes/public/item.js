@@ -1,216 +1,170 @@
 const express = require('express');
+const axios = require('axios');
+const url = require('../../config').server.url;
 let app = express();
 
-app.get('/', function (req, res, next) {
+app.get('/', (req, res, next) => {
 
-    let sql_query = '';
-    if (req.query.tipo == 'Todos' || !req.query.tipo)
-        sql_query = 'SELECT * FROM item;';
-    else
-        sql_query = `SELECT * FROM item WHERE tipo = '${req.query.tipo}'`;
+    axios.get(`${url}/api/item/get`)
+        .then(result => {
+            return result.data.items;
+        }).then(items => {
+            axios.get(`${url}/api/item/categories`)
+            .then(result => {
+                return {data: items, categorias: result.data.categorias, subcategorias: result.data.subcategorias};
+            }).then(datos => {
+                res.render('item/list', datos)
+            })
+            .catch(err => res.send(err))
+        }).catch(err => res.send(err));
 
-    req.getConnection(function (error, conn) {
-        conn.query(sql_query, function (err, rows, fields) {
-            if (err) {
-                req.flash('error', err);
-                res.render(
-                    'item/list', {
-                        filtro_tipo: 'Todos',
-                        title: 'Lista de items',
-                        data: ''
-                    }
-                );
-            } else {
-                res.render(
-                    'item/list', {
-                        filtro_tipo: req.query.tipo,
-                        title: 'Lista de items',
-                        data: rows
-                    }
-                );
-            }
-        });
-    })
 });
 
 app.get('/register', function (req, res, next) {
-    res.render(
-        'item/register', {
-            action: 'Registrar', item: {
-                id: '',
-                nombre: '',
-                descripcion: '',
-                precio: '',
-                tipo: '',
-                eliminado: 0
-            }
-        }
-    );
+
+    let item = {
+        id: '',
+        nombre: '',
+        descripcion: '',
+        categoria: '',
+        subcategoria: '',
+        precio: '',
+        puntos: '',
+        eliminado: 0
+    }
+
+    axios.get(`${url}/api/item/get?subcategoria=Guarnicion`)
+        .then(result => {
+            return result;
+        }).then(guarniciones => {
+            axios.get(`${url}/api/item/get?subcategoria=Bebida`)
+                .then(bebidas => {
+                    axios.get(`${url}/api/item/categories`)
+                    .then(result => {
+                        return {
+                            action: 'Registrar', 
+                            item: item, 
+                            categorias: result.data.categorias, 
+                            subcategorias: result.data.subcategorias,
+                            guarniciones: guarniciones.data.items,
+                            bebidas: bebidas.data.items
+                        };
+                    }).then(datos => {
+                        res.render('item/register', datos)
+                    })
+                    .catch(err => res.send(err))
+                }).catch(err => res.send(err))
+        }).catch(err => res.send(err));
 });
 
-app.post('/register', function(req, res, next){    
+app.post('/register', (req, res, next) => {
+
     req.assert('id-item', 'El Id no puede estar vacío').notEmpty();
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
+    req.assert('puntos', 'Los puntos no pueden estar vacíos').notEmpty();
 
     let errors = req.validationErrors()
-    let item = {id: '', nombre: '', descripcion: '', tipo: '', precio: '', eliminado: 0};
-    
-    if( !errors ) {   //No errors were found.  Passed Validation!
-        
-        item.id = req.sanitize('id-item').escape().trim();
-        item.nombre = req.sanitize('nombre').escape().trim();
-        item.descripcion = req.sanitize('descripcion').escape().trim();
-        item.tipo = req.sanitize('tipo-item').escape().trim();
-        item.precio = req.sanitize('precio').escape().trim();
-        item.eliminado = 0;
-
-        let sql_query = `INSERT INTO item VALUES (
-            '${item.id}',
-            '${item.nombre}',
-            '${item.descripcion}',
-            ${item.precio},
-            '${item.tipo}',
-            ${item.eliminado});`;
-        
-        req.getConnection(function(error, conn) {
-            conn.query(sql_query, function(err, result) {
-                if (err) {
-                    req.flash('error', err);
-                    res.render(
-                        'item/register', {
-                            action: 'Registrar', item
-                        }
-                    );
-                } else {
-                    req.flash('success', "Item registrado exitosamente!");
-                    res.render(
-                        'item/register', {
-                            action: 'Registrar', item
-                        }
-                    );
-                }
-            })
-        })
+    let item = {
+        id_item: req.sanitize('id-item').escape().trim(),
+        nombre: req.sanitize('nombre').escape().trim(),
+        descripcion: req.sanitize('descripcion').escape().trim(),
+        id_categoria: parseInt(req.sanitize('categoria-cbx').escape().trim()),
+        id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
+        precio: req.sanitize('precio').escape().trim(),
+        puntos: req.sanitize('puntos').escape().trim(),
+        eliminado: 0
     }
-    else {
-        req.flash('error', errors[0].msg);
-        res.render(
-            'item/register', {
-                action: 'Registrar', item
-            }
-        );
-    }
-});
 
-app.get('/edit/(:id_item)', function(req, res, next){
-    req.getConnection(function(error, conn) {
-        conn.query(`SELECT * FROM item WHERE id_item = '${req.params.id_item}';`, function(err, rows, fields) {
-            
-            if (rows.length <= 0) {
-                req.flash('error', `No se encontro el item con Id = "${req.params.id_item}"`);
-                res.redirect('/item')
-            }
-            else {
-                res.render('item/register', {
-                    action: 'Modificar', item: {
-                        id: rows[0].id_item,
-                        nombre: rows[0].nombre,
-                        descripcion: rows[0].descripcion,
-                        tipo: rows[0].tipo,
-                        precio: rows[0].precio,
-                        eliminado: rows[0].eliminado
-                    }         
-                })
-            }            
+    if (!errors) {
+        axios.post(`${url}/api/item/register`, {data: item})
+        .then( () => {
+            req.flash('success', 'Item registrado satisfactoriamente');
+        }).catch(err => {
+            req.flash('error', err);
+        }).finally( () => {
+            res.redirect('/item/register');
         });
-    });
+    } else {
+        req.flash('error', errors[0].msg);
+        res.redirect('/item/register');
+    }
 });
 
-app.post('/edit/(:id_item)', function(req, res, next){
+app.get('/edit/(:id_item)', (req, res, next) => {
+
+    let item;
+
+    axios.get(`${url}/api/item/get?id_item=${req.params.id_item}`)
+        .then(result => {
+            item = result.data.items[0];
+        }).catch(err => console.log(err));
+
+    axios.get(`${url}/api/item/get?subcategoria=Guarnicion`)
+        .then(result => {
+            return result;
+        }).then(guarniciones => {
+            axios.get(`${url}/api/item/get?subcategoria=Bebida`)
+                .then(bebidas => {
+                    axios.get(`${url}/api/item/categories`)
+                    .then(result => {
+                        return {
+                            action: 'Modificar', 
+                            item: item, 
+                            categorias: result.data.categorias, 
+                            subcategorias: result.data.subcategorias,
+                            guarniciones: guarniciones.data.items,
+                            bebidas: bebidas.data.items
+                        };
+                    }).then(datos => {
+                        res.render('item/register', datos)
+                    })
+                    .catch(err => res.send(err))
+                }).catch(err => res.send(err))
+        }).catch(err => res.send(err));
+});
+
+app.post('/edit/(:id_item)', (req, res, next) => {
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
+    req.assert('puntos', 'Los puntos no pueden estar vacío').notEmpty();
 
     let errors = req.validationErrors()
-    let item = {id: '', nombre: '', descripcion: '', tipo: '', precio: '', eliminado: 0};
-    
-    if( !errors ) {
-        
-        item.id = req.sanitize('id-item').escape().trim();
-        item.nombre = req.sanitize('nombre').escape().trim();
-        item.descripcion = req.sanitize('descripcion').escape().trim();
-        item.tipo = req.sanitize('tipo-item').escape().trim();
-        item.precio = req.sanitize('precio').escape().trim();
-        item.eliminado = req.body.eliminado;
-
-        let sql_query = `UPDATE item SET 
-            nombre = '${item.nombre}', 
-            descripcion = '${item.descripcion}', 
-            tipo = '${item.tipo}', 
-            precio = ${item.precio} 
-            WHERE id_item = '${item.id}';`;
-        
-        req.getConnection(function(error, conn) {
-            conn.query(sql_query, function(err, result) {
-                if (err) {
-                    req.flash('error', err);
-                    res.render(
-                        `item/edit/${item.id}`, {
-                            action: 'Modificar', item
-                        }
-                    );
-                } else {
-                    req.flash('success', 'Item modificado satisfactoriamente');
-                    res.redirect('/item');
-                }
-            })
-        })
+    let item = {
+        id_item: req.params.id_item,
+        nombre: req.sanitize('nombre').escape().trim(),
+        descripcion: req.sanitize('descripcion').escape().trim(),
+        id_categoria: parseInt(req.sanitize('categoria-cbx').escape().trim()),
+        id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
+        precio: req.sanitize('precio').escape().trim(),
+        puntos: req.sanitize('puntos').escape().trim(),
+        eliminado: req.body.eliminado
     }
-    else {
-        req.flash('error', errors[0].msg);
-        res.render(
-            `item/edit/${item.id}`, {
-                action: 'Modificar', item
+
+    if (!errors) {
+        axios.post(`${url}/api/item/edit/${item.id_item}`, {data: item})
+        .then( response => {
+            if (!response.data.error) {
+                req.flash('success', response.data.message);
+                res.redirect('/item');
+            } else {
+                req.flash('error', response.data.message);
+                res.redirect(`/item/edit/${item.id_item}`);
             }
-        );
+        }).catch(err => console.log(err));
     }
 });
 
-app.post('/delete/(:id_item)', function(req, res, next) {
-    
-    req.getConnection(function(error, conn) {
-        conn.query(`SELECT * FROM item WHERE id_item = '${req.params.id_item}';`, function(err, rows, fields) {
-            
-            if (rows.length <= 0) {
-                req.flash('error', `No se encontro el item con Id = "${req.params.id_item}"`);
-                res.redirect('/item')
-            }
-            else {
-                if (rows[0].eliminado == 0) {
-                    conn.query(`UPDATE item SET eliminado = 1 WHERE id_item = '${req.params.id_item}';`, function(err, result) {
-                        if (err) {
-                            console.log(err);
-                            res.redirect('/item');
-                        } else {
-                            req.flash('success', `Se ha cancelado el item con Id = ${req.params.id_item}`);
-                            res.redirect(`/item/edit/${req.params.id_item}`);
-                        }
-                    });
-                } else {
-                    conn.query(`UPDATE item SET eliminado = 0 WHERE id_item = '${req.params.id_item}';`, function(err, result) {
-                        if (err) {
-                            console.log(err);
-                            res.redirect('/item');
-                        } else {
-                            req.flash('success', `Se ha puesto en operacion el item con Id = ${req.params.id_item}`);
-                            res.redirect(`/item/edit/${req.params.id_item}`);
-                        }
-                    });
-                }
-            }            
-        });
+app.post('/delete/(:id_item)', (req, res, next) => {
+
+    axios.post(`${url}/api/item/delete/${req.params.id_item}`)
+    .then(response => {
+        req.flash('success', response.data.message);
+    }).catch(err => console.log(err))
+    .finally( () => {
+        res.redirect(`/item/edit/${req.params.id_item}`);
     });
 });
 
