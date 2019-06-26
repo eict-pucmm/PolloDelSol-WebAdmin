@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<% include ../public/layouts/header.ejs %>
+
+<body>
+  <div class="container-scroller">
+  <% include ../public/layouts/navbar.ejs %>
+    <div class="container-fluid page-body-wrapper">
+      <% include ../public/layouts/sidebar.ejs %>
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-8 grid-margin stretch-card mx-auto">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Modificar empresa</h4>
+                  <% if (messages.error) { %>
+                      <p id="result-message" style="color:red"><%- messages.error %></p>
+                  <% } %>
+                  <% if (messages.success) { %>
+                      <p id="result-message" style="color:green"><%- messages.success %></p>
+                  <% } %>
+                      <form class="forms-sample" method="POST" action="/empresa/edit/<%= empresa.id_empresa %>">
+                  <div class="row">
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="id">Id</label>
+                          <div class="col-sm-12 row">
+                            <input type="text" name="id-empresa" class="form-control" id="id-empresa" placeholder="Id" value="<%= empresa.id_empresa %>" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="nombre">Nombre</label>
+                          <div class="col-sm-12 row">
+                            <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= empresa.nombre %>"/>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="rnc">RNC</label>
+                          <div class="col-sm-12 row">
+                            <input type="text" name="rnc" class="form-control" id="RNC" placeholder="RNC" value="<%= empresa.RNC %>"/>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="tipo-item">Tipo de corte</label>
+                            <select class="form-control col-sm-10" id="tipo-de-corte" name="tipo-de-corte">
+                              <option value="Semanal" <% if (empresa.tipo_de_cierre == '1') { %>selected<% } %> >Semanal</option>
+                              <option value="Quincenal" <% if (empresa.tipo_de_cierre == '2') { %>selected<% } %> >Quincenal</option>
+                              <option value="Mensual" <% if (empresa.tipo_de_cierre == '3') { %>selected<% } %> >Mensual</option>
+                            </select>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label>Dia de corte</label>
+                          <div class="input-group col-sm-4 row">
+                            <input type="number" name="dia_de_corte" step="1" min="1" max="31" class="form-control price-int-input" value="<%= empresa.dia_de_corte%>">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="input-group align-items-center">
+                      <% if (empresa.registrada === 1) { %>
+                        <input type="checkbox" class="form-check-input" checked=""> Empresa aprobada
+                          <span class="separator" ></span>
+                      <% } else { %>
+                        <input type="checkbox" class="form-check-input"> Empresa aprobada
+                        <span class="separator" ></span>
+                      <% } %>
+
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018 <a
+                href="https://www.templatewatch.com/" target="_blank">Templatewatch</a>. All rights reserved.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i
+                class="ti-heart text-danger ml-1"></i></span>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <script src="/vendors/base/vendor.bundle.base.js"></script>
+  <script src="/scripts/off-canvas.js"></script>
+  <script src="/scripts/hoverable-collapse.js"></script>
+  <script src="/scripts/template.js"></script>
+  <script src="/scripts/todolist.js"></script>
+  <!--<script src="/scripts/register_item.js"></script>-->
+</body>
+
+</html>

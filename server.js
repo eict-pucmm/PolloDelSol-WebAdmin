@@ -12,8 +12,10 @@ const cors              = require('cors');
 //visual routes
 const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
+const empresaRoute      = require('./routes/public/empresa');
 //api routes
 const indexApi          = require('./routes/api/index');
+
 let app = express();
 
 app.set('view engine', 'ejs');
@@ -40,6 +42,7 @@ app.use(methodOverride((req, res) => {
 //routes
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
+app.use('/empresa', empresaRoute);
 app.use('/api', indexApi);
 //assets
 app.use(express.static(__dirname + '/views/public'));
