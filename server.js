@@ -8,19 +8,17 @@ const expressFlash      = require('express-flash')
 const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session');
 const config            = require('./config');              //config values for server and database
-const indexRoute        = require('./routes/index');
-const itemRoute         = require('./routes/item');
+const cors              = require('cors');
+//visual routes
+const indexRoute        = require('./routes/public/index');
+const itemRoute         = require('./routes/public/item');
+//api routes
+const indexApi          = require('./routes/api/index');
 let app = express();
 
-let dbOptions = {
-    host: config.database.host,
-    user: config.database.username,
-    password: config.database.password,
-    database: config.database.name
-}
-
 app.set('view engine', 'ejs');
-app.use(myConnection(mysql, dbOptions, 'pool'));
+app.use(myConnection(mysql, config.database, 'pool'));
+app.use(cors());
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -32,7 +30,7 @@ app.use(expressSession({
     saveUninitialized: true,
     cookie: { maxAge: 60000 }
 }))
-app.use(methodOverride(function (req, res) {
+app.use(methodOverride((req, res) => {
     if ((req.body) && (typeof req.body === 'object') && ('_method' in req.body)) {
         let method = req.body._method;
         delete req.body._method;
@@ -42,9 +40,10 @@ app.use(methodOverride(function (req, res) {
 //routes
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
+app.use('/api', indexApi);
 //assets
 app.use(express.static(__dirname + '/views/public'));
 
 app.listen(config.server.port, function () {
-    console.log(`Server running at ${config.server.host}:${config.server.port}`);
+    console.log(`Server running at ${config.server.url}`);
 });
