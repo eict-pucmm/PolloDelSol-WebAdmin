@@ -8,8 +8,10 @@ const expressFlash      = require('express-flash')
 const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session');
 const config            = require('./config');              //config values for server and database
-const indexRoute        = require('./routes/index');
-const itemRoute         = require('./routes/item');
+const indexRoute        = require('./routes/Public/index');
+const itemRoute         = require('./routes/Public/item');
+const empresaRoute      = require('./routes/Public/empresa');
+const indexAPI          = require('./routes/API/index')
 let app = express();
 
 let dbOptions = {
@@ -42,6 +44,8 @@ app.use(methodOverride(function (req, res) {
 //routes
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
+app.use('/empresa', empresaRoute);
+app.use('/api', indexAPI); 
 //assets
 app.use(express.static(__dirname + '/views/public'));
 

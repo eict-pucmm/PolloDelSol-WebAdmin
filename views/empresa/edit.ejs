@@ -21,13 +21,13 @@
                   <% if (messages.success) { %>
                       <p id="result-message" style="color:green"><%- messages.success %></p>
                   <% } %>
-                      <form class="forms-sample" method="POST" action="/empresa/edit/<%= empresa.id %>">
+                      <form class="forms-sample" method="POST" action="/empresa/edit/<%= empresa.id_empresa %>">
                   <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="id">Id</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="id-item" class="form-control" id="id-empresa" placeholder="Id" value="<%= empresa.id %>" />
+                            <input type="text" name="id-empresa" class="form-control" id="id-empresa" placeholder="Id" value="<%= empresa.id_empresa %>" />
                           </div>
                         </div>
                       </div>
@@ -43,7 +43,7 @@
                         <div class="form-group">
                           <label for="rnc">RNC</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="rnc" class="form-control" id="RNC" placeholder="RNC" value="<%= empresa.rnc %>"/>
+                            <input type="text" name="rnc" class="form-control" id="RNC" placeholder="RNC" value="<%= empresa.RNC %>"/>
                           </div>
                         </div>
                       </div>
@@ -51,18 +51,18 @@
                           <div class="form-group">
                             <label for="tipo-item">Tipo de corte</label>
                             <select class="form-control col-sm-10" id="tipo-de-corte" name="tipo-de-corte">
-                              <option value="Semanal" <% if (item.tipo == 'Semanal') { %>selected<% } %> >Semanal</option>
-                              <option value="Quincenal" <% if (item.tipo == 'Quincenal') { %>selected<  % } %> >Quincenal</option>
-                              <option value="Mensual" <% if (item.tipo == 'Mensual') { %>selected<% } %> >Mensual</option>
+                              <option value="Semanal" <% if (empresa.tipo_de_cierre == '1') { %>selected<% } %> >Semanal</option>
+                              <option value="Quincenal" <% if (empresa.tipo_de_cierre == '2') { %>selected<% } %> >Quincenal</option>
+                              <option value="Mensual" <% if (empresa.tipo_de_cierre == '3') { %>selected<% } %> >Mensual</option>
                             </select>
                           </div>
                         </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-12">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label>Dia de corte</label>
-                          <div class="input-group col-sm-12 row">
+                          <div class="input-group col-sm-4 row">
                             <input type="number" name="dia_de_corte" step="1" min="1" max="31" class="form-control price-int-input" value="<%= empresa.dia_de_corte%>">
                           </div>
                         </div>
@@ -72,13 +72,12 @@
                       <div class="col-md-12">
                         <div class="input-group align-items-center">
                       <% if (empresa.registrada === 1) { %>
-                        <input type="checkbox" class="form-check-input" checked="true"> Empresa aprobada
+                        <input type="checkbox" class="form-check-input" checked=""> Empresa aprobada
                           <span class="separator" ></span>
-                      <% }else{ %>
-                        <input type="checkbox" class="form-check-input" checked="false"> Empresa aprobada
+                      <% } else { %>
+                        <input type="checkbox" class="form-check-input"> Empresa aprobada
                         <span class="separator" ></span>
-                      
-                      <%}%>
+                      <% } %>
 
                         </div>
                       </div>
@@ -105,7 +104,7 @@
   <script src="/scripts/hoverable-collapse.js"></script>
   <script src="/scripts/template.js"></script>
   <script src="/scripts/todolist.js"></script>
-  <script src="/scripts/register_item.js"></script>
+  <!--<script src="/scripts/register_item.js"></script>-->
 </body>
 
 </html>

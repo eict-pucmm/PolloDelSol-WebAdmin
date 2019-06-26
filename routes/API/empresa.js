@@ -5,7 +5,10 @@ app.get('/', function (req, res, next) {
 
     let sql_query = `SELECT empresa.id_empresa, cliente.nombre, empresa.RNC, cierre.tipo_de_cierre, cierre.dia_ajustado, empresa.registrada 
     FROM empresa, cliente, cierre, empresacierre 
-    WHERE empresacierre.id_cierre = cierre.id_cierre AND empresacierre.id_empresa = empresa.id_empresa AND empresa.id_cliente = cliente.id_cliente;`;
+    WHERE empresacierre.id_cierre = cierre.id_cierre AND empresacierre.id_empresa = empresa.id_empresa AND empresa.id_cliente = cliente.id_cliente`;
+    if (req.query.id_empresa) {
+        sql_query += ` AND empresa.id_empresa = '${req.query.id_empresa}'`;
+}
     req.getConnection(function (error, conn) {
         conn.query(sql_query, function (err, rows, fields) {
             if (!err) {
@@ -17,15 +20,6 @@ app.get('/', function (req, res, next) {
     })
 });
 
-app.get('/edit/(:id_empresa)', function(req, res, next){
-    req.getConnection(function(error, conn) {
-        conn.query(`SELECT empresa.id_empresa, cliente.nombre, empresa.RNC, cierre.tipo_de_cierre, cierre.dia_de_cierre, empresa.registrada FROM empresa, cliente, cierre, empresacierre WHERE empresacierre.id_cierre = cierre.id_cierre AND empresacierre.id_empresa = empresa.id_empresa AND empresa.id_cliente = cliente.id_cliente AND empresa.id_empresa = '${req.params.id_empresa}';`, function(err, rows, fields) {
-            if (rows.length <= 0) {
-            
-            }        
-        });
-    });
-});
  
 app.post('/edit/(:id_empresa)', function(req, res, next){
     req.assert('cierre', 'Debe seleccionar un tipo de cierre').notEmpty();
@@ -52,7 +46,7 @@ app.post('/edit/(:id_empresa)', function(req, res, next){
             UPDATE cierre SET
             tipo_de_cierre = '${enterprise.tipo_de_cierre}'
             dia_de_cierre = '${enterprise.dia_de_cierre}'
-            WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterpirse.id}');
+            WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id}');
             COMMIT;
             `
 
@@ -77,7 +71,7 @@ app.post('/edit/(:id_empresa)', function(req, res, next){
         req.flash('error', errors[0].msg);
         res.render(
             `item/edit/${enterprise.id}`, {
-                action: 'Modificar', enterpirse
+                action: 'Modificar', enterprise
             }
         );
     }

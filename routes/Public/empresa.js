@@ -10,18 +10,19 @@ app.get('/', function (req, res, next) {
         });
 });
 
-app.get('/edit/(:id_item)', function(req, res, next){
-    axios.get(`http://localhost:5000/api/empresa?id_empresa='${req.id_empresa}'`)
+app.get('/edit/(:id_empresa)', function(req, res, next){
+    axios.get(`http://localhost:5000/api/empresa?id_empresa=${req.params.id_empresa}`)
         .then(result => {
-            if(result.data.empresa = null){
+            console.log(result.data.empresa[0])
+            if(result.data.empresa == null){
                 req.flash('error', `No se encontro la empresa con Id = "${req.params.id_empresa}"`);
-                res.redirect('/empresa')
+                res.redirect('empresa')
             }else{
-                res.render('empresa/edit', {data: result.data.empresa});
+                console.log(result.data.empresa[0])
+                res.render('empresa/edit', {empresa: result.data.empresa[0]});
             }
-            
         })
-    
+        .catch(err => console.log)
 });
 
 app.post('/edit/(:id_item)', function(req, res, next){
