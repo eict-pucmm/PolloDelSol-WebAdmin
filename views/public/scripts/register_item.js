@@ -1,3 +1,4 @@
+//error message from database
 let result_message = document.getElementById('result-message');
 if (result_message) {
     let message = result_message.innerHTML;
@@ -7,7 +8,7 @@ if (result_message) {
             message.substring(message.indexOf("'") + 1, message.indexOf("'", message.indexOf("'") + 1)) + '"';
     }
 }
-
+// set categories and subcategories
 let categoriaCbx = document.getElementById('categoria-cbx');
 let subcategoriaCbx = document.getElementById('subcategoria-cbx');
 let combo_card = document.getElementById('combo-card');
@@ -43,9 +44,9 @@ let setSelectedComboBox = (comboBox, nombre) => {
     }
 }
 
+//manage case Modificar
 if (document.getElementById('reg-button').innerHTML === 'Modificar') {
     document.getElementById('id-item').disabled = true;
-    // categoriaCbx.disabled = true;
     updateSubcategorias();
     setSelectedComboBox(subcategoriaCbx, item.subcategoria);
 } else {
@@ -53,6 +54,7 @@ if (document.getElementById('reg-button').innerHTML === 'Modificar') {
     updateSubcategorias();
 }
 
+//combo data
 let max_guarnicion = document.getElementById('max-guarnicion');
 let max_bebida = document.getElementById('max-bebida');
 let lista_guarnicion = document.getElementById('lista-guarnicion');
@@ -70,5 +72,27 @@ function updateGuarniciones() {
 function updateBebidas() {
     if (max_bebida.value < max_bebida.max) {
         console.log(lista_guarnicion);
+    }
+}
+
+//manage image
+function readURL(input) {
+    let url = input.value;
+    let ext = url.substring(url.lastIndexOf('.') + 1).toLowerCase();
+    let preview = document.getElementById('preview-image');
+    let imageText = document.getElementById('image-text');
+
+    if (input.files && input.files[0] && (ext == "png" || ext == "jpeg" || ext == "jpg")) {
+        var fileName = url.split('fakepath' + String.fromCharCode(92)).pop();
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            imageText.value = fileName;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+    else{
+        preview.src = '/images/placeholder.jpg';
+        imageText.value = '';
     }
 }

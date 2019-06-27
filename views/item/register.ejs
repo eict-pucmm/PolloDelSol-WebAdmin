@@ -11,9 +11,9 @@
       <div class="main-panel">
           <div class="content-wrapper">
           <% if (action === 'Registrar') {%>
-            <form method="POST" action="/item/register" onkeydown="return event.key != 'Enter';">
+            <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
           <% } else if (action === 'Modificar') { %>
-            <form method="POST" action="/item/edit/<%=item.id_item%>" onkeydown="return event.key != 'Enter';">
+            <form method="POST" action="/item/edit/<%=item.id_item%>" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
           <% } %>
             <div class="row">
               <div class="col-3 grid-margin stretch-card mx-auto">
@@ -22,22 +22,21 @@
                   <h4 class="card-title">Imagen</h4>
                     <div class="row text-center">
                       <div class="col-md-12">
-                        <img src="/images/test/combo/combo1.jpg" class="register-img"/>
+                      <%if (item.imagen) {%>
+                        <img id="preview-image" src="https://res.cloudinary.com/pollo-del-sol/image/upload/v1561587848/item/k2ptdyvhlyiw8wdsxopv.jpg" class="register-img"/>
+                      <%} else {%>
+                        <img id="preview-image" src="/images/placeholder.jpg" class="register-img"/>
+                      <%}%>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-md-12">
-                        <div class="form-group">
-                          <input type="file" name="img[]" class="file-upload-default">
-                          <div class="input-group">
-                            <input type="text" class="form-control file-upload-info" disabled placeholder="Subir imagen">
-                            <span class="input-group-append">
-                              <button id="upload-button" type="button" class="btn file-upload-browse btn-primary btn-icon-text">
-                                <i class="ti-upload btn-icon-prepend"></i>                                                    
-                                Subir
-                              </button>
-                            </span>
-                          </div>
+                        <div class="input-group">
+                          <input id="image-text" name="image-text" type="text" class="form-control file-upload-info" disabled placeholder="Subir imagen">
+                          <label class="btn btn-primary mr-2">
+                            <input type="file" name="image" id="image" accept="image/png, image/jpeg" onchange="readURL(this)" style="display: none;">
+                            Buscar Imagen
+                          </label>
                         </div>
                       </div>
                     </div>
@@ -75,9 +74,11 @@
                           <div class="form-group">
                             <label>Categoria</label>
                             <select class="form-control col-sm-10" id="categoria-cbx" name="categoria-cbx" onchange="updateSubcategorias()">
+                            <%if (categorias) {%>
                             <% categorias.forEach(cat => { %>
-                                <option value="<%= cat.id_categoria %>" <%if (cat.nombre === item.categoria) {%>selected<%}%>><%= cat.nombre %></option>
+                              <option value="<%= cat.id_categoria %>" <%if (cat.nombre === item.categoria) {%>selected<%}%>><%= cat.nombre %></option>
                             <% }); %>
+                            <%}%>
                             </select>
                           </div>
                         </div>
@@ -160,7 +161,7 @@
                             <div class="input-group-prepend">
                               <span class="input-group-text bg-primary text-white">Guarnicion</span>
                             </div>
-                            <input id="max-guarnicion" type="number" onchange="updateGuarniciones()" name="max-guarnicion" step="1" min="1" max="<%= guarniciones.length%>" class="form-control" value="<%= guarniciones.length%>">
+                            <input id="max-guarnicion" type="number" onchange="updateGuarniciones()" name="max-guarnicion" step="1" min="1" max="<%if(guarniciones) {%><%=guarniciones.length%><%}%>" class="form-control" value="<%if(guarniciones) {%><%=guarniciones.length%><%}%>">
                           </div>
                         </div>
                       </div>
@@ -172,7 +173,7 @@
                             <div class="input-group-prepend">
                               <span class="input-group-text bg-primary text-white">Bebida</span>
                             </div>
-                            <input id="max-bebida" type="number" onchange="updateBebidas()" name="max-bebida" step="1" min="0" max="<%=bebidas.length%>" class="form-control" value="<%= bebidas.length%>">
+                            <input id="max-bebida" type="number" onchange="updateBebidas()" name="max-bebida" step="1" min="0" max="<%if(bebidas) {%><%=bebidas.length%><%}%>" class="form-control" value="<%if(bebidas) {%><%=bebidas.length%><%}%>">
                           </div>
                         </div>
                       </div>
@@ -191,16 +192,18 @@
                                   </label>
                                 </div>
                               </li>
+                            <%if (guarniciones) {%>
                             <% guarniciones.forEach(function (guarnicion) { %>
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="<%=guarnicion.nombre%>" type="checkbox" class="form-check-input">
+                                    <input name="<%=guarnicion.nombre%>" value="<%=guarnicion.nombre%>" type="checkbox" class="form-check-input">
                                     <%= guarnicion.nombre%>
                                   </label>
                                 </div>
                               </li>
                             <% }); %>
+                            <%}%>
                             </ul>
                           </div>
                         </div>
@@ -219,16 +222,18 @@
                                   </label>
                                 </div>
                               </li>
+                            <%if (bebidas) {%>
                             <% bebidas.forEach(function (bebida) { %>
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="<%=bebida.nombre%>" type="checkbox" class="form-check-input">
+                                    <input name="<%=bebida.nombre%>" value="<%=bebida.nombre%>" type="checkbox" class="form-check-input">
                                     <%= bebida.nombre%>
                                   </label>
                                 </div>
                               </li>
                             <% }); %>
+                            <%}%>
                             </ul>
                           </div>
                         </div>

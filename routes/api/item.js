@@ -33,7 +33,7 @@ app.get('/categories', (req, res) => {
 
 app.get('/get', (req, res) => {
 
-    let sql_query = `SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.puntos, item.eliminado 
+    let sql_query = `SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.puntos, item.eliminado, item.imagen 
         FROM item, categoria AS categoria, categoria AS subcategoria 
         WHERE item.id_categoria = categoria.id_categoria 
         AND item.id_subcategoria = subcategoria.id_categoria`;
