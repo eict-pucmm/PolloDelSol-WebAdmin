@@ -17,24 +17,23 @@
                   <h4 class="card-title">Empresas</h4>
                   <form action="/empresa?nombre-empresa=">
                     <div class="row">
-                      <div class="col-md-3">
+                      <div class="col-md-6">
                         <div class="form-group">
                           <label for="nombre-empresa">Buscar por nombre</label>
                             <form>
                               <input type="text" class="form-control" id="nombre-empresa" name="Nombre"/>
-                              <button type="button" class="btn btn-secondary" >Buscar</button>
                             </form>
-                        </div>
-                        <div class="col-md-3">
-                        <div class="form-group">
-                          <label for="rnc-empresa">Buscar por RNC</label>
-                            <form>
-                              <input type="text" class="form-control" id="nombre-empresa" name="Nombre"/>
-                              <button type="button" class="btn btn-secondary" >Buscar</button>
-                            </form>
+                          <div class="col-md-6">                        
+                            <label for="rnc-empresa">Buscar por RNC</label>
+                              <form>
+                                <input type="text" class="form-control" id="rnc-empresa" name="RNC"/>
+                                <button type="button" class="btn btn-secondary" >Buscar</button>
+                              </form>
+                          </div>
                         </div>
                       </div>
                     </div>
+                    </form>
                   </form>
                   <% if (data == '') { %>
                     <p id="result-message" style="color :red">No hay empresas con ese nombre</p>
@@ -57,9 +56,16 @@
                               <tr>
                                 <td><%= enterprise.id_empresa %></td>
                                 <td><%= enterprise.nombre %></td>
-                                <td><%= enterprise.rnc %></td>
-                                <td><%= enterprise.tipo_de_cierre %></td>
-                                <td><%= enterprise.dia_ajustado %></td>
+                                <td><%= enterprise.RNC %></td>
+                                <!--<td><%= enterprise.tipo_de_cierre %></td>-->
+                                <% if (enterprise.tipo_de_cierre == 1){ %>
+                                  <td>Semanal</td>
+                                <% } else if (enterprise.tipo_de_cierre == 2) { %>
+                                  <td>Quincenal</td>
+                                <% } else if (enterprise.tipo_de_cierre == 3) { %>
+                                  <td>Mensual</td>
+                                <% } %>
+                                <td><%= enterprise.dia_cierre %></td>
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">
