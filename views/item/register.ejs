@@ -73,6 +73,7 @@
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Categoria</label>
+                            <input class="form-control col-sm-10" id="selected-category" name="selected-category" style="display: none"/>
                             <select class="form-control col-sm-10" id="categoria-cbx" name="categoria-cbx" onchange="updateSubcategorias()">
                             <%if (categorias) {%>
                             <% categorias.forEach(cat => { %>
@@ -187,7 +188,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="Todas" type="checkbox" class="form-check-input" checked>
+                                    <input id="guarniciones-todas" type="checkbox" class="form-check-input" onchange="updateGuarnicionesCheckedAll()" checked/>
                                     Todas
                                   </label>
                                 </div>
@@ -197,7 +198,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="<%=guarnicion.nombre%>" value="<%=guarnicion.nombre%>" type="checkbox" class="form-check-input">
+                                    <input name="guarniciones" value="<%=guarnicion.id_item%>" type="checkbox" class="form-check-input" onchange="checkCheckboxes()" checked/>
                                     <%= guarnicion.nombre%>
                                   </label>
                                 </div>
@@ -217,7 +218,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="Todas" type="checkbox" class="form-check-input" checked>
+                                    <input id="bebidas-todas" type="checkbox" class="form-check-input" onchange="updateBebidasCheckedAll()" checked/>
                                     Todas
                                   </label>
                                 </div>
@@ -227,7 +228,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="<%=bebida.nombre%>" value="<%=bebida.nombre%>" type="checkbox" class="form-check-input">
+                                    <input name="bebidas" value="<%=bebida.id_item%>" type="checkbox" class="form-check-input" onchange="checkCheckboxes()" checked/>
                                     <%= bebida.nombre%>
                                   </label>
                                 </div>
@@ -261,6 +262,12 @@
     let subcategorias = <%- JSON.stringify(subcategorias)%>;
     let item = <%- JSON.stringify(item)%>;
   </script>
+  <%if (itemCombo && combo) {%>
+  <script>
+    let combo = <%- JSON.stringify(combo)%>;
+    let itemCombo = <%- JSON.stringify(itemCombo)%>;
+  </script>
+  <%}%>
   <script src="/vendors/base/vendor.bundle.base.js"></script>
   <script src="/scripts/off-canvas.js"></script>
   <script src="/scripts/hoverable-collapse.js"></script>

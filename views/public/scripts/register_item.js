@@ -1,5 +1,17 @@
 //error message from database
 let result_message = document.getElementById('result-message');
+let categoriaCbx = document.getElementById('categoria-cbx');
+let subcategoriaCbx = document.getElementById('subcategoria-cbx');
+let combo_card = document.getElementById('combo-card');
+let max_guarnicion = document.getElementById('max-guarnicion');
+let max_bebida = document.getElementById('max-bebida');
+let lista_guarnicion = document.getElementById('lista-guarnicion');
+let lista_bebida = document.getElementById('lista-bebida');
+let guarnicionesCheckboxes = document.getElementsByName('guarniciones');
+let bebidasCheckboxes = document.getElementsByName('bebidas');
+let guarnicionesTodas = document.getElementById('guarniciones-todas');
+let bebidasTodas = document.getElementById('bebidas-todas');
+
 if (result_message) {
     let message = result_message.innerHTML;
 
@@ -9,10 +21,6 @@ if (result_message) {
     }
 }
 // set categories and subcategories
-let categoriaCbx = document.getElementById('categoria-cbx');
-let subcategoriaCbx = document.getElementById('subcategoria-cbx');
-let combo_card = document.getElementById('combo-card');
-
 function checkSelectedCat(cat) {
     return cat.nombre == cat_selected;
 }
@@ -20,6 +28,7 @@ function checkSelectedCat(cat) {
 function updateSubcategorias () {
     subcategoriaCbx.innerText = '';
     cat_selected = categoriaCbx.options[categoriaCbx.selectedIndex].innerHTML;
+    document.getElementById('selected-category').value = cat_selected;
     if (cat_selected === 'Combo') {
         combo_card.style.display = 'flex';
     }else{
@@ -44,22 +53,7 @@ let setSelectedComboBox = (comboBox, nombre) => {
     }
 }
 
-//manage case Modificar
-if (document.getElementById('reg-button').innerHTML === 'Modificar') {
-    document.getElementById('id-item').disabled = true;
-    updateSubcategorias();
-    setSelectedComboBox(subcategoriaCbx, item.subcategoria);
-} else {
-    let cat_selected = '';
-    updateSubcategorias();
-}
-
 //combo data
-let max_guarnicion = document.getElementById('max-guarnicion');
-let max_bebida = document.getElementById('max-bebida');
-let lista_guarnicion = document.getElementById('lista-guarnicion');
-let lista_bebida = document.getElementById('lista-bebida');
-
 function updateGuarniciones() {
     let guarniciones = lista_guarnicion.getElementsByTagName('input');
     if (max_guarnicion.value < max_guarnicion.max) {
@@ -95,4 +89,56 @@ function readURL(input) {
         preview.src = '/images/placeholder.jpg';
         imageText.value = '';
     }
+}
+
+//guarniciones and bebidas checkboxes
+let updateGuarnicionesCheckedAll = () => {
+    for (let i = 0; i < guarnicionesCheckboxes.length; i++) {
+        guarnicionesCheckboxes[i].checked = guarnicionesTodas.checked;
+    }
+}
+
+let updateBebidasCheckedAll = () => {
+    for (let i = 0; i < bebidasCheckboxes.length; i++) {
+        bebidasCheckboxes[i].checked = bebidasTodas.checked;
+    }
+}
+
+let checkCheckboxes = () => {
+    let allChecked = true, i = 0;
+
+    for (let i = 0; i < guarnicionesCheckboxes.length; i++) {
+        if (!guarnicionesCheckboxes[i].checked) {
+            allChecked = false;
+            break;
+        }
+    }
+    guarnicionesTodas.checked = allChecked ? true : false;
+    
+    allChecked = true, i = 0;
+
+    for (let i = 0; i < bebidasCheckboxes.length; i++) {
+        if (!bebidasCheckboxes[i].checked) {
+            allChecked = false;
+            break;
+        }
+    }
+    bebidasTodas.checked = allChecked ? true : false;
+}
+
+let setCheckBoxes = () => {
+
+}
+
+//manage case Modificar
+if (document.getElementById('reg-button').innerHTML === 'Modificar') {
+    document.getElementById('id-item').disabled = true;
+    updateSubcategorias();
+    setSelectedComboBox(subcategoriaCbx, item.subcategoria);
+    if (document.getElementById('selected-category').value == 'Combo') {
+        setCheckBoxes();        
+    }
+} else {
+    let cat_selected = '';
+    updateSubcategorias();
 }
