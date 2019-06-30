@@ -92,42 +92,67 @@ function readURL(input) {
 }
 
 //guarniciones and bebidas checkboxes
-let updateGuarnicionesCheckedAll = () => {
-    for (let i = 0; i < guarnicionesCheckboxes.length; i++) {
-        guarnicionesCheckboxes[i].checked = guarnicionesTodas.checked;
+let updateCheckedAll = todasInput => {
+    if (todasInput.id === 'guarniciones-todas') {
+        for (let i = 0; i < guarnicionesCheckboxes.length; i++) {
+            guarnicionesCheckboxes[i].checked = guarnicionesTodas.checked;
+        }
+    } else if (todasInput.id === 'bebidas-todas') {
+        for (let i = 0; i < bebidasCheckboxes.length; i++) {
+            bebidasCheckboxes[i].checked = bebidasTodas.checked;
+        }
     }
 }
 
-let updateBebidasCheckedAll = () => {
-    for (let i = 0; i < bebidasCheckboxes.length; i++) {
-        bebidasCheckboxes[i].checked = bebidasTodas.checked;
+let changeMaxEvent = (maxInput) => {
+    if (maxInput.id === 'max-bebida') {
+        console.log(maxInput)
+    } else if (maxInput.id === 'max-bebida') {
+        console.log(maxInput)
     }
 }
 
-let checkCheckboxes = () => {
+let checkAllChecked = inputCheckbox => {
     let allChecked = true, i = 0;
 
-    for (let i = 0; i < guarnicionesCheckboxes.length; i++) {
-        if (!guarnicionesCheckboxes[i].checked) {
-            allChecked = false;
-            break;
+    if (inputCheckbox.name === 'guarniciones') {
+        for (let i = 0; i < guarnicionesCheckboxes.length; i++) {
+            if (!guarnicionesCheckboxes[i].checked) {
+                allChecked = false;
+                break;
+            }
         }
-    }
-    guarnicionesTodas.checked = allChecked ? true : false;
-    
-    allChecked = true, i = 0;
-
-    for (let i = 0; i < bebidasCheckboxes.length; i++) {
-        if (!bebidasCheckboxes[i].checked) {
-            allChecked = false;
-            break;
+        guarnicionesTodas.checked = allChecked ? true : false;
+    } else if (inputCheckbox.name === 'bebidas') {
+        for (let i = 0; i < bebidasCheckboxes.length; i++) {
+            if (!bebidasCheckboxes[i].checked) {
+                allChecked = false;
+                break;
+            }
         }
+        bebidasTodas.checked = allChecked ? true : false;
     }
-    bebidasTodas.checked = allChecked ? true : false;
 }
 
 let setCheckBoxes = () => {
+    for (let i = 0; i < guarnicionesCheckboxes.length; i++) {
+        itemCombo.forEach(relation => {
+            if (relation.id_item == guarnicionesCheckboxes[i].value) {
+                guarnicionesCheckboxes[i].checked = true;
+            }
+        })
+    }
 
+    for (let i = 0; i < bebidasCheckboxes.length; i++) {
+        itemCombo.forEach(relation => {
+            if (relation.id_item == bebidasCheckboxes[i].value) {
+                bebidasCheckboxes[i].checked = true;
+            }
+        })
+    }
+
+    checkAllChecked({name: 'bebidas'});
+    checkAllChecked({name: 'guarniciones'});
 }
 
 //manage case Modificar

@@ -162,7 +162,15 @@
                             <div class="input-group-prepend">
                               <span class="input-group-text bg-primary text-white">Guarnicion</span>
                             </div>
-                            <input id="max-guarnicion" type="number" onchange="updateGuarniciones()" name="max-guarnicion" step="1" min="1" max="<%if(guarniciones) {%><%=guarniciones.length%><%}%>" class="form-control" value="<%if(guarniciones) {%><%=guarniciones.length%><%}%>">
+                            <%if (guarniciones) {
+                             if (combo) {%>
+                                <input id="max-guarnicion" type="number" onchange="changeMaxEvent(this)" name="max-guarnicion" step="1" min="1" max="<%=guarniciones.length%>" class="form-control" value="<%=combo.max_guarnicion%>">
+                             <%} else {%>
+                                <input id="max-guarnicion" type="number" onchange="changeMaxEvent(this)" name="max-guarnicion" step="1" min="1" max="<%=guarniciones.length%>" class="form-control" value="<%=guarniciones.length%>">
+                             <%}%>
+                            <%} else {%>
+                              <input id="max-guarnicion" type="number" onchange="" name="max-guarnicion" step="1" min="0" max="0" class="form-control" value="0">
+                            <%}%>
                           </div>
                         </div>
                       </div>
@@ -174,7 +182,15 @@
                             <div class="input-group-prepend">
                               <span class="input-group-text bg-primary text-white">Bebida</span>
                             </div>
-                            <input id="max-bebida" type="number" onchange="updateBebidas()" name="max-bebida" step="1" min="0" max="<%if(bebidas) {%><%=bebidas.length%><%}%>" class="form-control" value="<%if(bebidas) {%><%=bebidas.length%><%}%>">
+                            <%if (bebidas) {
+                             if (combo) {%>
+                                <input id="max-bebida" type="number" onchange="changeMaxEvent(this)" name="max-bebida" step="1" min="1" max="<%=bebidas.length%>" class="form-control" value="<%=combo.max_bebida%>">
+                             <%} else {%>
+                                <input id="max-bebida" type="number" onchange="changeMaxEvent(this)" name="max-bebida" step="1" min="1" max="<%=bebidas.length%>" class="form-control" value="<%=bebidas.length%>">
+                             <%}%>
+                            <%} else {%>
+                              <input id="max-bebida" type="number" onchange="" name="max-bebida" step="1" min="0" max="0" class="form-control" value="0">
+                            <%}%>
                           </div>
                         </div>
                       </div>
@@ -188,7 +204,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input id="guarniciones-todas" type="checkbox" class="form-check-input" onchange="updateGuarnicionesCheckedAll()" checked/>
+                                    <input id="guarniciones-todas" type="checkbox" class="form-check-input" onchange="updateCheckedAll(this)"/>
                                     Todas
                                   </label>
                                 </div>
@@ -198,7 +214,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="guarniciones" value="<%=guarnicion.id_item%>" type="checkbox" class="form-check-input" onchange="checkCheckboxes()" checked/>
+                                    <input name="guarniciones" value="<%=guarnicion.id_item%>" type="checkbox" class="form-check-input" onchange="checkAllChecked(this)"/>
                                     <%= guarnicion.nombre%>
                                   </label>
                                 </div>
@@ -218,7 +234,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input id="bebidas-todas" type="checkbox" class="form-check-input" onchange="updateBebidasCheckedAll()" checked/>
+                                    <input id="bebidas-todas" type="checkbox" class="form-check-input" onchange="updateCheckedAll(this)"/>
                                     Todas
                                   </label>
                                 </div>
@@ -228,7 +244,7 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="bebidas" value="<%=bebida.id_item%>" type="checkbox" class="form-check-input" onchange="checkCheckboxes()" checked/>
+                                    <input name="bebidas" value="<%=bebida.id_item%>" type="checkbox" class="form-check-input" onchange="checkAllChecked(this)"/>
                                     <%= bebida.nombre%>
                                   </label>
                                 </div>
@@ -266,6 +282,7 @@
   <script>
     let combo = <%- JSON.stringify(combo)%>;
     let itemCombo = <%- JSON.stringify(itemCombo)%>;
+    console.log(itemCombo);
   </script>
   <%}%>
   <script src="/vendors/base/vendor.bundle.base.js"></script>

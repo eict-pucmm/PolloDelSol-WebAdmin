@@ -134,7 +134,7 @@ app.get('/edit/(:id_item)', (req, res, next) => {
             if (result.data.items[0].categoria == 'Combo') {
                 axios.get(`${config.server.url}/api/item/get/combo?id_combo=${result.data.items[0].id_item}`)
                     .then(comboData => {
-                        combo = comboData.data.combo;
+                        combo = comboData.data.combo[0];
                         itemCombo = comboData.data.itemCombo;
                     })
             }
