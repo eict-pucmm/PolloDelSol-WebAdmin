@@ -20232,7 +20232,7 @@ select.form-control.border-dark:focus {
   height: 11rem;
   border-radius: 5%;
   margin: 1.5rem 0;
-  object-fit: fill;
+  object-fit: contain;
 }
 
 /* Icons */

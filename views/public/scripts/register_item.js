@@ -104,14 +104,6 @@ let updateCheckedAll = todasInput => {
     }
 }
 
-let changeMaxEvent = (maxInput) => {
-    if (maxInput.id === 'max-bebida') {
-        console.log(maxInput)
-    } else if (maxInput.id === 'max-bebida') {
-        console.log(maxInput)
-    }
-}
-
 let checkAllChecked = inputCheckbox => {
     let allChecked = true, i = 0;
 

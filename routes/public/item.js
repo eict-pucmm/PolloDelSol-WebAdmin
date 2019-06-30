@@ -91,7 +91,7 @@ app.post('/register', parser.single('image'), (req, res, next) => {
         precio: req.sanitize('precio').escape().trim(),
         puntos: req.sanitize('puntos').escape().trim(),
         eliminado: 0,
-        imagen: ''
+        imagen: req.file.url
     }
 
     if (!errors) {
@@ -190,6 +190,20 @@ app.post('/edit/(:id_item)', (req, res, next) => {
         .then( response => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
+                if (req.body['selected-category'] == 'Combo') {
+                    let itemCombo = [], combo = {};
+                    combo = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
+                    req.body.bebidas.forEach(bebida => {
+                        itemCombo.push({id_combo: item.id_item, id_item: bebida})
+                    })
+                    req.body.guarniciones.forEach(guarnicion => {
+                        itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
+                    })
+    
+                    axios.post(`${config.server.url}/api/item/edit/combo`, {combo: combo, itemCombo: itemCombo})
+                        .then(result => {})
+                        .catch(err => console.log(err));
+                }
                 res.redirect('/item');
             } else {
                 req.flash('error', response.data.message);

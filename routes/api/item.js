@@ -162,6 +162,44 @@ app.post('/register/combo', (req, res) => {
     }
 });
 
+app.post('/edit/combo', (req, res) => {
+
+    const combo = req.body.combo;
+    const itemCombo = req.body.itemCombo;
+
+    if (!combo || !itemCombo) {
+        res.status(400).send({error: true, message: 'Please provide combo data'});
+    } else {
+        req.getConnection((error, conn) => {
+            if (!error) {
+                conn.query(`UPDATE INTO combo SET ? WHERE id_combo = ?`, [combo, combo.id_combo], (err, results) => {
+                    if (!err) {
+                        res.status(200).send({error: false, result: results, message: 'Combo registered sucessfully'});
+                    } else {
+                        res.status(500).send({error: true, message: err});
+                    }
+                })
+
+                conn.query(`DELETE FROM itemcombo WHERE id_combo = ?`, combo.id_combo, (err, results) => {
+                    if (err) {
+                        res.status(500).send({error: true, message: err});
+                    }
+                });
+
+                itemCombo.forEach(entry => {
+                    conn.query(`INSERT INTO itemcombo SET ?`, entry, (err, results) => {
+                        if (err) {
+                            res.status(500).send({error: true, message: err});
+                        }
+                    })
+                });
+            } else {
+                res.status(500).send({error: true, message: error});
+            }
+        });
+    }
+});
+
 app.post('/edit/(:id_item)', (req, res) => {
     
     const id_item = req.params.id_item;

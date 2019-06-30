@@ -13,7 +13,7 @@
           <% if (action === 'Registrar') {%>
             <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
           <% } else if (action === 'Modificar') { %>
-            <form method="POST" action="/item/edit/<%=item.id_item%>" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
+            <form method="POST" action="/item/edit/<%=item.id_item%>" onkeydown="return event.key != 'Enter';">
           <% } %>
             <div class="row">
               <div class="col-3 grid-margin stretch-card mx-auto">
@@ -23,7 +23,7 @@
                     <div class="row text-center">
                       <div class="col-md-12">
                       <%if (item.imagen) {%>
-                        <img id="preview-image" src="https://res.cloudinary.com/pollo-del-sol/image/upload/v1561587848/item/k2ptdyvhlyiw8wdsxopv.jpg" class="register-img"/>
+                        <img id="preview-image" src="<%=item.imagen%>" class="register-img"/>
                       <%} else {%>
                         <img id="preview-image" src="/images/placeholder.jpg" class="register-img"/>
                       <%}%>
@@ -49,8 +49,7 @@
                   <h4 class="card-title">Datos generales</h4>
                     <% if (messages.error) { %>
                         <p id="result-message" style="color:red"><%- messages.error %></p>
-                    <% } %>
-                    <% if (messages.success) { %>
+                    <% } else if (messages.success) { %>
                         <p id="result-message" style="color:green"><%- messages.success %></p>
                     <% } %>
                       <div class="row">
@@ -164,12 +163,12 @@
                             </div>
                             <%if (guarniciones) {
                              if (combo) {%>
-                                <input id="max-guarnicion" type="number" onchange="changeMaxEvent(this)" name="max-guarnicion" step="1" min="1" max="<%=guarniciones.length%>" class="form-control" value="<%=combo.max_guarnicion%>">
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1" max="<%=guarniciones.length%>" class="form-control" value="<%=combo.max_guarnicion%>">
                              <%} else {%>
-                                <input id="max-guarnicion" type="number" onchange="changeMaxEvent(this)" name="max-guarnicion" step="1" min="1" max="<%=guarniciones.length%>" class="form-control" value="<%=guarniciones.length%>">
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1" max="<%=guarniciones.length%>" class="form-control" value="<%=guarniciones.length%>">
                              <%}%>
                             <%} else {%>
-                              <input id="max-guarnicion" type="number" onchange="" name="max-guarnicion" step="1" min="0" max="0" class="form-control" value="0">
+                              <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0" class="form-control" value="0">
                             <%}%>
                           </div>
                         </div>
@@ -184,12 +183,12 @@
                             </div>
                             <%if (bebidas) {
                              if (combo) {%>
-                                <input id="max-bebida" type="number" onchange="changeMaxEvent(this)" name="max-bebida" step="1" min="1" max="<%=bebidas.length%>" class="form-control" value="<%=combo.max_bebida%>">
+                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="1" max="<%=bebidas.length%>" class="form-control" value="<%=combo.max_bebida%>">
                              <%} else {%>
-                                <input id="max-bebida" type="number" onchange="changeMaxEvent(this)" name="max-bebida" step="1" min="1" max="<%=bebidas.length%>" class="form-control" value="<%=bebidas.length%>">
+                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="1" max="<%=bebidas.length%>" class="form-control" value="<%=bebidas.length%>">
                              <%}%>
                             <%} else {%>
-                              <input id="max-bebida" type="number" onchange="" name="max-bebida" step="1" min="0" max="0" class="form-control" value="0">
+                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0" class="form-control" value="0">
                             <%}%>
                           </div>
                         </div>
@@ -220,6 +219,8 @@
                                 </div>
                               </li>
                             <% }); %>
+                            <%} else {%>
+                              <p style="color:red">No hay guarniciones registradas</p>
                             <%}%>
                             </ul>
                           </div>
@@ -250,6 +251,8 @@
                                 </div>
                               </li>
                             <% }); %>
+                            <%} else {%>
+                              <p style="color:red">No hay bebidas registradas</p>
                             <%}%>
                             </ul>
                           </div>
