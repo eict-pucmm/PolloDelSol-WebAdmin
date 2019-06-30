@@ -66,12 +66,12 @@
                        <% if (data) { %>
                          <% data.forEach(function (item) { %>
                               <tr title="<%=item.categoria%> <%=item.subcategoria%> <%=item.eliminado%>">
-                                <td><%= item.id_item %></td>
-                                <td><%= item.nombre %></td>
-                                <td><%= item.descripcion %></td>
+                                <td><%- item.id_item %></td>
+                                <td><%- item.nombre %></td>
+                                <td><%- item.descripcion %></td>
                                 <td><%= item.precio %></td>
-                                <td><%= item.categoria %></td>
-                                <td><%= item.subcategoria %></td>
+                                <td><%- item.categoria %></td>
+                                <td><%- item.subcategoria %></td>
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">
@@ -80,7 +80,7 @@
                                   </div>
                                 </td>
                                 <td class="image"> 
-                                  <a href='/item/edit/<%= item.id_item %>'> <img src="/images/icons/edit.svg" /> </a>
+                                  <a href='/item/edit/<%- item.id_item %>'> <img src="/images/icons/edit.svg" /> </a>
                                 </td>
                               </tr>
                          <% }) %>
