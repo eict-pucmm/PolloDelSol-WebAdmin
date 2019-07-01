@@ -6,8 +6,8 @@ values = {
         database: 'heroku_7fdb4fe0285393e',
     },
     server: {
-        host: '127.0.0.1',
-        port: '5000',
+        host: 'http://pollo-del-sol.herokuapp.com',
+        port: '80',
         url: `http://pollo-del-sol.herokuapp.com`
     },
     cloudinary: {
