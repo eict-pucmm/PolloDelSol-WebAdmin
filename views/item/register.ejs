@@ -13,7 +13,7 @@
           <% if (action === 'Registrar') {%>
             <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
           <% } else if (action === 'Modificar') { %>
-            <form method="POST" action="/item/edit/<%=item.id_item%>" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
+            <form method="POST" action="/item/edit/<%-item.id_item%>" onkeydown="return event.key != 'Enter';">
           <% } %>
             <div class="row">
               <div class="col-3 grid-margin stretch-card mx-auto">
@@ -23,7 +23,7 @@
                     <div class="row text-center">
                       <div class="col-md-12">
                       <%if (item.imagen) {%>
-                        <img id="preview-image" src="https://res.cloudinary.com/pollo-del-sol/image/upload/v1561587848/item/k2ptdyvhlyiw8wdsxopv.jpg" class="register-img"/>
+                        <img id="preview-image" src="<%-item.imagen%>" class="register-img"/>
                       <%} else {%>
                         <img id="preview-image" src="/images/placeholder.jpg" class="register-img"/>
                       <%}%>
@@ -49,8 +49,7 @@
                   <h4 class="card-title">Datos generales</h4>
                     <% if (messages.error) { %>
                         <p id="result-message" style="color:red"><%- messages.error %></p>
-                    <% } %>
-                    <% if (messages.success) { %>
+                    <% } else if (messages.success) { %>
                         <p id="result-message" style="color:green"><%- messages.success %></p>
                     <% } %>
                       <div class="row">
@@ -58,7 +57,7 @@
                           <div class="form-group">
                             <label for="id">Id</label>
                             <div class="col-sm-12 row">
-                              <input type="text" name="id-item" class="form-control" id="id-item" placeholder="Id" value="<%= item.id_item %>" />
+                              <input type="text" name="id-item" class="form-control" id="id-item" placeholder="Id" value="<%- item.id_item %>" />
                             </div>
                           </div>
                         </div>
@@ -66,17 +65,18 @@
                           <div class="form-group">
                             <label for="nombre">Nombre</label>
                             <div class="col-sm-12 row">
-                              <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= item.nombre %>"/>
+                              <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%- item.nombre %>"/>
                             </div>
                           </div>
                         </div>
                         <div class="col-md-3">
                           <div class="form-group">
                             <label>Categoria</label>
+                            <input class="form-control col-sm-10" id="selected-category" name="selected-category" style="display: none"/>
                             <select class="form-control col-sm-10" id="categoria-cbx" name="categoria-cbx" onchange="updateSubcategorias()">
                             <%if (categorias) {%>
                             <% categorias.forEach(cat => { %>
-                              <option value="<%= cat.id_categoria %>" <%if (cat.nombre === item.categoria) {%>selected<%}%>><%= cat.nombre %></option>
+                              <option value="<%= cat.id_categoria %>" <%if (cat.nombre === item.categoria) {%>selected<%}%>><%- cat.nombre %></option>
                             <% }); %>
                             <%}%>
                             </select>
@@ -88,7 +88,7 @@
                           <div class="form-group">
                             <label>Descripción</label>
                             <div class="col-sm-12 row">
-                              <input name="descripcion" class="form-control" id="descripcion" placeholder="Descripcion" value="<%= item.descripcion%>"/>
+                              <input name="descripcion" class="form-control" id="descripcion" placeholder="Descripcion" value="<%- item.descripcion%>"/>
                             </div>
                           </div>
                         </div>
@@ -130,9 +130,9 @@
                             <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-item" ><%= action %></button>
                         <% if (action === 'Modificar') { %>
                           <%if (item.eliminado == 0) { %>
-                            <button id="del-button" name="delete" type="submit" formmethod="POST" formaction="/item/delete/<%=item.id_item%>" class="btn btn-danger">Cancelar item</button>
+                            <button id="del-button" name="delete" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-danger">Cancelar item</button>
                           <%} else {%>
-                            <button id="act-button" name="sucess" type="submit" formmethod="POST" formaction="/item/delete/<%=item.id_item%>" class="btn btn-success">Activar item</button>
+                            <button id="act-button" name="sucess" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-success">Activar item</button>
                           <%}%>
                             <span class="separator-horizontal" ></span>
                           <% if (!item.eliminado) { %>
@@ -156,24 +156,32 @@
                     <div class="row">
                       <div class="col-md-5">
                         <div class="form-group">
-                          <label>Max. guarnicion</label>
+                          <label>Cantidad máxima de guarniciones a elegir</label>
                           <div class="input-group col-sm-12 row">
                             <div class="input-group-prepend">
                               <span class="input-group-text bg-primary text-white">Guarnicion</span>
                             </div>
-                            <input id="max-guarnicion" type="number" onchange="updateGuarniciones()" name="max-guarnicion" step="1" min="1" max="<%if(guarniciones) {%><%=guarniciones.length%><%}%>" class="form-control" value="<%if(guarniciones) {%><%=guarniciones.length%><%}%>">
+                            <%if (guarniciones) {%>
+                              <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1" class="form-control" value="1">
+                            <%} else {%>
+                              <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0" class="form-control" value="0">
+                            <%}%>
                           </div>
                         </div>
                       </div>
                       <div class="col-md-2"></div>
                       <div class="col-md-5">
                         <div class="form-group">
-                          <label>Max. bebida</label>
+                          <label>Cantidad máxima de bebidas a elegir</label>
                           <div class="input-group col-sm-12 row">
                             <div class="input-group-prepend">
                               <span class="input-group-text bg-primary text-white">Bebida</span>
                             </div>
-                            <input id="max-bebida" type="number" onchange="updateBebidas()" name="max-bebida" step="1" min="0" max="<%if(bebidas) {%><%=bebidas.length%><%}%>" class="form-control" value="<%if(bebidas) {%><%=bebidas.length%><%}%>">
+                            <%if (bebidas) {%>
+                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="1" class="form-control" value="1">
+                            <%} else {%>
+                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0" class="form-control" value="0">
+                            <%}%>
                           </div>
                         </div>
                       </div>
@@ -181,13 +189,13 @@
                     <div class="row">
                       <div class="col-md-5">
                         <div class="form-group">
-                          <label>Guarnicion/es</label>
+                          <label>Opciones de guarniciones a elegir</label>
                           <div class="list-wrapper">
                             <ul id="lista-guarnicion" class="col-sm-11">
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="Todas" type="checkbox" class="form-check-input" checked>
+                                    <input id="guarniciones-todas" type="checkbox" class="form-check-input" onchange="updateCheckedAll(this)"/>
                                     Todas
                                   </label>
                                 </div>
@@ -197,12 +205,14 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="<%=guarnicion.nombre%>" value="<%=guarnicion.nombre%>" type="checkbox" class="form-check-input">
-                                    <%= guarnicion.nombre%>
+                                    <input name="guarniciones" value="<%-guarnicion.id_item%>" type="checkbox" class="form-check-input" onchange="checkAllChecked(this)"/>
+                                    <%- guarnicion.nombre%>
                                   </label>
                                 </div>
                               </li>
                             <% }); %>
+                            <%} else {%>
+                              <p style="color:red">No hay guarniciones registradas</p>
                             <%}%>
                             </ul>
                           </div>
@@ -211,13 +221,13 @@
                       <div class="col-md-2"></div>
                       <div class="col-md-5">
                         <div class="form-group">
-                          <label>Bebida/s</label>
+                          <label>Opciones de bebidas a elegir</label>
                           <div class="list-wrapper">
                             <ul id="lista-bebida" class="col-sm-11">
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="Todas" type="checkbox" class="form-check-input" checked>
+                                    <input id="bebidas-todas" type="checkbox" class="form-check-input" onchange="updateCheckedAll(this)"/>
                                     Todas
                                   </label>
                                 </div>
@@ -227,12 +237,14 @@
                               <li>
                                 <div class="form-check">
                                   <label class="form-check-label">
-                                    <input name="<%=bebida.nombre%>" value="<%=bebida.nombre%>" type="checkbox" class="form-check-input">
-                                    <%= bebida.nombre%>
+                                    <input name="bebidas" value="<%-bebida.id_item%>" type="checkbox" class="form-check-input" onchange="checkAllChecked(this)"/>
+                                    <%- bebida.nombre%>
                                   </label>
                                 </div>
                               </li>
                             <% }); %>
+                            <%} else {%>
+                              <p style="color:red">No hay bebidas registradas</p>
                             <%}%>
                             </ul>
                           </div>
@@ -261,6 +273,13 @@
     let subcategorias = <%- JSON.stringify(subcategorias)%>;
     let item = <%- JSON.stringify(item)%>;
   </script>
+  <%if (itemCombo && combo) {%>
+  <script>
+    let combo = <%- JSON.stringify(combo)%>;
+    let itemCombo = <%- JSON.stringify(itemCombo)%>;
+    console.log(itemCombo);
+  </script>
+  <%}%>
   <script src="/vendors/base/vendor.bundle.base.js"></script>
   <script src="/scripts/off-canvas.js"></script>
   <script src="/scripts/hoverable-collapse.js"></script>

@@ -47,6 +47,6 @@ app.use('/api', indexApi);
 //assets
 app.use(express.static(__dirname + '/views/public'));
 
-app.listen(config.server.port, function () {
+app.listen(process.env.PORT || config.server.port, function () {
     console.log(`Server running at ${config.server.url}`);
 });
