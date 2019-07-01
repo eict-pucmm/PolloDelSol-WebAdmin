@@ -8,7 +8,10 @@ values = {
     server: {
         host: '127.0.0.1',
         port: '5000',
-        url: `http://pollo-del-sol.herokuapp.com`
+        // url to call API
+        // set to http://localhost:5000 if working locally
+        // set to http://pollo-sel-sol.herokuapp.com if deploying to heroku
+        url: `http://localhost:5000`
     },
     cloudinary: {
         cloud_name: 'pollo-del-sol',
