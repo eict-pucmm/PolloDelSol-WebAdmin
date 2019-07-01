@@ -21,60 +21,40 @@ app.get('/', function (req, res, next) {
 });
 
  
-app.post('/edit/(:id_empresa)', function(req, res, next){
-    req.assert('cierre', 'Debe seleccionar un tipo de cierre').notEmpty();
-    req.assert('dia_cierre', 'El dia de cierre no puede estar vacio').notEmpty();
-
+app.post('/edit/(:id_empresa)', (req, res) => {
+    const id_empresa = req.params.id_item;
+    const enterprise = req.body.data;
+    console.log(enterprise);
     
+    /*let sql_query = `BEGIN TRANSACTION;
+        UPDATE empresa SET
+        registrada = ${enterprise.registrada}, 
+        WHERE id_empresa = '${enterprise.id}';
+        UPDATE cierre SET
+        tipo_de_cierre = '${enterprise.tipo_de_cierre}'
+        dia_de_cierre = '${enterprise.dia_de_cierre}'
+        WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id}');
+        COMMIT;
+    `
 
-    let errors = req.validationErrors()
-    let enterprise = {id: '', nombre: '', rnc: '', tipo_de_cierre: '', dia_de_cierre: '', registrada: '', deleted: ''};
-    
-    if( !errors ) {
-        
-        enterprise.id = req.sanitize('id-enterprise').escape().trim();
-        enterprise.nombre = req.sanitize('nombre').escape().trim();
-        enterprise.rnc = req.sanitize('rnc').escape().trim();
-        enterprise.tipo_de_cierre = req.sanitize('tipo-de-cierre').escape().trim();
-        enterprise.dia_de_cierre = req.sanitize('dia_de_cierre').escape().trim();
-        enterprise.registrada = req.body.registrada;
-
-        let sql_query = `BEGIN TRANSACTION;
-            UPDATE empresa SET
-            registrada = ${enterprise.registrada}, 
-            WHERE id_empresa = '${enterprise.id}';
-            UPDATE cierre SET
-            tipo_de_cierre = '${enterprise.tipo_de_cierre}'
-            dia_de_cierre = '${enterprise.dia_de_cierre}'
-            WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id}');
-            COMMIT;
-            `
-
-        
-        req.getConnection(function(error, conn) {
-            conn.query(sql_query, function(err, result) {
-                if (err) {
-                    req.flash('error', err);
-                    res.render(
-                        `empresa/edit/${enterprise.id}`, {
-                            action: 'Modificar', item
-                        }
-                    );
-                } else {
-                    req.flash('success', 'Empresa modificada satisfactoriamente');
-                    res.redirect('/empresa');
-                }
-            })
-        })
-    }
-    else {
-        req.flash('error', errors[0].msg);
-        res.render(
-            `item/edit/${enterprise.id}`, {
-                action: 'Modificar', enterprise
+    if (!item || !id_item) {
+        res.status(400).send({error: true, message: 'Please provide an item and item id'});
+    } else {
+        req.getConnection((error, conn) => {
+            if (!error) {
+                conn.query(`UPDATE item SET ? WHERE id_item = ?`, [item, id_item], (err, results) => {
+                    if (!err) {
+                        res.status(200).send({error: false, result: results, message: 'Item modificado exitosamente'});
+                    } else {
+                        res.status(500).send({error: true, message: err});
+                    }
+                });
+            } else {
+                res.status(500).send({error: true, message: error});
             }
-        );
-    }
+        });
+    }*/
 });
+
 
 module.exports = app;
