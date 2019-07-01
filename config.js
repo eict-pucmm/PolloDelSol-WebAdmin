@@ -6,7 +6,7 @@ values = {
         database: 'heroku_7fdb4fe0285393e',
     },
     server: {
-        host: 'http://pollo-del-sol.herokuapp.com',
+        host: '127.0.0.1',
         port: '80',
         url: `http://pollo-del-sol.herokuapp.com`
     },
