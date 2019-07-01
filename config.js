@@ -8,7 +8,7 @@ values = {
     server: {
         host: '127.0.0.1',
         port: '5000',
-        url: `http://127.0.0.1:5000`
+        url: `http://pollo-del-sol.herokuapp.com`
     },
     cloudinary: {
         cloud_name: 'pollo-del-sol',
