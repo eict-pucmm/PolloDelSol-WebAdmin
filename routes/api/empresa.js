@@ -26,7 +26,7 @@ app.post('/edit/(:id_empresa)', (req, res) => {
     const enterprise = req.body.data;
     console.log(enterprise);
     
-    /*let sql_query = `BEGIN TRANSACTION;
+    let sql_query = `BEGIN TRANSACTION;
         UPDATE empresa SET
         registrada = ${enterprise.registrada}, 
         WHERE id_empresa = '${enterprise.id}';
@@ -36,7 +36,7 @@ app.post('/edit/(:id_empresa)', (req, res) => {
         WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id}');
         COMMIT;
     `
-
+    /*
     if (!item || !id_item) {
         res.status(400).send({error: true, message: 'Please provide an item and item id'});
     } else {

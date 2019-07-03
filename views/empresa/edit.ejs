@@ -51,19 +51,19 @@
                           <div class="form-group">
                             <label for="tipo-de-corte">Tipo de corte</label>
                             <select class="form-control col-sm-10" id="tipo-de-corte" name="tipo-de-corte">
-                              <option value="Semanal" <% if (empresa.tipo_de_cierre == '1') { %>selected<% } %> >Semanal</option>
-                              <option value="Quincenal" <% if (empresa.tipo_de_cierre == '2') { %>selected<% } %> >Quincenal</option>
-                              <option value="Mensual" <% if (empresa.tipo_de_cierre == '3') { %>selected<% } %> >Mensual</option>
+                              <option value="1" <% if (empresa.tipo_de_cierre == '1') { %>selected<% } %> >Semanal</option>
+                              <option value="2" <% if (empresa.tipo_de_cierre == '2') { %>selected<% } %> >Quincenal</option>
+                              <option value="3" <% if (empresa.tipo_de_cierre == '3') { %>selected<% } %> >Mensual</option>
                             </select>
                           </div>
                         </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-4">
+                      <div class="col-md-8">
                         <div class="form-group">
                           <label>Dia de corte</label>
-                          <div class="input-group col-sm-4 row">
-                            <input type="number" name="dia_de_corte" step="1" min="1" max="31" class="form-control price-int-input" value="<%= empresa.dia_de_corte%>">
+                          <div class="input-group col-sm-6 row">
+                            <input type="number" name="dia_de_corte" step="1" min="1" max="31" class="form-control" value="<%= empresa.dia_de_corte%>">
                           </div>
                         </div>
                       </div>
