@@ -21,4 +21,22 @@ app.get('/', (req, res) => {
     });
 });
 
+app.post('/register', (req, res) => {
+    let sql_query = `INSERT INTO menu (nombre) VALUES ('${req.body.name}');`;
+
+    req.getConnection((error, conn) => {
+        if (!error) {
+            conn.query(sql_query, (err, results) => {
+                if (!err) {
+                    res.status(200).send({error: false, result: results, message: 'Menu registered sucessfully'});
+                } else {
+                    res.status(500).send({error: true, message: err});
+                }
+            })
+        } else {
+            res.status(500).send({error: true, message: error});
+        }
+    });
+});
+
 module.exports = app;
