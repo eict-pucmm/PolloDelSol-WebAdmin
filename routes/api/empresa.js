@@ -22,39 +22,43 @@ app.get('/', function (req, res, next) {
 
  
 app.post('/edit/(:id_empresa)', (req, res) => {
-    const id_empresa = req.params.id_item;
+    const id_empresa = req.params.id_empresa;
     const enterprise = req.body.data;
     console.log(enterprise);
-    
-    let sql_query = `BEGIN TRANSACTION;
+    var habilitar;
+    if (enterprise.registrada == "on") {
+        habilitar=1;
+    }else{
+        habilitar=0;
+    }
+    let sql_query = `START TRANSACTION;
         UPDATE empresa SET
-        registrada = ${enterprise.registrada}, 
-        WHERE id_empresa = '${enterprise.id}';
+        registrada = ${habilitar}, 
+        WHERE id_empresa = '${enterprise.id_empresa}';
         UPDATE cierre SET
-        tipo_de_cierre = '${enterprise.tipo_de_cierre}'
-        dia_de_cierre = '${enterprise.dia_de_cierre}'
-        WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id}');
+        tipo_de_cierre = ${enterprise.tipo_de_cierre},
+        dia_de_cierre = '${enterprise.dia_de_corte}'
+        WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id_empresa}');
         COMMIT;
-    `
-    /*
-    if (!item || !id_item) {
-        res.status(400).send({error: true, message: 'Please provide an item and item id'});
+    `;
+    console.log(sql_query);
+    if (!enterprise || !id_empresa) {
+        res.status(400).send({error: true, message: 'Please provide an enterprise and enterprise id'});
     } else {
         req.getConnection((error, conn) => {
             if (!error) {
-                conn.query(`UPDATE item SET ? WHERE id_item = ?`, [item, id_item], (err, results) => {
+                conn.query(sql_query, (err, results) => {
                     if (!err) {
-                        res.status(200).send({error: false, result: results, message: 'Item modificado exitosamente'});
+                        res.status(200).send({error: false, result: results, message: 'empresa modificada exitosamente'});
                     } else {
-                        res.status(500).send({error: true, message: err});
+                        console.log(err);
+                        res.status(501).send({error: true, message: err});
                     }
                 });
             } else {
                 res.status(500).send({error: true, message: error});
             }
         });
-    }*/
+    }
 });
-
-
 module.exports = app;

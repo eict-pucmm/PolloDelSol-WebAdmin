@@ -11,7 +11,7 @@ values = {
         // url to call API
         // set to http://localhost:5000 if working locally
         // set to http://pollo-sel-sol.herokuapp.com if deploying to heroku
-        url: `http://localhost:5000`
+        url: `http://127.0.0.1:5000`
     },
     cloudinary: {
         cloud_name: 'pollo-del-sol',
