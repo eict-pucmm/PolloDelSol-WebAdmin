@@ -31,16 +31,7 @@ app.post('/edit/(:id_empresa)', (req, res) => {
     }else{
         habilitar=0;
     }
-    let sql_query = `START TRANSACTION;
-        UPDATE empresa SET
-        registrada = ${habilitar}, 
-        WHERE id_empresa = '${enterprise.id_empresa}';
-        UPDATE cierre SET
-        tipo_de_cierre = ${enterprise.tipo_de_cierre},
-        dia_de_cierre = '${enterprise.dia_de_corte}'
-        WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id_empresa}');
-        COMMIT;
-    `;
+    let sql_query = `START TRANSACTION;UPDATE empresa SET registrada = ${habilitar} WHERE id_empresa = '${enterprise.id_empresa}'; UPDATE cierre SET tipo_de_cierre = ${enterprise.tipo_de_cierre}, dia_de_cierre = '${enterprise.dia_de_corte}' WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id_empresa}'); COMMIT;`;
     console.log(sql_query);
     if (!enterprise || !id_empresa) {
         res.status(400).send({error: true, message: 'Please provide an enterprise and enterprise id'});
