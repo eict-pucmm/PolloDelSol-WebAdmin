@@ -44,7 +44,7 @@ app.get('/edit/(:id_menu)', (req, res) => {
         .then(combos => {
             axios.get(`${url}/api/menu?id_menu=${req.params.id_menu}`)
             .then(menu => {
-                axios.get(`${url}/api/menu/items/${req.params.id_menu}`)
+                axios.get(`${url}/api/menu/items?id_menu=${req.params.id_menu}`)
                     .then(menu_items => {
                         res.render('menu/edit', {
                             menu: menu.data.menus[0],
@@ -64,10 +64,14 @@ app.post('/edit/(:id_menu)', (req, res) => {
     deleted = checkIfString(req.body['combo-items']) ? [req.body['combo-items']] : req.body['combo-items'];
     inserted = checkIfString(req.body['menu-items']) ? [req.body['menu-items']] : req.body['menu-items'];
     
-    axios.post(`${url}/api/menu/edit/${req.params.id_menu}`, {deleted: deleted, inserted: inserted})
-        .catch(err => console.log(err));
-
-    res.redirect('/menu');
+    axios.post(`${url}/api/menu/edit/${req.params.id_menu}`, {nombre: req.body.nombre, deleted: deleted, inserted: inserted})
+        .then(response => {
+            req.flash('success', response.data.message)
+        })
+        .catch(err => console.log(err))
+        .finally( () => {
+            res.redirect(`/menu/edit/${req.params.id_menu}`);
+        });
 
 });
 
