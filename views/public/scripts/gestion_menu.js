@@ -1,5 +1,3 @@
-let modalo = document.getElementById('modalo');
-
-let switchModal = (state) => {
-    modalo.style.display = state;
+let switchModal = (id, state) => {
+    document.getElementById(id).style.display = state;
 }

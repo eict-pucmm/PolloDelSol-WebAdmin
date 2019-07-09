@@ -7,13 +7,13 @@
         <% include ../public/layouts/navbar.ejs %>
         <div class="container-fluid page-body-wrapper">
             <% include ../public/layouts/sidebar.ejs %>
-            <div id="modalo" class="modal-container" <% if (messages.error) { %> style="display: flex;" <% } %>>
+            <div id="reg-menu" class="modal-container" <% if (messages.error) { %> style="display: flex;" <% } %>>
                 <div class="modal">
                     <div class="modal-content">
                         <form method="POST" action="/menu/register">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Registrar menú</h4>
+                                    <h4 class="card-title">Añadir menú</h4>
                                     <% if (messages.error) { %>
                                     <p id="result-message" style="color:red"><%- messages.error %></p>
                                     <% } %>
@@ -26,8 +26,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Registrar</button>
-                                    <button type="button" class="btn btn-danger" onclick="switchModal('none')">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary">Añadir</button>
+                                    <button type="button" class="btn btn-danger"
+                                        onclick="switchModal('reg-menu', 'none')">Cancelar</button>
                                 </div>
                             </div>
                         </form>
@@ -41,8 +42,8 @@
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title">Menús</h4>
-                                    <% if (messages.success) { %>
-                                    <p id="result-message" style="color:green"><%- messages.success %></p>
+                                    <% if (messages.success) { %> <p id="result-message" style="color:green">
+                                    <%- messages.success %></p>
                                     <% } %>
                                     <div class="table-responsive pt-3">
                                         <table class="table table-bordered">
@@ -50,6 +51,7 @@
                                                 <tr>
                                                     <th class="col-6">Menu</th>
                                                     <th>Cantidad de items</th>
+                                                    <th>Activo</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -58,11 +60,16 @@
                                                 <tr title="<%-menu.id_menu%>">
                                                     <td><%- menu.nombre %></td>
                                                     <td><%= menu.cant_items%></td>
-                                                    <td class="image">
-                                                        <a href='#'> <img src="/images/icons/edit.svg" /> </a>
+                                                    <td>
+                                                        <div class="form-check">
+                                                        <label class="form-check-label">
+                                                            <input type="checkbox" class="form-check-input" disabled <% if (menu.activo) { %> checked <% } %>/>
+                                                        </label>
+                                                        </div>
                                                     </td>
                                                     <td class="image">
-                                                        <a href='#'> <img src="/images/icons/delete.svg" /> </a>
+                                                        <a href="/menu/edit/<%=menu.id_menu%>"> <img src="/images/icons/edit.svg" />
+                                                        </a>
                                                     </td>
                                                 </tr>
                                                 <%});%>
@@ -71,7 +78,7 @@
                                                 <%}%>
                                             </tbody>
                                         </table>
-                                        <button type="button" class="btn btn-primary" onclick="switchModal('flex')">Añadir menú</button>
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="switchModal('reg-menu', 'flex')">Añadir menú</button>
                                     </div>
                                 </div>
                             </div>
