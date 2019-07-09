@@ -136,7 +136,7 @@
                             <div class="input-group align-items-center">
                               <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-item"><%= action %></button>
                               <% if (action === 'Modificar') { %>
-                              <%if (item.eliminado) { %>
+                              <%if (!item.eliminado) { %>
                               <button id="del-button" name="delete" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-danger">Cancelar item</button>
                               <span class="separator-horizontal" ></span>
                               <p id="result-message" name="eliminado" style="color:green">El item esta activado</p>
