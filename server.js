@@ -13,6 +13,7 @@ const cors              = require('cors');
 const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
 const empresaRoute      = require('./routes/public/empresa');
+const menuRoute         = require('./routes/public/menu');
 //api routes
 const indexApi          = require('./routes/api/index');
 
@@ -42,6 +43,7 @@ app.use(methodOverride((req, res) => {
 //routes
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
+app.use('/menu', menuRoute);
 app.use('/empresa', empresaRoute);
 app.use('/api', indexApi);
 //assets

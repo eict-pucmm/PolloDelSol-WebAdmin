@@ -5,28 +5,28 @@
 
 <body>
   <div class="container-scroller">
-  <% include ../public/layouts/navbar.ejs %>
+    <% include ../public/layouts/navbar.ejs %>
     <div class="container-fluid page-body-wrapper">
       <% include ../public/layouts/sidebar.ejs %>
       <div class="main-panel">
-          <div class="content-wrapper">
+        <div class="content-wrapper">
           <% if (action === 'Registrar') {%>
-            <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
+          <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
           <% } else if (action === 'Modificar') { %>
-            <form method="POST" action="/item/edit/<%-item.id_item%>" onkeydown="return event.key != 'Enter';">
+          <form method="POST" action="/item/edit/<%-item.id_item%>" onkeydown="return event.key != 'Enter';">
           <% } %>
-            <div class="row">
-              <div class="col-3 grid-margin stretch-card mx-auto">
-                <div class="card">
-                  <div class="card-body">
-                  <h4 class="card-title">Imagen</h4>
-                    <div class="row text-center">
-                      <div class="col-md-12">
-                      <%if (item.imagen) {%>
-                        <img id="preview-image" src="<%-item.imagen%>" class="register-img"/>
-                      <%} else {%>
-                        <img id="preview-image" src="/images/placeholder.jpg" class="register-img"/>
-                      <%}%>
+              <div class="row">
+                <div class="col-3 grid-margin stretch-card mx-auto">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Imagen</h4>
+                      <div class="row text-center">
+                        <div class="col-md-12">
+                          <%if (item.imagen) {%>
+                          <img id="preview-image" src="<%-item.imagen%>" class="register-img" />
+                          <%} else {%>
+                          <img id="preview-image" src="/images/placeholder.jpg" class="register-img" />
+                          <%}%>
                       </div>
                     </div>
                     <div class="row">
@@ -48,37 +48,42 @@
                   <div class="card-body">
                   <h4 class="card-title">Datos generales</h4>
                     <% if (messages.error) { %>
-                        <p id="result-message" style="color:red"><%- messages.error %></p>
-                    <% } else if (messages.success) { %>
-                        <p id="result-message" style="color:green"><%- messages.success %></p>
-                    <% } %>
-                      <div class="row">
-                        <div class="col-md-3">
-                          <div class="form-group">
-                            <label for="id">Id</label>
-                            <div class="col-sm-12 row">
-                              <input type="text" name="id-item" class="form-control" id="id-item" placeholder="Id" value="<%- item.id_item %>" />
+                          <p id="result-message" style="color:red"><%- messages.error %></p>
+                          <% } else if (messages.success) { %>
+                          <p id="result-message" style="color:green"><%- messages.success %></p>
+                          <% } %>
+                          <div class="row">
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label for="id">Id</label>
+                                <div class="col-sm-12 row">
+                                  <input type="text" name="id-item" class="form-control" id="id-item" placeholder="Id"
+                                    value="<%- item.id_item %>" />
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label for="nombre">Nombre</label>
-                            <div class="col-sm-12 row">
-                              <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%- item.nombre %>"/>
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label for="nombre">Nombre</label>
+                                <div class="col-sm-12 row">
+                                  <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre"
+                                    value="<%- item.nombre %>" />
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        <div class="col-md-3">
-                          <div class="form-group">
-                            <label>Categoria</label>
-                            <input class="form-control col-sm-10" id="selected-category" name="selected-category" style="display: none"/>
-                            <select class="form-control col-sm-10" id="categoria-cbx" name="categoria-cbx" onchange="updateSubcategorias()">
-                            <%if (categorias) {%>
-                            <% categorias.forEach(cat => { %>
-                              <option value="<%= cat.id_categoria %>" <%if (cat.nombre === item.categoria) {%>selected<%}%>><%- cat.nombre %></option>
-                            <% }); %>
-                            <%}%>
+                            <div class="col-md-3">
+                              <div class="form-group">
+                                <label>Categoria</label>
+                                <input class="form-control col-sm-10" id="selected-category" name="selected-category"
+                                  style="display: none" />
+                                <select class="form-control col-sm-10" id="categoria-cbx" name="categoria-cbx"
+                                  onchange="updateSubcategorias()">
+                                  <%if (categorias) {%>
+                                  <% categorias.forEach(cat => { %>
+                                  <option value="<%= cat.id_categoria %>"
+                                    <%if (cat.nombre === item.categoria) {%>selected<%}%>><%- cat.nombre %></option>
+                                    <% }); %>
+                                    <%}%>
                             </select>
                           </div>
                         </div>
@@ -88,84 +93,85 @@
                           <div class="form-group">
                             <label>Descripción</label>
                             <div class="col-sm-12 row">
-                              <input name="descripcion" class="form-control" id="descripcion" placeholder="Descripcion" value="<%- item.descripcion%>"/>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-3">
-                          <div class="form-group">
-                            <label>Sub categoria</label>
-                            <select class="form-control col-sm-10" id="subcategoria-cbx" name="subcategoria-cbx">
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label>Precio</label>
-                            <div class="input-group col-sm-12 row">
-                              <div class="input-group-prepend">
-                                <span class="input-group-text bg-primary text-white">DOP$</span>
+                              <input name="descripcion" class="form-control" id="descripcion" placeholder="Descripcion" value="<%- item.descripcion%>" />
                               </div>
-                              <input type="number" name="precio" step="0.01" min="0" class="form-control" value="<%= item.precio%>">
+                            </div>
+                          </div>
+                          <div class="col-md-3">
+                            <div class="form-group">
+                              <label>Sub categoria</label>
+                              <select class="form-control col-sm-10" id="subcategoria-cbx" name="subcategoria-cbx">
+                              </select>
                             </div>
                           </div>
                         </div>
-                        <div class="col-md-6">
-                          <div class="form-group">
-                            <label>Puntos requeridos para descuento</label>
-                            <div class="input-group col-sm-12 row">
-                              <div class="input-group-prepend">
-                                <span class="input-group-text bg-primary text-white">Puntos</span>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>Precio</label>
+                              <div class="input-group col-sm-12 row">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text bg-primary text-white">DOP$</span>
+                                </div>
+                                <input type="number" name="precio" step="0.01" min="0" class="form-control"
+                                  value="<%= item.precio%>">
                               </div>
-                              <input type="number" name="puntos" step="1" min="0" class="form-control" value="<%= item.puntos%>">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label>Puntos requeridos para descuento</label>
+                              <div class="input-group col-sm-12 row">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text bg-primary text-white">Puntos</span>
+                                </div>
+                                <input type="number" name="puntos" step="1" min="0" class="form-control"
+                                  value="<%= item.puntos%>">
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="input-group align-items-center">
-                            <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-item" ><%= action %></button>
-                        <% if (action === 'Modificar') { %>
-                          <%if (item.eliminado == 0) { %>
-                            <button id="del-button" name="delete" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-danger">Cancelar item</button>
-                          <%} else {%>
-                            <button id="act-button" name="sucess" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-success">Activar item</button>
-                          <%}%>
-                            <span class="separator-horizontal" ></span>
-                          <% if (!item.eliminado) { %>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="input-group align-items-center">
+                              <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-item"><%= action %></button>
+                              <% if (action === 'Modificar') { %>
+                              <%if (item.eliminado) { %>
+                              <button id="del-button" name="delete" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-danger">Cancelar item</button>
+                              <span class="separator-horizontal" ></span>
                               <p id="result-message" name="eliminado" style="color:green">El item esta activado</p>
-                          <% } else { %>
+                              <%} else {%>
+                              <button id="act-button" name="sucess" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-success">Activar item</button>
+                              <span class="separator-horizontal" ></span>
                               <p id="result-message" name="eliminado" style="color:red">El item esta cancelado</p>
-                          <% } %>
-                        <% } %>
+                              <%}%>
+                            </div>
                           </div>
                         </div>
                       </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div id="combo-card" class="row" style="display: none;">
-              <div class="col-12 grid-margin stretch-card mx-auto">
-                <div class="card">
-                  <div class="card-body">
-                  <h4 class="card-title">Datos de combo</h4>
-                    <div class="row">
-                      <div class="col-md-5">
-                        <div class="form-group">
-                          <label>Cantidad máxima de guarniciones a elegir</label>
-                          <div class="input-group col-sm-12 row">
-                            <div class="input-group-prepend">
-                              <span class="input-group-text bg-primary text-white">Guarnicion</span>
-                            </div>
-                            <%if (guarniciones) {%>
-                              <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1" class="form-control" value="1">
-                            <%} else {%>
-                              <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0" class="form-control" value="0">
-                            <%}%>
+                <div id="combo-card" class="row" style="display: none;">
+                  <div class="col-12 grid-margin stretch-card mx-auto">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title">Datos de combo</h4>
+                        <div class="row">
+                          <div class="col-md-5">
+                            <div class="form-group">
+                              <label>Cantidad máxima de guarniciones a elegir</label>
+                              <div class="input-group col-sm-12 row">
+                                <div class="input-group-prepend">
+                                  <span class="input-group-text bg-primary text-white">Guarnicion</span>
+                                </div>
+                                <%if (guarniciones) {%>
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1"
+                                  class="form-control" value="1">
+                                <%} else {%>
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0"
+                                  class="form-control" value="0">
+                                <%}%>
                           </div>
                         </div>
                       </div>
@@ -178,10 +184,12 @@
                               <span class="input-group-text bg-primary text-white">Bebida</span>
                             </div>
                             <%if (bebidas) {%>
-                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="1" class="form-control" value="1">
-                            <%} else {%>
-                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0" class="form-control" value="0">
-                            <%}%>
+                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="1"
+                                  class="form-control" value="1">
+                                <%} else {%>
+                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0"
+                                  class="form-control" value="0">
+                                <%}%>
                           </div>
                         </div>
                       </div>
@@ -201,19 +209,20 @@
                                 </div>
                               </li>
                             <%if (guarniciones) {%>
-                            <% guarniciones.forEach(function (guarnicion) { %>
-                              <li>
-                                <div class="form-check">
-                                  <label class="form-check-label">
-                                    <input name="guarniciones" value="<%-guarnicion.id_item%>" type="checkbox" class="form-check-input" onchange="checkAllChecked(this)"/>
-                                    <%- guarnicion.nombre%>
-                                  </label>
-                                </div>
-                              </li>
-                            <% }); %>
-                            <%} else {%>
-                              <p style="color:red">No hay guarniciones registradas</p>
-                            <%}%>
+                                <% guarniciones.forEach(function (guarnicion) { %>
+                                <li>
+                                  <div class="form-check">
+                                    <label class="form-check-label">
+                                      <input name="guarniciones" value="<%-guarnicion.id_item%>" type="checkbox"
+                                        class="form-check-input" onchange="checkAllChecked(this)" />
+                                      <%- guarnicion.nombre%>
+                                    </label>
+                                  </div>
+                                </li>
+                                <% }); %>
+                                <%} else {%>
+                                <p style="color:red">No hay guarniciones registradas</p>
+                                <%}%>
                             </ul>
                           </div>
                         </div>
@@ -233,19 +242,20 @@
                                 </div>
                               </li>
                             <%if (bebidas) {%>
-                            <% bebidas.forEach(function (bebida) { %>
-                              <li>
-                                <div class="form-check">
-                                  <label class="form-check-label">
-                                    <input name="bebidas" value="<%-bebida.id_item%>" type="checkbox" class="form-check-input" onchange="checkAllChecked(this)"/>
-                                    <%- bebida.nombre%>
-                                  </label>
-                                </div>
-                              </li>
-                            <% }); %>
-                            <%} else {%>
-                              <p style="color:red">No hay bebidas registradas</p>
-                            <%}%>
+                                <% bebidas.forEach(function (bebida) { %>
+                                <li>
+                                  <div class="form-check">
+                                    <label class="form-check-label">
+                                      <input name="bebidas" value="<%-bebida.id_item%>" type="checkbox"
+                                        class="form-check-input" onchange="checkAllChecked(this)" />
+                                      <%- bebida.nombre%>
+                                    </label>
+                                  </div>
+                                </li>
+                                <% }); %>
+                                <%} else {%>
+                                <p style="color:red">No hay bebidas registradas</p>
+                                <%}%>
                             </ul>
                           </div>
                         </div>
@@ -269,15 +279,14 @@
     </div>
   </div>
   <script>
-    let categorias = <%- JSON.stringify(categorias)%>;
-    let subcategorias = <%- JSON.stringify(subcategorias)%>;
-    let item = <%- JSON.stringify(item)%>;
+    let categorias = <%- JSON.stringify(categorias) %>;
+    let subcategorias = <%- JSON.stringify(subcategorias) %>;
+    let item = <%- JSON.stringify(item) %>;
   </script>
   <%if (itemCombo && combo) {%>
   <script>
-    let combo = <%- JSON.stringify(combo)%>;
-    let itemCombo = <%- JSON.stringify(itemCombo)%>;
-    console.log(itemCombo);
+    let combo = <%- JSON.stringify(combo) %>;
+    let itemCombo = <%- JSON.stringify(itemCombo) %>;
   </script>
   <%}%>
   <script src="/vendors/base/vendor.bundle.base.js"></script>

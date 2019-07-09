@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<% include ../public/layouts/header.ejs %>
+
+<body>
+    <div class="container-scroller">
+        <% include ../public/layouts/navbar.ejs %>
+        <div class="container-fluid page-body-wrapper">
+            <% include ../public/layouts/sidebar.ejs %>
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <form method="POST" action="/menu/edit/<%=menu.id_menu%>">
+                        <div class="row">
+                            <div class="col-12 grid-margin stretch-card mx-auto">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Editar menú: <%-menu.nombre%></h4>
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label for="nombre">Nombre</label>
+                                                    <div class="col-sm-12" style="padding-left: 0; padding-right: 0;"> 
+                                                    <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre"
+                                                        value="<%- menu.nombre %>" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label>Lista de combos</label>
+                                                    <select class="form-control col-sm-12" name="combo-items" id="combo-list" size="10" multiple="multiple">
+                                                    <% if (combos) {%>
+                                                    <% combos.forEach(combo => {%>
+                                                        <option value="<%=combo.id_item%>"><%-combo.nombre%></option>
+                                                    <%});%>
+                                                    <%}%>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="template-demo mt-4 col-md-2 text-center">
+                                                <div class="btn-group-vertical" role="group" style="padding: 0;">
+                                                    <button id="all-menu-to-combo" type="button" class="btn btn-outline-secondary">
+                                                        <i class="ti-angle-double-left"></i>
+                                                    </button>
+                                                    <button id="menu-to-combo" type="button" class="btn btn-outline-secondary">
+                                                        <i class="ti-arrow-left"></i>
+                                                    </button>
+                                                    <button id="combo-to-menu" type="button" class="btn btn-outline-secondary">
+                                                        <i class="ti-arrow-right"></i>
+                                                    </button>
+                                                    <button id="all-combo-to-menu" type="button" class="btn btn-outline-secondary">
+                                                        <i class="ti-angle-double-right"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+    
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label>Menú</label>
+                                                    <select class="form-control col-sm-12" name="menu-items" id="menu-list" size="10" multiple="multiple">
+                                                    <% if (menuItems) {%>
+                                                    <% menuItems.forEach(item => {%>
+                                                        <option value="<%=item.id_item%>"><%-item.nombre%></option>
+                                                    <%});%>
+                                                    <%}%>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="input-group align-items-center">
+                                                    <button id="save-menu" type="submit" class="btn btn-primary mr-2">Guardar</button>
+                                                    <input type="text" name="activo" value="<%=menu.activo%>" style="display: none;"/>
+                                                    <%if (menu.activo) { %>
+                                                    <button id="del-button" type="submit" class="btn btn-danger" formmethod="POST" formaction="/menu/delete/<%=menu.id_menu%>">Cancelar menú</button>
+                                                    <span class="separator-horizontal" ></span>
+                                                    <p id="result-message" style="color:green">El menú esta activado</p>
+                                                    <%} else {%>
+                                                    <button id="act-button" type="submit" class="btn btn-success" formmethod="POST" formaction="/menu/delete/<%=menu.id_menu%>">Activar menú</button>
+                                                    <span class="separator-horizontal" ></span>
+                                                    <p id="result-message" style="color:red">El menú esta cancelado</p>
+                                                    <%}%>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018 <a href="https://www.templatewatch.com/" target="_blank">Templatewatch</a>. All rights reserved.</span>
+                <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
+            </div>
+        </footer>
+    </div>
+    <script src="/vendors/base/vendor.bundle.base.js"></script>
+    <script src="/scripts/off-canvas.js"></script>
+    <script src="/scripts/hoverable-collapse.js"></script>
+    <script src="/scripts/template.js"></script>
+    <script src="/scripts/edit_menu.js"></script>
+</body>
+
+</html>
