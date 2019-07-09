@@ -23,7 +23,7 @@
                   <% } %>
                       <form class="forms-sample" method="POST" action="/empresa/edit/<%= empresa.id_empresa %>">
                   <div class="row">
-                      <div class="col-md-3">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label for="id">Id</label>
                           <div class="col-sm-12 row">
@@ -70,15 +70,22 @@
                     </div>
                     <div class="row">
                       <div class="col-md-12">
-                        <div class="input-group align-items-center">
+                        <div class="form-group align-items-center">
                       <% if (empresa.registrada === 1) { %>
-                        <input name="registrada" type="checkbox" class="form-check-input" checked=""> Empresa aprobada
-                          <span class="separator" ></span>
+                        <div class="form-check form-check-primary">
+                          <label class="form-check-label">
+                            <input name="registrada" type="checkbox" class="form-check-input" checked="">
+                             Empresa aprobada
+                          <i class="input-helper"></i></label>
+                        </div>
                       <% } else { %>
-                        <input name="registrada" type="checkbox" class="form-check-input"> Empresa aprobada
-                        <span class="separator" ></span>
+                        <label class="form-check-label">
+                          <input name="registrada" type="checkbox" class="form-check-input">
+                           Empresa aprobada
+                          <i class="input-helper"></i></label>                       
                       <% } %>
-                      <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                      <span class="separator" ></span>
+                      <button type="submit" class="btn btn-primary mr-2" style="float: right;">Modificar</button>
                         </div>
                       </div>
                     </div>
