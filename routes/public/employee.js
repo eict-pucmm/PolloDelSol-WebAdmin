@@ -26,7 +26,6 @@ firebase.initializeApp(config.firebaseConfig);
 console.log('initialized Firebase >>');
 
 app.get('/', (req, res, next) => {
-    console.log("DQWINOWQDNOQIWDNQWOIDQW");
     axios.get(`${url}/api/employee/get`).
     then(result => {
         res.render('employee/list', {data: result.data.employee})
@@ -36,26 +35,29 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/register', function (req, res, next) {
+    let employee = {
+        avatar: '',
+        nombre: '',
+        correo: '',
+        contrasena:'',
+        contrasenaconfirmada: '',
+        rol: '',
+    };
+
+    let data = {
+        action: 'Registrar',
+        employee: employee,
+    }
     res.render(
-        'employee/register', {
-            avatar: '',
-            nombre: '',
-            correo: '',
-            contrasena:'',
-            contrasenaconfirmada: '',
-            rol: '',
-            eliminado: 0,
-        }
+        'employee/register', data
     );
 });
 
 app.post('/register', parser.single('ProfilePicSelect'), function (req, res, next) {
     if(!req.file){
-        // res.status(401).json({error: 'Please provide an image'});
         req.flash('Error', 'La imagen no puede estar vacía.');
         res.redirect(
             '/employee/register', {
-                // avatar: employee.avatar,
                 avatar: '',
                 nombre: employee.nombre,
                 correo: employee.correo,
@@ -87,25 +89,27 @@ app.post('/register', parser.single('ProfilePicSelect'), function (req, res, nex
     let errors = req.validationErrors();
 
     if( !errors ) {
-        console.log('No errors');
         let employee = {
             avatar:               req.file.url,
             id_empleado:          '',
             nombre:               req.sanitize('nombre').escape(),
             correo:               req.sanitize('correo').escape().trim(),
-            rol:                  req.sanitize('rol').escape().trim()
+            rol:                  req.sanitize('rol').escape().trim(),
+            eliminado:            0
         };
-        console.log('employee var created');
         axios.post(`${url}/api/employee/register`, {data: employee})
         .then( () => {
             console.log('before auth');
-            firebase.auth().createUserWithEmailAndPassword(employee.correo, contrasena).catch((error) => {
+            firebase.auth().createUserWithEmailAndPassword(employee.correo, contrasena)
+            .catch((error) => {
                 req.flash('error', error.message);
                 res.redirect('/employee/register');
                 console.log(error);
             });
-            console.log('after auth');
 
+            
+
+            
             req.flash('success', 'Empleado registrado satisfactoriamente')
         }).catch(err => {
             console.log('error in axios');
@@ -119,6 +123,79 @@ app.post('/register', parser.single('ProfilePicSelect'), function (req, res, nex
         req.flash('error', errors[0].msg);
         res.redirect('/employee/register')
     }
+});
+
+app.get('/edit/(:id_empleado)', (req,res,next) =>{
+
+
+    axios.get(`${url}/api/employee/get?id_empleado=${req.params.id_empleado}`)
+    .then(result => {
+        let employee = {
+            id_empleado: result.data.employee[0].id_empleado,
+            avatar: result.data.employee[0].avatar,
+            nombre: result.data.employee[0].nombre,
+            correo: result.data.employee[0].correo,
+            contrasena:'',
+            contrasenaconfirmada: '',
+            rol: result.data.employee[0].rol,
+            eliminado: result.data.employee[0].eliminado,
+        }
+
+        let data = {
+            action: 'Modificar',
+            employee: employee,
+        }
+        
+        res.render('employee/register', data);
+    }).catch(err => {
+        res.send(err); 
+    });
+
+
+});
+
+app.post('/edit/(:id_empleado)', function (req,res,next) {
+    
+
+    console.log('req.body: ', req.body);
+    let employee = {
+        id_empleado: req.body.id_empleado,
+        avatar: req.body.avatar,
+        nombre: req.body.nombre,
+        correo: req.body.correo,
+        rol: req.sanitize('rol').escape().trim(),
+        eliminado: req.body.eliminado,
+    }
+
+    console.log('modified employee: ', employee);
+
+    if(employee) {
+        axios.post(`${url}/api/employee/edit/${employee.id_empleado}`, {data: employee})
+        .then(response => {
+            if (!response.data.error) {
+                req.flash('success', response.data.message);
+                res.redirect('/employee');
+            } else {
+                req.flash('error', response.data.message);
+                res.redirect(`/employee/edit/${employee.id_empleado}`);
+            }
+        })
+        .catch(err => console.log(err));
+    }
+});
+
+
+app.post('/delete/(:id_empleado)', (req, res, next) => {
+
+
+    axios.post(`${url}/api/employee/delete/${req.params.id_empleado}`)
+    .then(response => {
+        req.flash('success', response.data.message);
+    })
+    .catch(err => console.log(err.message))
+    .finally(() => {
+        res.redirect(`/employee/edit/${req.params.id_empleado}`);
+    })
 });
 
 module.exports = app;

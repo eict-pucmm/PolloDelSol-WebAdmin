@@ -22,13 +22,22 @@
                   <% if (messages.success) { %>
                       <p id="result-message" style="color:green"><%- messages.success %></p>
                   <% } %>
+                <% if (action === 'Registrar') {%>
                   <form class="forms-sample" method="POST" action="/employee/register" enctype="multipart/form-data">
+                <% } else if (action === 'Modificar') { %>
+                  <form class="forms-sample" method="POST" action="/employee/edit/<%=employee.id_empleado%>">
+                <% } %>
                   <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="avatar">Avatar</label>
                           <div class="col-sm-12 row">
-                            <img src="/images/ProfilePic.png" name="ProfilePic" id="ProfilePic" value = "<%= avatar %>"/>
+                            <% if (employee.avatar === '') {%>
+                              <img src="/images/ProfilePic.png" name="ProfilePic" id="ProfilePic" value = "<%= employee.avatar %>"/>
+                            <%}else {%>
+                              <img src="<%= employee.avatar %>" name="ProfilePic" id="ProfilePic" value = "<%= employee.avatar %>"/>
+                              <input name="id_empleado" type="text" style="display: none;" value="<%= employee.id_empleado %>">
+                            <% } %>
                           </div>
                         </div>
                       </div>
@@ -36,11 +45,19 @@
                     <div class="row">
                       <div class="col-md-5">
                         <div class="input-group">
+                          <% if (action === 'Registrar') {%>
                             <input id="ProfilePicText"type="text" class="form-control file-upload-info" disabled placeholder="Image" value='' style="background-color: white"/>
                             <label for="ProfilePicSelect" class="btn btn-primary mr-2 reg-employee">
-                                <input type="file" name="ProfilePicSelect" id="ProfilePicSelect" accept="image/png, image/jpeg" onchange="readURL(this),compressImage(event)"  style="display: none;">
+                                <input type="file" name="ProfilePicSelect" id="ProfilePicSelect" accept="image/png, image/jpeg" onchange="readURL(this),compressImage(event)"  style="display: none;" disabled>
                                  Buscar Imagen
-                            </label>   
+                            </label>
+                          <% }else if (action === 'Modificar') { %>
+                            <input id="ProfilePicText"type="text" class="form-control file-upload-info" placeholder="Image" value='<%= employee.avatar %>' disabled readonly"/>
+                            <label for="ProfilePicSelect" class="btn btn-primary mr-2 reg-employee">
+                                <input type="file" name="ProfilePicSelect" id="ProfilePicSelect" accept="image/png, image/jpeg" onchange="readURL(this),compressImage(event)"  style="display: none;" disabled>
+                                 Buscar Imagen
+                            </label>
+                          <% } %>   
                         </div>
                       </div>
                     </div>
@@ -49,7 +66,11 @@
                             <div class="form-group">
                                 <label for="nombre">Nombre</label>
                                 <div class="col-sm-12 row">
-                                    <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= nombre %>"/>
+                                    <% if (action === 'Registrar') {%>
+                                    <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= employee.nombre %>"/>
+                                    <% } else if (action === 'Modificar') { %>
+                                    <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= employee.nombre %>" readonly/>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
@@ -57,8 +78,8 @@
                           <div class="form-group">
                             <label for="rol">Rol</label>
                             <select class="form-control col-sm-10" id="rol" name="rol">
-                              <option value="Cajero" <% if (rol == 'Cajero') { %>selected<% } %> >Cajero</option>
-                              <option value="Delivery" <% if (rol == 'Delivery') { %>selected<% } %> >Delivery</option>
+                              <option value="Cajero" <% if (employee.rol == 'Cajero') { %>selected<% } %> >Cajero</option>
+                              <option value="Delivery" <% if (employee.rol == 'Delivery') { %>selected<% } %> >Delivery</option>
                           </select>
                           </div>
                         </div>
@@ -68,7 +89,11 @@
                         <div class="form-group">
                           <label for="correo">Correo Electronico</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="correo" class="form-control" id="correo" placeholder="Correo" value="<%= correo %>">
+                              <% if (action === 'Registrar') {%>
+                            <input type="text" name="correo" class="form-control" id="correo" placeholder="Correo" value="<%= employee.correo %>">
+                              <% } else if (action === 'Modificar') { %>
+                            <input type="text" name="correo" class="form-control" id="correo" placeholder="Correo" value="<%= employee.correo %>" readonly>
+                              <% } %>
                           </div>
                         </div>
                       </div>
@@ -76,9 +101,18 @@
                     <div class="row">
                       <div class="col-md-9">
                         <div class="form-group">
-                          <label for="contrasena">Contraseña</label>
+                            <% if (action === 'Registrar') {%>
+                              <label for="contrasena">Contraseña</label>
+                            <%} else  if (action === 'Modificar') {%>
+                            
+                             <label for="contrasena" style="display:none;">Contraseña</label>
+                            <% } %>
                           <div class="col-sm-12 row">
-                              <input type="password" name="contrasena" class="form-control" id="contrasena" placeholder="Contrasena" value="<%= contrasena %>">
+                              <% if (action === 'Registrar') {%>
+                              <input type="password" name="contrasena" class="form-control" id="contrasena" placeholder="Contrasena" value="<%= employee.contrasena %>">
+                              <% } else if (action === 'Modificar') { %>
+                              <input type="password" name="contrasena" class="form-control" id="contrasena" placeholder="Contrasena" value="<%= employee.contrasena %>" style="display:none;">
+                              <% } %>
                             </div>
                           </div>
                         </div>
@@ -86,14 +120,36 @@
                       <div class="row">
                         <div class="col-md-9">
                           <div class="form-group">
-                            <label for="contrasenaconfirmada">Repita la contraseña</label>
+                            <% if (action === 'Registrar') {%>
+                              <label for="contrasenaconfirmada" >Repita la contraseña</label>
+                            <%} else  if (action === 'Modificar') {%>
+                              <label for="contrasenaconfirmada" style="display:none;">Repita la contraseña</label>
+                            <% } %>
                             <div class="col-sm-12 row">
-                                <input type="password" name="contrasenaconfirmada" class="form-control" id="contrasenaconfirmada" placeholder="Contrasena" value="<%= contrasenaconfirmada %>">
+                                <% if (action === 'Registrar') {%>
+                                <input type="password" name="contrasenaconfirmada" class="form-control" id="contrasenaconfirmada" placeholder="Contrasena" value="<%= employee.contrasenaconfirmada %>">
+                                <% } else if (action === 'Modificar') { %>
+                                <input type="password" name="contrasenaconfirmada" class="form-control" id="contrasenaconfirmada" placeholder="Contrasena" value="<%= employee.contrasenaconfirmada %>" style="display:none;">
+                                <% } %>
                               </div>
                             </div>
                           </div>
                         </div>
-                    <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-employee" >Registrar</button>
+                        <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-employee" ><%= action %></button>
+                        
+                    <% if (action === 'Modificar') { %>
+                      <% if (employee.eliminado === 0) { %>
+                          <button id='del-button' name='delete' type='submit' class="btn btn-danger " formmethod="POST" formaction ="/employee/delete/<%=employee.id_empleado%>">Cancelar empleado</button>          
+                      <% } else {%>
+                          <button id='act-button' name='success' type="submit" class="btn btn-success" formmethod="POST" formaction ="/employee/delete/<%=employee.id_empleado%>">Activar empleado</button>   
+                      <% } %>
+                        <span class='separator-horizontal'></span>
+                      <% if (employee.eliminado === 0) {%>
+                        <p id='result-message' name='eliminado' style='color: green;'>El empleado esta activado</p>
+                      <% } else { %>
+                        <p id='result-message' name='eliminado' style='color: red;' >El empleado esta cancelado</p>
+                      <% } %>
+                    <% } %>
                   </form>
                 </div>
               </div>

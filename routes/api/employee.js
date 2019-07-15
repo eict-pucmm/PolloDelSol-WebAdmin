@@ -1,9 +1,14 @@
 const express = require('express');
+const axios = require('axios');
+const url = require('../../config').server.url;
 let app = express();
 
 app.get('/get', function (req, res, next) {
 
-    let sql_query = 'Select empleado.avatar, empleado.id_empleado, empleado.nombre, empleado.correo, empleado.rol FROM empleado';
+    let sql_query = 'Select empleado.avatar, empleado.id_empleado, empleado.nombre, empleado.correo, empleado.rol, empleado.eliminado FROM empleado';
+    if (req.query.id_empleado) {
+        sql_query += ` WHERE empleado.id_empleado = '${req.query.id_empleado}'`;
+}
     req.getConnection((error,conn) => {
         if(!error) {
             conn.query(sql_query, (err, rows, fields) => {
@@ -43,6 +48,65 @@ app.post('/register', (req,res) => {
             }
         });
     }
+});
+
+app.post('/edit/(:id_empleado)', (req,res) => {
+
+    const id_empleado = req.params.id_empleado;
+    const employee = req.body.data;
+
+    if(!employee || !id_empleado) {
+        res.status(400).send({error: true, message: 'Please provide an employee and employee id'});
+    } else {
+        req.getConnection((error, conn) => {
+            if (!error) {
+                conn.query(`UPDATE empleado SET ? WHERE id_empleado = ?`, [employee, id_empleado], (err, results) => {
+                    if (!err) {
+                        res.status(200).send({error: false, result: results, message: 'Empleado modificado exitosamente'});
+                    } else {
+                        res.status(500).send({error: true, message: err});
+                    }
+                });
+            } else {
+                res.status(500).send({error: true, message: error});
+            }
+        });
+    }
+});
+
+app.post('/delete/(:id_empleado)', (req, res, next) => {
+    let employee;
+
+    axios.get(`${url}/api/employee/get?id_empleado=${req.params.id_empleado}`)
+    .then(result => {
+        employee = result.data.employee[0];
+    })
+    .catch(err => {console.log(err)})
+    .finally(() => {
+        req.getConnection((error,conn) => {
+            if(!error){
+                if(employee.eliminado === 0) {
+                    conn.query(`UPDATE empleado SET eliminado = 1 WHERE id_empleado = ?`, employee.id_empleado, (err, result) => {
+                        if (!err) {
+                            res.status(200).send({error: false, result: result, message: `Se ha cancelado el empleado con Id = ${req.params.id_empleado}`});
+                        } else {
+                            res.status(500).send({error: true, message: err});
+                        }
+                    })
+                } else {
+                    conn.query(`UPDATE empleado SET eliminado = 0 WHERE id_empleado = '${req.params.id_empleado}';`, (err, result) => {
+                        if (!err) {
+                            res.status(200).send({error: false, result: result, message: `Se ha activado el empleado con Id = ${req.params.id_empleado}`});
+                        } else {
+                            res.status(500).send({error: true, message: err});
+                        }
+                    });
+                }
+            } else {
+                res.status(500).send({error: true, message: error});
+            }
+        })
+    })
 });
 
 module.exports = app;

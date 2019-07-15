@@ -19,12 +19,15 @@
                     <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label for="tipo-item">Filtrar por tipo</label>
-                          <select onchange="this.form.submit()" class="form-control col-sm-10" id="tipo-item" name="filtro-tipo">
-                            <option value=''>Todos</option>
-                            <option value='Plato'>Cajero</option>
-                            <option value='Bebida'>Delivery</option>
-                          </select>
+                          <label for="filtro-cbx">Filtrar por tipo</label>
+                          <form>
+                            <select class="form-control col-sm-10" id="filtro-cbx" name="filtro-empleados">
+                              <option value="" selected>Todos</option>
+                              <option value="Cajero">Cajero</option>
+                              <option value="Delivery">Delivery</option>
+                            </select>
+                          </form>
+                          
                         </div>
                       </div>
                     </div>
@@ -55,7 +58,8 @@
                       </thead>
                       <tbody>
                       <!--Code to fill table with employees data-->
-                       <% if (data !== '') { %>
+                       <% if (data !== '' && data !== undefined) { %>
+                        <input id= 'data-input'style="display: none" value="<%=data%>">
                          <% data.forEach(function (employee) { %>
                               <tr>
                                 <td style="width: 10%"><img src="<%= employee.avatar %>" style="width: 100px; height: 100px; border-radius: 10%"></td>
@@ -97,6 +101,7 @@
   <script src="/scripts/hoverable-collapse.js"></script>
   <script src="/scripts/template.js"></script>
   <script src="/scripts/todolist.js"></script>
+  <script src="/scripts/list_empleado.js"></script>
 </body>
 
 </html>
