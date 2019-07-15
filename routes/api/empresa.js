@@ -31,8 +31,10 @@ app.post('/edit/(:id_empresa)', (req, res) => {
     }else{
         habilitar=0;
     }
-    let sql_query = `START TRANSACTION;UPDATE empresa SET registrada = ${habilitar} WHERE id_empresa = '${enterprise.id_empresa}'; UPDATE cierre SET tipo_de_cierre = ${enterprise.tipo_de_cierre}, dia_de_cierre = '${enterprise.dia_de_corte}' WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id_empresa}'); COMMIT;`;
+    let sql_query = `UPDATE empresa SET registrada = ${habilitar} WHERE id_empresa = '${enterprise.id_empresa}';` 
+    let sql_query0 = `UPDATE cierre SET tipo_de_cierre = ${enterprise.tipo_de_cierre}, dia_de_cierre = '${enterprise.dia_de_corte}' WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id_empresa}');`;
     console.log(sql_query);
+    console.log(sql_query0);    
     if (!enterprise || !id_empresa) {
         res.status(400).send({error: true, message: 'Please provide an enterprise and enterprise id'});
     } else {
@@ -40,9 +42,17 @@ app.post('/edit/(:id_empresa)', (req, res) => {
             if (!error) {
                 conn.query(sql_query, (err, results) => {
                     if (!err) {
-                        res.status(200).send({error: false, result: results, message: 'empresa modificada exitosamente'});
+                        conn.query(sql_query0,(errorx,ress) => {
+                            if(!errorx){
+                                res.status(200).send({error: false, result: results, message: 'empresa modificada exitosamente'});
+                            }else{
+                                console.log("yo me voa guinda");
+                                res.status(501).send({error: true, message: err});
+                            }
+                        });
                     } else {
-                        console.log(err);
+                        console.log("chikuelos");
+                        //console.log(err);
                         res.status(501).send({error: true, message: err});
                     }
                 });
