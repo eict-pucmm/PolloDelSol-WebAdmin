@@ -14,6 +14,7 @@ const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
 const empleadoRoute     = require('./routes/public/empleado');
 const empresaRoute      = require('./routes/public/empresa');
+const menuRoute         = require('./routes/public/menu');
 //api routes
 const indexApi          = require('./routes/api/index');
 
@@ -44,11 +45,12 @@ app.use(methodOverride((req, res) => {
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
 app.use('/empleado', empleadoRoute);
+app.use('/menu', menuRoute);
 app.use('/empresa', empresaRoute);
 app.use('/api', indexApi);
 //assets
 app.use(express.static(__dirname + '/views/public'));
 
-app.listen(config.server.port, function () {
+app.listen(process.env.PORT || config.server.port, function () {
     console.log(`Server running at ${config.server.url}`);
 });

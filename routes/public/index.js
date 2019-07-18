@@ -1,7 +1,7 @@
-let express = require('express');
+const express = require('express');
 let app = express();
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.render('index');
 });
 

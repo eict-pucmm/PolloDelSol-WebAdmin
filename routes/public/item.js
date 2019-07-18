@@ -1,15 +1,31 @@
 const express = require('express');
-const axios = require('axios');
-const url = require('../../config').server.url;
+const axios   = require('axios');
+const multer = require("multer");
+const cloudinary = require("cloudinary");
+const cloudinaryStorage = require("multer-storage-cloudinary");
+const config = require('../../config');
+
 let app = express();
+let regItem;
+
+cloudinary.config(config.cloudinary);
+
+const storage = cloudinaryStorage({
+    cloudinary: cloudinary,
+    folder: 'item',
+    allowedFormats: ['jpg', 'png'],
+    transformation: [{ height: 500, crop: 'limit' }]}
+);
+
+const parser = multer({ storage: storage });
 
 app.get('/', (req, res, next) => {
 
-    axios.get(`${url}/api/item/get`)
+    axios.get(`${config.server.url}/api/item/get`)
         .then(result => {
             return result.data.items;
         }).then(items => {
-            axios.get(`${url}/api/item/categories`)
+            axios.get(`${config.server.url}/api/item/categories`)
             .then(result => {
                 return {data: items, categorias: result.data.categorias, subcategorias: result.data.subcategorias};
             }).then(datos => {
@@ -20,26 +36,31 @@ app.get('/', (req, res, next) => {
 
 });
 
-app.get('/register', function (req, res, next) {
+app.get('/register', (req, res, next) => {
 
-    let item = {
-        id: '',
-        nombre: '',
-        descripcion: '',
-        categoria: '',
-        subcategoria: '',
-        precio: '',
-        puntos: '',
-        eliminado: 0
+    let item;
+    if (regItem) {
+        item = regItem;
+    } else {
+        item = {
+            id: '',
+            nombre: '',
+            descripcion: '',
+            categoria: '',
+            subcategoria: '',
+            precio: '',
+            puntos: '',
+            eliminado: 0
+        }
     }
 
-    axios.get(`${url}/api/item/get?subcategoria=Guarnicion`)
+    axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${url}/api/item/get?subcategoria=Bebida`)
+            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida`)
                 .then(bebidas => {
-                    axios.get(`${url}/api/item/categories`)
+                    axios.get(`${config.server.url}/api/item/categories`)
                     .then(result => {
                         return {
                             action: 'Registrar', 
@@ -47,7 +68,9 @@ app.get('/register', function (req, res, next) {
                             categorias: result.data.categorias, 
                             subcategorias: result.data.subcategorias,
                             guarniciones: guarniciones.data.items,
-                            bebidas: bebidas.data.items
+                            bebidas: bebidas.data.items,
+                            combo: undefined,
+                            itemCombo: undefined
                         };
                     }).then(datos => {
                         res.render('item/register', datos)
@@ -57,7 +80,7 @@ app.get('/register', function (req, res, next) {
         }).catch(err => res.send(err));
 });
 
-app.post('/register', (req, res, next) => {
+app.post('/register', parser.single('image'), (req, res, next) => {
 
     req.assert('id-item', 'El Id no puede estar vacío').notEmpty();
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
@@ -65,7 +88,12 @@ app.post('/register', (req, res, next) => {
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
     req.assert('puntos', 'Los puntos no pueden estar vacíos').notEmpty();
 
-    let errors = req.validationErrors()
+    if (req.body['selected-category'] == 'Combo') {
+        req.assert('bebidas', 'Debe seleccionar al menos una opcion de bebida').notEmpty();
+        req.assert('guarniciones', 'Debe seleccionar al menos una opcion de guarnición').notEmpty();
+    }
+
+    let errors = req.validationErrors();
     let item = {
         id_item: req.sanitize('id-item').escape().trim(),
         nombre: req.sanitize('nombre').escape().trim(),
@@ -74,16 +102,44 @@ app.post('/register', (req, res, next) => {
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
         puntos: req.sanitize('puntos').escape().trim(),
-        eliminado: 0
+        eliminado: 0,
+        imagen: req.file.url
     }
+    regItem = Object.assign({}, item);
+    regItem.categoria = req.body['selected-category'];
 
     if (!errors) {
-        axios.post(`${url}/api/item/register`, {data: item})
+        axios.post(`${config.server.url}/api/item/register`, {data: item})
         .then( () => {
             req.flash('success', 'Item registrado satisfactoriamente');
+        }).then( () => {
+            if (req.body['selected-category'] == 'Combo') {
+                let itemCombo = [], combo = {};
+                combo = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
+                if (Array.isArray(req.body.bebidas)) {
+                    req.body.bebidas.forEach(bebida => {
+                        itemCombo.push({id_combo: item.id_item, id_item: bebida})
+                    });
+                } else {
+                    itemCombo.push({id_combo: item.id_item, id_item: req.body.bebidas});
+                }
+
+                if (Array.isArray(req.body.guarniciones)) {
+                    req.body.guarniciones.forEach(guarnicion => {
+                        itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
+                    });
+                } else {
+                    itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
+                }
+
+                axios.post(`${config.server.url}/api/item/register/combo`, {combo: combo, itemCombo: itemCombo})
+                    .then(result => {})
+                    .catch(err => console.log(err));
+            }
         }).catch(err => {
-            req.flash('error', err);
+            console.log(err);
         }).finally( () => {
+            regItem = undefined;
             res.redirect('/item/register');
         });
     } else {
@@ -94,20 +150,27 @@ app.post('/register', (req, res, next) => {
 
 app.get('/edit/(:id_item)', (req, res, next) => {
 
-    let item;
+    let item, combo = '', itemCombo = '';
 
-    axios.get(`${url}/api/item/get?id_item=${req.params.id_item}`)
+    axios.get(`${config.server.url}/api/item/get?id_item=${req.params.id_item}`)
         .then(result => {
             item = result.data.items[0];
+            if (result.data.items[0].categoria == 'Combo') {
+                axios.get(`${config.server.url}/api/item/get/combo?id_combo=${result.data.items[0].id_item}`)
+                    .then(comboData => {
+                        combo = comboData.data.combo[0];
+                        itemCombo = comboData.data.itemCombo;
+                    })
+            }
         }).catch(err => console.log(err));
 
-    axios.get(`${url}/api/item/get?subcategoria=Guarnicion`)
+    axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${url}/api/item/get?subcategoria=Bebida`)
+            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida`)
                 .then(bebidas => {
-                    axios.get(`${url}/api/item/categories`)
+                    axios.get(`${config.server.url}/api/item/categories`)
                     .then(result => {
                         return {
                             action: 'Modificar', 
@@ -115,7 +178,9 @@ app.get('/edit/(:id_item)', (req, res, next) => {
                             categorias: result.data.categorias, 
                             subcategorias: result.data.subcategorias,
                             guarniciones: guarniciones.data.items,
-                            bebidas: bebidas.data.items
+                            bebidas: bebidas.data.items,
+                            combo: combo,
+                            itemCombo: itemCombo
                         };
                     }).then(datos => {
                         res.render('item/register', datos)
@@ -125,7 +190,7 @@ app.get('/edit/(:id_item)', (req, res, next) => {
         }).catch(err => res.send(err));
 });
 
-app.post('/edit/(:id_item)', (req, res, next) => {
+app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
@@ -140,26 +205,53 @@ app.post('/edit/(:id_item)', (req, res, next) => {
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
         puntos: req.sanitize('puntos').escape().trim(),
-        eliminado: req.body.eliminado
+        eliminado: req.body.eliminado,
     }
 
+    item.imagen = req.file ? req.file.url : req.body.imagen;
+
     if (!errors) {
-        axios.post(`${url}/api/item/edit/${item.id_item}`, {data: item})
+        axios.post(`${config.server.url}/api/item/edit/${item.id_item}`, {data: item})
         .then( response => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
+                if (req.body['selected-category'] == 'Combo') {
+                    let itemCombo = [], combo = {};
+                    combo = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
+                    if (Array.isArray(req.body.bebidas)) {
+                        req.body.bebidas.forEach(bebida => {
+                            itemCombo.push({id_combo: item.id_item, id_item: bebida})
+                        });
+                    } else {
+                        itemCombo.push({id_combo: item.id_item, id_item: req.body.bebidas});
+                    }
+                    if (Array.isArray(req.body.guarniciones)) {
+                        req.body.guarniciones.forEach(guarnicion => {
+                            itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
+                        });
+                    } else {
+                        itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
+                    }
+
+                    axios.post(`${config.server.url}/api/item/edit/combo`, {combo: combo, itemCombo: itemCombo})
+                        .then(result => {})
+                        .catch(err => console.log(err));
+                }
                 res.redirect('/item');
             } else {
                 req.flash('error', response.data.message);
                 res.redirect(`/item/edit/${item.id_item}`);
             }
         }).catch(err => console.log(err));
+    } else {
+        req.flash('error', errors[0].msg);
+        res.redirect(`/item/edit/${item.id_item}`);
     }
 });
 
 app.post('/delete/(:id_item)', (req, res, next) => {
 
-    axios.post(`${url}/api/item/delete/${req.params.id_item}`)
+    axios.post(`${config.server.url}/api/item/delete/${req.params.id_item}`)
     .then(response => {
         req.flash('success', response.data.message);
     }).catch(err => console.log(err))

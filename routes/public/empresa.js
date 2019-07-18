@@ -25,55 +25,23 @@ app.get('/edit/(:id_empresa)', function(req, res, next){
         .catch(err => console.log)
 });
 
-app.post('/edit/(:id_item)', function(req, res, next){
+app.post('/edit/(:id_empresa)', (req, res, next) => {
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
-    req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
-    req.assert('precio', 'El precio no puede estar vacío').notEmpty();
+    req.assert('RNC', 'el RNC no puede estar vacía').notEmpty();
+    req.assert('id', 'El id no puede estar vacío').notEmpty();
+    req.assert('dia_de_corte', 'El dia de cierre no pueden estar vacío').notEmpty();
 
     let errors = req.validationErrors()
-    let item = {id: '', nombre: '', descripcion: '', tipo: '', precio: '', eliminado: 0};
-    
-    if( !errors ) {
-        
-        item.id = req.sanitize('id-item').escape().trim();
-        item.nombre = req.sanitize('nombre').escape().trim();
-        item.descripcion = req.sanitize('descripcion').escape().trim();
-        item.tipo = req.sanitize('tipo-item').escape().trim();
-        item.precio = req.sanitize('precio').escape().trim();
-        item.eliminado = req.body.eliminado;
-
-        let sql_query = `UPDATE item SET 
-            nombre = '${item.nombre}', 
-            descripcion = '${item.descripcion}', 
-            tipo = '${item.tipo}', 
-            precio = ${item.precio} 
-            WHERE id_item = '${item.id}';`;
-        
-        req.getConnection(function(error, conn) {
-            conn.query(sql_query, function(err, result) {
-                if (err) {
-                    req.flash('error', err);
-                    res.render(
-                        `item/edit/${item.id}`, {
-                            action: 'Modificar', item
-                        }
-                    );
-                } else {
-                    req.flash('success', 'Item modificado satisfactoriamente');
-                    res.redirect('/item');
-                }
-            })
-        })
+    let empresa = {
+        id_empresa: req.params.id_empresa,
+        nombre: req.sanitize('nombre').escape().trim(),
+        rnc: req.sanitize('rnc').escape().trim(),
+        tipo_de_corte: parseInt(req.sanitize('tipo-de-corte').escape().trim()) + 1  ,
+        dia_de_corte: req.sanitize('dia_de_corte').escape().trim(),
+        eliminado: req.body.eliminado
     }
-    else {
-        req.flash('error', errors[0].msg);
-        res.render(
-            `item/edit/${item.id}`, {
-                action: 'Modificar', item
-            }
-        );
-    }
+    axios.post(`http://127.0.0.1:5000/api/empresa/edit/${empresa.id_empresa}`, {data: empresa})
+    console.log(empresa)
 });
-
 
 module.exports = app;

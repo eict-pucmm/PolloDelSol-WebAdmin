@@ -27,7 +27,7 @@
                         <div class="form-group">
                           <label for="id">Id</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="id-empresa" class="form-control" id="id-empresa" placeholder="Id" value="<%= empresa.id_empresa %>" />
+                            <input type="text" name="id_empresa" class="form-control" id="id_empresa" placeholder="Id" value="<%= empresa.id_empresa %>" />
                           </div>
                         </div>
                       </div>
@@ -49,7 +49,7 @@
                       </div>
                       <div class="col-md-3">
                           <div class="form-group">
-                            <label for="tipo-item">Tipo de corte</label>
+                            <label for="tipo-de-corte">Tipo de corte</label>
                             <select class="form-control col-sm-10" id="tipo-de-corte" name="tipo-de-corte">
                               <option value="Semanal" <% if (empresa.tipo_de_cierre == '1') { %>selected<% } %> >Semanal</option>
                               <option value="Quincenal" <% if (empresa.tipo_de_cierre == '2') { %>selected<% } %> >Quincenal</option>
@@ -72,13 +72,13 @@
                       <div class="col-md-12">
                         <div class="input-group align-items-center">
                       <% if (empresa.registrada === 1) { %>
-                        <input type="checkbox" class="form-check-input" checked=""> Empresa aprobada
+                        <input name="registrada" type="checkbox" class="form-check-input" checked=""> Empresa aprobada
                           <span class="separator" ></span>
                       <% } else { %>
-                        <input type="checkbox" class="form-check-input"> Empresa aprobada
+                        <input name="registrada" type="checkbox" class="form-check-input"> Empresa aprobada
                         <span class="separator" ></span>
                       <% } %>
-
+                      <button type="submit" class="btn btn-primary mr-2">Submit</button>
                         </div>
                       </div>
                     </div>
