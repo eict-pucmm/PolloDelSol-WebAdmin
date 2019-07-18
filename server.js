@@ -12,7 +12,7 @@ const cors              = require('cors');
 //visual routes
 const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
-const empleadoRoute     = require('./routes/public/employee');
+const empleadoRoute     = require('./routes/public/empleado');
 const empresaRoute      = require('./routes/public/empresa');
 //api routes
 const indexApi          = require('./routes/api/index');

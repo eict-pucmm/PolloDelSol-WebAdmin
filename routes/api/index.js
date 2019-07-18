@@ -1,5 +1,5 @@
 const express = require('express');
-const employeeAPI = require('./employee');
+const empleadoAPI = require('./empleado');
 const empresaAPI = require('./empresa');
 const itemApi = require('./item');
 let app = express();
@@ -11,6 +11,6 @@ app.get('/', (req, res) => {
 
 app.use('/item', itemApi);
 app.use('/empresa', empresaAPI);
-app.use('/empleado', employeeAPI);
+app.use('/empleado', empleadoAPI);
 
 module.exports = app;
