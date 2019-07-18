@@ -14,24 +14,30 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Items</h4>
-                  <form>
+                  <h4 class="card-title">Empleados</h4>
                     <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label for="filtro-cbx">Filtrar por tipo</label>
-                          <form>
-                            <select class="form-control col-sm-10" id="filtro-cbx" name="filtro-empleados">
+                          <label>Rol</label>
+                            <select class="form-control col-sm-10" id="rol-cbx" name="rol-cbx" onchange="updateList()">
                               <option value="" selected>Todos</option>
+                              <option value="Administrador">Administrador</option>
                               <option value="Cajero">Cajero</option>
                               <option value="Delivery">Delivery</option>
                             </select>
-                          </form>
-                          
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label>Cancelado</label>
+                            <select class="form-control col-sm-10" id="cancelado-cbx" name="cancelado-cbx" onchange="updateList()">
+                              <option value="" selected>Todos</option>
+                              <option value="0">En operación</option>
+                              <option value="1">Cancelado</option>
+                            </select>
                         </div>
                       </div>
                     </div>
-                  </form>
                   <% if (data == '') { %>
                     <p id="result-message" style="color:red">No hay empleados registrados</p>
                   <% } %>
@@ -39,9 +45,6 @@
                     <table class="table table-bordered" style="width: 100%">
                       <thead>
                         <tr>
-                          <th>
-                            Avatar
-                          </th>
                           <th>
                             Nombre
                           </th>
@@ -56,13 +59,12 @@
                           </th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody id="employee-list">
                       <!--Code to fill table with employees data-->
                        <% if (data !== '' && data !== undefined) { %>
                         <input id= 'data-input'style="display: none" value="<%=data%>">
                          <% data.forEach(function (employee) { %>
-                              <tr>
-                                <td style="width: 10%"><img src="<%= employee.avatar %>" style="width: 100px; height: 100px; border-radius: 10%"></td>
+                              <tr title="<%-employee.rol%> <%=employee.eliminado%>">
                                 <td><%= employee.nombre %></td>
                                 <td><%= employee.correo %></td>
                                 <td><%= employee.rol %></td>
@@ -74,7 +76,7 @@
                                   </div>
                                 </td>
                                 <td class="image"> 
-                                  <a href='/employee/edit/<%= employee.id_empleado %>'> <img src="/images/icons/edit.svg" /> </a>
+                                  <a href='/empleado/modificar/<%= employee.id_empleado %>'> <img src="/images/icons/edit.svg" /> </a>
                                 </td>
                               </tr>
                          <% }) %>
@@ -100,7 +102,6 @@
   <script src="/scripts/off-canvas.js"></script>
   <script src="/scripts/hoverable-collapse.js"></script>
   <script src="/scripts/template.js"></script>
-  <script src="/scripts/todolist.js"></script>
   <script src="/scripts/list_empleado.js"></script>
 </body>
 

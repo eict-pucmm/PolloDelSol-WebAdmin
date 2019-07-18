@@ -11,6 +11,6 @@ app.get('/', (req, res) => {
 
 app.use('/item', itemApi);
 app.use('/empresa', empresaAPI);
-app.use('/employee', employeeAPI);
+app.use('/empleado', employeeAPI);
 
 module.exports = app;

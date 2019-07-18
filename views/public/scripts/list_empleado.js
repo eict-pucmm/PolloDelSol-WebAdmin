@@ -1,16 +1,19 @@
-document.getElementById('filtro-cbx').onchange = function() {
-    let rol = document.getElementById('filtro-cbx');
-    let selected_rol;
-    if(rol.value != ""){
-        if(rol.value == 'Cajero') {
-            console.log('Cajeros')
-            selected_rol = rol.options[rol.selectedIndex].innerHTML;
-        //   let cajeros = data.filter(cajero => data.rol === 'Cajero');
-        //   console.log(cajeros);
-        } else if(rol.value == 'Delivery') {
-            console.log('Deslivery')
+const employeeList = document.getElementById('employee-list').rows;
+const rolCbx = document.getElementById('rol-cbx');
+
+let updateList = () => {
+    const canceladoCbx = document.getElementById('cancelado-cbx');
+    const rol = rolCbx.options[rolCbx.selectedIndex].innerHTML;
+    
+    for (let i = 0; i < employeeList.length; i++) {
+        employeeList[i].style.display = 'none';
+      
+      if (employeeList[i].title.includes(canceladoCbx.value)) {
+        if (rol === "Todos") {
+            employeeList[i].style.display = 'table-row';
+        } else if (employeeList[i].title.includes(rol)) {
+            employeeList[i].style.display = 'table-row';
         }
+      }
     }
   }
-
-console.log('inside filter cbx changes');

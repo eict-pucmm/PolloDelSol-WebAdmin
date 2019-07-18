@@ -3,12 +3,13 @@ const axios = require('axios');
 const url = require('../../config').server.url;
 let app = express();
 
-app.get('/get', function (req, res, next) {
+app.get('/buscar', (req, res, next) => {
 
-    let sql_query = 'Select empleado.avatar, empleado.id_empleado, empleado.nombre, empleado.correo, empleado.rol, empleado.eliminado FROM empleado';
+    let sql_query = `SELECT * FROM empleado`;
+    
     if (req.query.id_empleado) {
-        sql_query += ` WHERE empleado.id_empleado = '${req.query.id_empleado}'`;
-}
+        sql_query += ` WHERE empleado.id_empleado = ${req.query.id_empleado}`;
+    }
     req.getConnection((error,conn) => {
         if(!error) {
             conn.query(sql_query, (err, rows, fields) => {
@@ -28,9 +29,10 @@ app.get('/get', function (req, res, next) {
     })
 });
 
-app.post('/register', (req,res) => {
+app.post('/registrar', (req,res) => {
 
     const employee = req.body.data;
+
     if(!employee){
         res.status(400).send({error: true, message: 'Please provide an employee'});
     } else {
@@ -50,17 +52,17 @@ app.post('/register', (req,res) => {
     }
 });
 
-app.post('/edit/(:id_empleado)', (req,res) => {
+app.post('/modificar/(:id_empleado)', (req,res) => {
 
     const id_empleado = req.params.id_empleado;
-    const employee = req.body.data;
+    const empleado = req.body.data;
 
-    if(!employee || !id_empleado) {
+    if(!empleado || !id_empleado) {
         res.status(400).send({error: true, message: 'Please provide an employee and employee id'});
     } else {
         req.getConnection((error, conn) => {
             if (!error) {
-                conn.query(`UPDATE empleado SET ? WHERE id_empleado = ?`, [employee, id_empleado], (err, results) => {
+                conn.query(`UPDATE empleado SET ? WHERE id_empleado = ?`, [empleado, id_empleado], (err, results) => {
                     if (!err) {
                         res.status(200).send({error: false, result: results, message: 'Empleado modificado exitosamente'});
                     } else {
@@ -74,10 +76,11 @@ app.post('/edit/(:id_empleado)', (req,res) => {
     }
 });
 
-app.post('/delete/(:id_empleado)', (req, res, next) => {
+app.post('/eliminar/(:id_empleado)', (req, res, next) => {
+
     let employee;
 
-    axios.get(`${url}/api/employee/get?id_empleado=${req.params.id_empleado}`)
+    axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
     .then(result => {
         employee = result.data.employee[0];
     })

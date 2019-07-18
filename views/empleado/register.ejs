@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<% include ../public/layouts/header.ejs %>
+
+<body>
+  <div class="container-scroller">
+  <% include ../public/layouts/navbar.ejs %>
+    <div class="container-fluid page-body-wrapper">
+      <% include ../public/layouts/sidebar.ejs %>
+      <div class="main-panel">
+        <div class="content-wrapper">
+        <% if (action === 'Registrar') {%>
+          <form class="forms-sample" method="POST" action="/empleado/registrar" enctype="multipart/form-data">
+        <% } else if (action === 'Modificar') { %>
+          <input name="id_empleado" type="text" style="display: none;" value="<%= employee.id_empleado %>"/>
+          <form class="forms-sample" method="POST" action="/empleado/modificar/<%=employee.id_empleado%>">
+        <% } %>
+            <div class="row">
+                  <div class="col-3 grid-margin stretch-card text-center">
+                    <div class="card">
+                      <div class="card-body">
+                        <h4 class="card-title">Imagen</h4>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <img src="/images/ProfilePic.png" name="ProfilePic" id="ProfilePic" class="register-img"/>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <div class="input-group">
+                              <label for="ProfilePicSelect" class="btn btn-primary btn-lg btn-block reg-employee">
+                                <input type="file" name="ProfilePicSelect" id="ProfilePicSelect" accept="image/png, image/jpeg" onchange="readURL(this),compressImage(event)"  style="display: none;">
+                                Buscar Imagen
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-9 grid-margin stretch-card">
+                    <div class="card">
+                      <div class="card-body">
+                      <h4 class="card-title"id="page-title">Datos generales</h4>
+                      <% if (messages.error) { %>
+                        <p id="result-message" style="color:red"><%- messages.error %></p>
+                      <% } %>
+                      <% if (messages.success) { %>
+                        <p id="result-message" style="color:green"><%- messages.success %></p>
+                      <% } %>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="nombre">Nombre completo</label>
+                              <div class="col-sm-12 row">
+                                <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= employee.nombre %>"/>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6" id="correo-field">
+                            <div class="form-group">
+                              <label for="correo">Correo electrónico</label>
+                              <div class="col-sm-12 row">
+                                <input type="text" name="correo" class="form-control" id="correo" placeholder="Correo" value="<%= employee.correo %>">
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="rol">Rol</label>
+                              <select class="form-control col-sm-11" id="rol" name="rol">
+                                <option value="Administrador" <% if (employee.rol == 'Administrador') { %>selected<% } %> >Administrador</option>
+                                <option value="Cajero" <% if (employee.rol == 'Cajero') { %>selected<% } %> >Cajero</option>
+                                <option value="Delivery" <% if (employee.rol == 'Delivery') { %>selected<% } %> >Delivery</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row" id="contrasena-field">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="contrasena">Contraseña</label>
+                              <div class="col-sm-12 row">
+                                <input type="password" name="contrasena" class="form-control" id="contrasena" placeholder="Contraseña">
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="contrasenaconfirmada">Confirmar contraseña</label>
+                                <div class="col-sm-12 row">
+                                  <input type="password" name="contrasenaconfirmada" class="form-control" id="contrasenaconfirmada" placeholder="Contraseña">
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                            <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-employee" ><%- action %></button>
+                        <% if (action === 'Modificar') { %>
+                          <% if (employee.eliminado === 0) { %>
+                              <button id='del-button' name='delete' type='submit' class="btn btn-danger " formmethod="POST" formaction ="/empleado/eliminar/<%=employee.id_empleado%>">Cancelar empleado</button>          
+                          <% } else {%>
+                              <button id='act-button' name='success' type="submit" class="btn btn-success" formmethod="POST" formaction ="/empleado/eliminar/<%=employee.id_empleado%>">Activar empleado</button>   
+                          <% } %>
+                            <span class='separator-horizontal'></span>
+                          <% if (employee.eliminado === 0) {%>
+                            <p id='result-message' name='eliminado' style='color: green;'>El empleado esta en operación</p>
+                          <% } else { %>
+                            <p id='result-message' name='eliminado' style='color: red;' >El empleado esta cancelado</p>
+                          <% } %>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018 <a
+                href="https://www.templatewatch.com/" target="_blank">Templatewatch</a>. All rights reserved.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i
+                class="ti-heart text-danger ml-1"></i></span>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <script>
+    const employee = <%- JSON.stringify(employee)%>;
+  </script>
+  <script src="/vendors/base/vendor.bundle.base.js"></script>
+  <script src="/scripts/off-canvas.js"></script>
+  <script src="/scripts/hoverable-collapse.js"></script>
+  <script src="/scripts/template.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@latest/dist/browser-image-compression.js"></script>
+  <script src="/scripts/register_employee.js"></script>
+</body>
+
+</html>

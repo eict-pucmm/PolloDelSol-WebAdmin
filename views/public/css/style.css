@@ -14012,14 +14012,24 @@ a.close.disabled {
   overflow-y: auto;
 }
 
-.modal {
+.modal-container {
+  display: none;
   position: fixed;
   top: 0;
+  bottom: 0;
   left: 0;
+  right: 0;
+  background: rgba(90, 90, 90, 0.5);
+  z-index: 1049;
+}
+
+.modal {
+  position: fixed;
+  top: 30%;
+  left: 25%;
   z-index: 1050;
-  display: none;
-  width: 100%;
-  height: 100%;
+  display: flex;
+  width: 50%;
   overflow: hidden;
   outline: 0;
 }
@@ -20228,11 +20238,32 @@ select.form-control.border-dark:focus {
 }
 
 .register-img {
-  width: 10rem;
-  height: 10rem;
+  width: 14.5rem;
+  height: 14.5rem;
   border-radius: 10%;
   margin: 1.5rem 0;
-  object-fit: fill;
+  object-fit: contain;
+}
+
+@media (max-width: 1500px) {
+  .register-img {
+    width: 12rem;
+    height: 12rem;
+  }
+}
+
+@media (max-width: 1300px) {
+  .register-img {
+    width: 8rem;
+    height: 8rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .register-img {
+    width: 7rem;
+    height: 7rem;
+  }
 }
 
 /* Icons */
@@ -21396,11 +21427,3 @@ dl li {
 }
 
 /* # sourceMappingURL=maps/style.css.map */
-
-#ProfilePic {
-  border-radius: 10%;
-  border: 1px solid #4d4d4d;
-  width: 150px;
-  height: 150px;
-  background-size: cover;
-}
