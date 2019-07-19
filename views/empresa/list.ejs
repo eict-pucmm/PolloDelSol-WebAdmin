@@ -15,25 +15,25 @@
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">Empresas</h4>
-                  <form action="/empresa?nombre-empresa=">
+                  <form action="/empresa?nombre-empresa=" method="GET">
                     <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group row">
-                            <form class="form-group">
-                              <div class="col-md-6">
+                          <div class="col-md-6">
+                              <div class="form-group">
                                   <label for="nombre-empresa">Buscar por nombre</label>
                                   <input type="text" class="form-control" id="nombre-empresa" name="Nombre"/>
                               </div>
-                              <div class="col-md-6">
+                          </div>
+                          <div class="col-md-6">
+                              <div class="form-group">
                                   <label for="rnc-empresa">Buscar por RNC</label>
                                   <input type="text" class="form-control" id="rnc-empresa" name="RNC"/>
                               </div>
-                              <div class="col-lg-6">
-                                  <button type="button" class="btn btn-secondary" >Buscar</button>
-                              </div>
-                            </form>
+                          </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-secondary" >Buscar</button>
                         </div>
-                      </div>
                     </div>
                     </form>
                   </form>

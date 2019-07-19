@@ -2,8 +2,8 @@
 <html lang="en">
 
 <% include ../public/layouts/header.ejs %>
-
 <body>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <div class="container-scroller">
   <% include ../public/layouts/navbar.ejs %>
     <div class="container-fluid page-body-wrapper">
@@ -23,11 +23,11 @@
                   <% } %>
                       <form class="forms-sample" method="POST" action="/empresa/edit/<%= empresa.id_empresa %>">
                   <div class="row">
-                      <div class="col-md-3">
+                      <div class="col-md-4">
                         <div class="form-group">
                           <label for="id">Id</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="id_empresa" class="form-control" id="id_empresa" placeholder="Id" value="<%= empresa.id_empresa %>" />
+                            <input type="text" disabled name="id_empresa" class="form-control" id="id_empresa" placeholder="Id" value="<%= empresa.id_empresa %>" />
                           </div>
                         </div>
                       </div>
@@ -35,7 +35,7 @@
                         <div class="form-group">
                           <label for="nombre">Nombre</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= empresa.nombre %>"/>
+                            <input type="text" name="nombre" disabled class="form-control" id="nombre" placeholder="Nombre" value="<%= empresa.nombre %>"/>
                           </div>
                         </div>
                       </div>
@@ -43,7 +43,7 @@
                         <div class="form-group">
                           <label for="rnc">RNC</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="rnc" class="form-control" id="RNC" placeholder="RNC" value="<%= empresa.RNC %>"/>
+                            <input type="text" name="rnc" disabled class="form-control" id="RNC" placeholder="RNC" value="<%= empresa.RNC %>"/>
                           </div>
                         </div>
                       </div>
@@ -51,34 +51,52 @@
                           <div class="form-group">
                             <label for="tipo-de-corte">Tipo de corte</label>
                             <select class="form-control col-sm-10" id="tipo-de-corte" name="tipo-de-corte">
-                              <option value="Semanal" <% if (empresa.tipo_de_cierre == '1') { %>selected<% } %> >Semanal</option>
-                              <option value="Quincenal" <% if (empresa.tipo_de_cierre == '2') { %>selected<% } %> >Quincenal</option>
-                              <option value="Mensual" <% if (empresa.tipo_de_cierre == '3') { %>selected<% } %> >Mensual</option>
+                              <option value="1" <% if (empresa.tipo_de_cierre == '1') { %>selected<% } %> >Semanal</option>
+                              <option value="2" <% if (empresa.tipo_de_cierre == '2') { %>selected<% } %> >Quincenal</option>
+                              <option value="3" <% if (empresa.tipo_de_cierre == '3') { %>selected<% } %> >Mensual</option>
                             </select>
                           </div>
                         </div>
                     </div>
                     <div class="row">
-                      <div class="col-md-4">
+                      <div class="col-md-8">
                         <div class="form-group">
                           <label>Dia de corte</label>
-                          <div class="input-group col-sm-4 row">
-                            <input type="number" name="dia_de_corte" step="1" min="1" max="31" class="form-control price-int-input" value="<%= empresa.dia_de_corte%>">
+                          <div class="input-group col-sm-6 row">
+                            <style>
+                              body {
+	                              font-family: Arial, Helvetica, sans-serif;
+                              }
+                              table {
+                              	font-size: 1em;
+                              }
+                              .ui-draggable, .ui-droppable {
+                              	background-position: top;
+                              }
+                            </style>
+                            <input type="text" id="datepicker" name="dia_de_corte" class="form-control" value="<%= empresa.dia_de_corte%>">
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="row">
                       <div class="col-md-12">
-                        <div class="input-group align-items-center">
+                        <div class="form-group align-items-center">
                       <% if (empresa.registrada === 1) { %>
-                        <input name="registrada" type="checkbox" class="form-check-input" checked=""> Empresa aprobada
-                          <span class="separator" ></span>
+                        <div class="form-check form-check-primary">
+                          <label class="form-check-label">
+                            <input name="registrada" type="checkbox" class="form-check-input" checked="">
+                             Empresa aprobada
+                          <i class="input-helper"></i></label>
+                        </div>
                       <% } else { %>
-                        <input name="registrada" type="checkbox" class="form-check-input"> Empresa aprobada
-                        <span class="separator" ></span>
+                        <label class="form-check-label">
+                          <input name="registrada" type="checkbox" class="form-check-input">
+                           Empresa aprobada
+                          <i class="input-helper"></i></label>                       
                       <% } %>
-                      <button type="submit" class="btn btn-primary mr-2">Submit</button>
+                      <span class="separator" ></span>
+                      <button type="submit" class="btn btn-primary mr-2" style="float: right;">Modificar</button>
                         </div>
                       </div>
                     </div>
@@ -88,14 +106,6 @@
             </div>
           </div>
         </div>
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018 <a
-                href="https://www.templatewatch.com/" target="_blank">Templatewatch</a>. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i
-                class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
       </div>
     </div>
   </div>
@@ -104,6 +114,15 @@
   <script src="/scripts/hoverable-collapse.js"></script>
   <script src="/scripts/template.js"></script>
   <script src="/scripts/todolist.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  
+  <script>
+      $( function() {
+        $( "#datepicker" ).datepicker({dateFormat: 'dd-mm-yy'});
+      } );
+  </script>
+
   <!--<script src="/scripts/register_item.js"></script>-->
 </body>
 
