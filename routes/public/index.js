@@ -1,8 +1,7 @@
-let express = require('express');
-const axios = require('axios');
+const express = require('express');
 let app = express();
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.render('index');
 });
 

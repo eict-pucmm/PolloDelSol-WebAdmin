@@ -14012,14 +14012,24 @@ a.close.disabled {
   overflow-y: auto;
 }
 
-.modal {
+.modal-container {
+  display: none;
   position: fixed;
   top: 0;
+  bottom: 0;
   left: 0;
+  right: 0;
+  background: rgba(90, 90, 90, 0.5);
+  z-index: 1049;
+}
+
+.modal {
+  position: fixed;
+  top: 30%;
+  left: 25%;
   z-index: 1050;
-  display: none;
-  width: 100%;
-  height: 100%;
+  display: flex;
+  width: 50%;
   overflow: hidden;
   outline: 0;
 }
@@ -20136,7 +20146,6 @@ select.form-control {
   padding: .4375rem .75rem;
   border: 0;
   outline: 1px solid #c9ccd7;
-  color: #c9c8c8;
 }
 
 select.form-control:focus {
@@ -20228,11 +20237,32 @@ select.form-control.border-dark:focus {
 }
 
 .register-img {
-  width: 11rem;
-  height: 11rem;
-  border-radius: 5%;
+  width: 14.5rem;
+  height: 14.5rem;
+  border-radius: 10%;
   margin: 1.5rem 0;
   object-fit: contain;
+}
+
+@media (max-width: 1500px) {
+  .register-img {
+    width: 12rem;
+    height: 12rem;
+  }
+}
+
+@media (max-width: 1300px) {
+  .register-img {
+    width: 8rem;
+    height: 8rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .register-img {
+    width: 7rem;
+    height: 7rem;
+  }
 }
 
 /* Icons */
