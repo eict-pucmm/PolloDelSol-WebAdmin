@@ -48,10 +48,10 @@ app.post('/edit/(:id_empresa)', (req, res, next) => {
     
     let empresa = {
         id_empresa: req.params.id_empresa,
-        nombre: req.sanitize('nombre').escape().trim(),
-        rnc: req.sanitize('rnc').escape().trim(),
+        nombre: req.params.nombre,
+        rnc: req.params.rnc,
         tipo_de_cierre: parseInt(req.sanitize('tipo-de-corte').escape().trim()),
-        dia_de_corte: anio.toString()+"-"+"0"+mes.toString()+"-"+dia_corte.toString(),
+        dia_de_corte: req.sanitize('dia_de_corte').escape().trim(),
         registrada: req.body.registrada
     }
     axios.post(`http://127.0.0.1:5000/api/empresa/edit/${empresa.id_empresa}`, {data: empresa})
