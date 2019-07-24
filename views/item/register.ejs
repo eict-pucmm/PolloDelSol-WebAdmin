@@ -32,9 +32,8 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="input-group">
-                          <input id="image-text" name="image-text" type="text" class="form-control file-upload-info" disabled placeholder="Subir imagen">
-                          <label class="btn btn-primary mr-2">
-                            <input type="file" name="image" id="image" accept="image/png, image/jpeg" onchange="readURL(this)" style="display: none;">
+                          <label for="image" class="btn btn-primary btn-lg btn-block reg-employee">
+                            <input type="file" name="image" id="image" accept="image/png, image/jpeg" onchange="readURL(this)"  style="display: none;">
                             Buscar Imagen
                           </label>
                         </div>
@@ -222,7 +221,7 @@
                                 </li>
                                 <% }); %>
                                 <%} else {%>
-                                <p style="color:red">No hay guarniciones registradas</p>
+                                <p style="color:red">No hay guarniciones en operación</p>
                                 <%}%>
                             </ul>
                           </div>
@@ -255,7 +254,7 @@
                                 </li>
                                 <% }); %>
                                 <%} else {%>
-                                <p style="color:red">No hay bebidas registradas</p>
+                                <p style="color:red">No hay bebidas en operación</p>
                                 <%}%>
                             </ul>
                           </div>

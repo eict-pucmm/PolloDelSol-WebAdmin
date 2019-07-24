@@ -1,17 +1,18 @@
 const express = require('express');
 const axios = require('axios'); 
+const url = require('../../config').server.url;
 
 let app = express();
 
 app.get('/', function (req, res, next) {
-    axios.get('http://localhost:5000/api/empresa')
+    axios.get(`${url}/api/empresa`)
         .then(result => {
             res.render('empresa/list', {data: result.data.empresa})
         });
 });
 
 app.get('/edit/(:id_empresa)', function(req, res, next){
-    axios.get(`http://localhost:5000/api/empresa?id_empresa=${req.params.id_empresa}`)
+    axios.get(`${url}/api/empresa?id_empresa=${req.params.id_empresa}`)
         .then(result => {
             console.log(result.data.empresa[0])
             if(result.data.empresa == null){
@@ -54,7 +55,7 @@ app.post('/edit/(:id_empresa)', (req, res, next) => {
         dia_de_corte: req.sanitize('dia_de_corte').escape().trim(),
         registrada: req.body.registrada
     }
-    axios.post(`http://127.0.0.1:5000/api/empresa/edit/${empresa.id_empresa}`, {data: empresa})
+    axios.post(`${url}/api/empresa/edit/${empresa.id_empresa}`, {data: empresa})
     .then(response => {
         req.flash('success', response.data.message);
     }).catch(err => console.log(err))

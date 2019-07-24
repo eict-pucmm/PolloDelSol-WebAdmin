@@ -50,6 +50,7 @@ app.get('/get', (req, res) => {
     sql_query += req.query.nombre ? ` AND item.nombre = '${req.query.nombre}'` : ``;
     sql_query += req.query.categoria ? ` AND categoria.nombre = '${req.query.categoria}'` : ``;
     sql_query += req.query.subcategoria ? ` AND subcategoria.nombre = '${req.query.subcategoria}'` : ``;
+    sql_query += req.query.eliminado ? ` AND item.eliminado = ${req.query.eliminado}` : ``;
 
     req.getConnection((error, conn) => {
         if (!error) {

@@ -54,11 +54,11 @@ app.get('/register', (req, res, next) => {
         }
     }
 
-    axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
+    axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion&eliminado=0`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida`)
+            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida&eliminado=0`)
                 .then(bebidas => {
                     axios.get(`${config.server.url}/api/item/categories`)
                     .then(result => {
