@@ -76,40 +76,4 @@ app.post('/modificar/(:id_empleado)', (req,res) => {
     }
 });
 
-app.post('/eliminar/(:id_empleado)', (req, res, next) => {
-
-    let employee;
-
-    axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
-    .then(result => {
-        employee = result.data.employee[0];
-    })
-    .catch(err => {console.log(err)})
-    .finally(() => {
-        req.getConnection((error,conn) => {
-            if(!error){
-                if(employee.eliminado === 0) {
-                    conn.query(`UPDATE empleado SET eliminado = 1 WHERE id_empleado = ?`, employee.id_empleado, (err, result) => {
-                        if (!err) {
-                            res.status(200).send({error: false, result: result, message: `Se ha cancelado el empleado con Id = ${req.params.id_empleado}`});
-                        } else {
-                            res.status(500).send({error: true, message: err});
-                        }
-                    })
-                } else {
-                    conn.query(`UPDATE empleado SET eliminado = 0 WHERE id_empleado = '${req.params.id_empleado}';`, (err, result) => {
-                        if (!err) {
-                            res.status(200).send({error: false, result: result, message: `Se ha activado el empleado con Id = ${req.params.id_empleado}`});
-                        } else {
-                            res.status(500).send({error: true, message: err});
-                        }
-                    });
-                }
-            } else {
-                res.status(500).send({error: true, message: error});
-            }
-        })
-    })
-});
-
 module.exports = app;

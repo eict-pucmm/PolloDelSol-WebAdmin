@@ -1,3 +1,4 @@
+document.getElementById('home-link').href = `'${window.location.href}'`;
 (function($) {
   'use strict';
   $(function() {

@@ -44,7 +44,6 @@
                     <table class="table table-bordered">
                       <thead>
                         <tr>
-                          <th>Id</th>
                           <th>Nombre</th>
                           <th>RNC</th>
                           <th>Periodo de cierre</th>
@@ -56,18 +55,10 @@
                        <% if (data !== '') { %>
                          <% data.forEach(function (enterprise) { %>
                               <tr>
-                                <td><%= enterprise.id_empresa %></td>
-                                <td><%= enterprise.nombre %></td>
-                                <td><%= enterprise.RNC %></td>
-                                <!--<td><%= enterprise.tipo_de_cierre %></td>-->
-                                <% if (enterprise.tipo_de_cierre == 1){ %>
-                                  <td>Semanal</td>
-                                <% } else if (enterprise.tipo_de_cierre == 2) { %>
-                                  <td>Quincenal</td>
-                                <% } else if (enterprise.tipo_de_cierre == 3) { %>
-                                  <td>Mensual</td>
-                                <% } %>
-                                <td><%= enterprise.dia_cierre %></td>
+                                <td><%- enterprise.nombre %></td>
+                                <td><%- enterprise.rnc %></td>
+                                <td><%- enterprise.tipo_de_cierre %></td>
+                                <td><%= enterprise.dia_de_cierre %></td>
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">

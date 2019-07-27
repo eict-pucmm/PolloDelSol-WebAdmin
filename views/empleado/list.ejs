@@ -45,18 +45,10 @@
                     <table class="table table-bordered" style="width: 100%">
                       <thead>
                         <tr>
-                          <th>
-                            Nombre
-                          </th>
-                          <th>
-                            Correo
-                          </th>
-                          <th>
-                            Rol
-                          </th>
-                          <th>
-                            Cancelado
-                          </th>
+                          <th>Nombre</th>
+                          <th>Correo</th>
+                          <th>Rol</th>
+                          <th>En operación</th>
                         </tr>
                       </thead>
                       <tbody id="employee-list">
@@ -71,7 +63,7 @@
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" disabled <% if (employee.eliminado) { %> checked <% } %>/>
+                                      <input type="checkbox" class="form-check-input" disabled <% if (!employee.eliminado) { %> checked <% } %>/>
                                     </label>
                                   </div>
                                 </td>

@@ -63,7 +63,7 @@ app.get('/register', (req, res, next) => {
                     axios.get(`${config.server.url}/api/item/categories`)
                     .then(result => {
                         return {
-                            action: 'Registrar', 
+                            action: 'Registrar item', 
                             item: item, 
                             categorias: result.data.categorias, 
                             subcategorias: result.data.subcategorias,
@@ -173,7 +173,7 @@ app.get('/edit/(:id_item)', (req, res, next) => {
                     axios.get(`${config.server.url}/api/item/categories`)
                     .then(result => {
                         return {
-                            action: 'Modificar', 
+                            action: 'Modificar item', 
                             item: item, 
                             categorias: result.data.categorias, 
                             subcategorias: result.data.subcategorias,
@@ -191,6 +191,7 @@ app.get('/edit/(:id_item)', (req, res, next) => {
 });
 
 app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
+
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
@@ -205,7 +206,7 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
         puntos: req.sanitize('puntos').escape().trim(),
-        eliminado: req.body.eliminado,
+        eliminado: req.body.eliminado !== undefined ? 0 : 1,
     }
 
     item.imagen = req.file ? req.file.url : req.body.imagen;
@@ -247,17 +248,6 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         req.flash('error', errors[0].msg);
         res.redirect(`/item/edit/${item.id_item}`);
     }
-});
-
-app.post('/delete/(:id_item)', (req, res, next) => {
-
-    axios.post(`${config.server.url}/api/item/delete/${req.params.id_item}`)
-    .then(response => {
-        req.flash('success', response.data.message);
-    }).catch(err => console.log(err))
-    .finally( () => {
-        res.redirect(`/item/edit/${req.params.id_item}`);
-    });
 });
 
 module.exports = app;

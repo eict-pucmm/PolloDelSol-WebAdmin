@@ -3,13 +3,13 @@ let app = express();
 
 app.get('/', function (req, res, next) {
 
-    let sql_query = `SELECT empresa.id_empresa, cliente.nombre, empresa.RNC, cierre.tipo_de_cierre, DATE_FORMAT(cierre.dia_ajustado, "%d/%m/%Y") as dia_cierre, empresa.registrada 
+    let sql_query = `SELECT empresa.id_empresa, cliente.nombre, empresa.rnc, cierre.tipo_de_cierre, DATE_FORMAT(cierre.dia_ajustado, "%d/%m/%Y") as dia_de_cierre, empresa.registrada 
     FROM empresa, cliente, cierre, empresacierre 
     WHERE empresacierre.id_cierre = cierre.id_cierre AND empresacierre.id_empresa = empresa.id_empresa AND empresa.id_cliente = cliente.id_cliente`;
-    if (req.query.id_empresa) {
-        sql_query += ` AND empresa.id_empresa = '${req.query.id_empresa}'`;
-}
-    req.getConnection(function (error, conn) {
+    
+    sql_query += req.query.id_empresa ? ` AND empresa.id_empresa = '${req.query.id_empresa}'` : ``;
+
+    req.getConnection((error, conn) => {
         conn.query(sql_query, function (err, rows, fields) {
             if (!err) {
                 res.status(200).send({error: false, empresa: rows});

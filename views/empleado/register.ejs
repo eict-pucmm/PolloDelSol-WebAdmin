@@ -10,9 +10,9 @@
       <% include ../public/layouts/sidebar.ejs %>
       <div class="main-panel">
         <div class="content-wrapper">
-        <% if (action === 'Registrar') {%>
+        <% if (action === 'Registrar empleado') {%>
           <form class="forms-sample" method="POST" action="/empleado/registrar" enctype="multipart/form-data">
-        <% } else if (action === 'Modificar') { %>
+        <% } else if (action === 'Modificar empleado') { %>
           <input name="id_empleado" type="text" style="display: none;" value="<%= employee.id_empleado %>"/>
           <form class="forms-sample" method="POST" action="/empleado/modificar/<%=employee.id_empleado%>">
         <% } %>
@@ -97,25 +97,38 @@
                               </div>
                             </div>
                           </div>
-                            <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-employee" ><%- action %></button>
-                        <% if (action === 'Modificar') { %>
-                          <% if (employee.eliminado === 0) { %>
-                              <button id='del-button' name='delete' type='submit' class="btn btn-danger " formmethod="POST" formaction ="/empleado/eliminar/<%=employee.id_empleado%>">Cancelar empleado</button>          
-                          <% } else {%>
-                              <button id='act-button' name='success' type="submit" class="btn btn-success" formmethod="POST" formaction ="/empleado/eliminar/<%=employee.id_empleado%>">Activar empleado</button>   
-                          <% } %>
-                            <span class='separator-horizontal'></span>
-                          <% if (employee.eliminado === 0) {%>
-                            <p id='result-message' name='eliminado' style='color: green;'>El empleado esta en operación</p>
-                          <% } else { %>
-                            <p id='result-message' name='eliminado' style='color: red;' >El empleado esta cancelado</p>
-                          <% } %>
-                        <% } %>
+                          <%if (action === 'Modificar empleado') {%>
+                          <div class="row">
+                            <div class="col-md-12">
+                              <div class="input-group align-items-center">
+                                <div class="form-check">
+                                  <%if (!employee.eliminado) {%>
+                                  <label class="form-check-label" style="color: green">
+                                    <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input" checked>
+                                    El empleado está en operación. Presione para cancelar.
+                                    <%} else {%>
+                                  <label class="form-check-label" style="color: red">
+                                    <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input">
+                                    El empleado está cancelado. Presione para poner en operación.
+                                    <%}%>
+                                  <i class="input-helper"></i></label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <%}%>
                       </div>
                     </div>
                   </div>
-                  </form>
                 </div>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                      <button id="reg-button" type="submit" class="btn btn-primary btn-lg btn-block reg-item"><%- action %></button>
+                    </div>
+                    <div class="col-md-4"></div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

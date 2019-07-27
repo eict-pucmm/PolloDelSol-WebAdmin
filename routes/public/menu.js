@@ -40,52 +40,47 @@ app.post('/register', (req, res) => {
 
 app.get('/edit/(:id_menu)', (req, res) => {
 
-    axios.get(`${url}/api/item/get?categoria=Combo`)
+    axios.get(`${url}/api/item/get?eliminado=0`)
         .then(combos => {
-            axios.get(`${url}/api/menu?id_menu=${req.params.id_menu}`)
-            .then(menu => {
-                axios.get(`${url}/api/menu/items?id_menu=${req.params.id_menu}`)
-                    .then(menu_items => {
-                        res.render('menu/edit', {
-                            menu: menu.data.menus[0],
-                            combos: combos.data.items,
-                            menuItems: menu_items.data.menu_items
-                        });
-                    }).catch(err => console.log(err));
-            }).catch(err => console.log(err));
+            axios.get(`${url}/api/item/categories`)
+            .then(result => {
+                axios.get(`${url}/api/menu?id_menu=${req.params.id_menu}`)
+                .then(menu => {
+                    axios.get(`${url}/api/menu/items?id_menu=${req.params.id_menu}`)
+                        .then(menu_items => {
+                            res.render('menu/edit', {
+                                categorias: result.data.categorias,
+                                subcategorias: result.data.subcategorias,
+                                menu: menu.data.menus[0],
+                                items: combos.data.items,
+                                menuItems: menu_items.data.menu_items
+                            });
+                        }).catch(err => console.log(err));
+                }).catch(err => console.log(err));
+            })
+            .catch(err => console.log(err));
         }).catch(err => console.log(err));
 
 });
 
 app.post('/edit/(:id_menu)', (req, res) => {
 
-    let deleted, inserted;
-
-    deleted = checkIfString(req.body['combo-items']) ? [req.body['combo-items']] : req.body['combo-items'];
-    inserted = checkIfString(req.body['menu-items']) ? [req.body['menu-items']] : req.body['menu-items'];
+    const data = {
+        deleted: checkIfString(req.body['item-list']) ? [req.body['item-list']] : req.body['item-list'],
+        inserted: checkIfString(req.body['menu-items']) ? [req.body['menu-items']] : req.body['menu-items'],
+        nombre: req.body.nombre,
+        activo: req.body.activo !== undefined ? 1 : 0
+    }
     
-    axios.post(`${url}/api/menu/edit/${req.params.id_menu}`, {nombre: req.body.nombre, deleted: deleted, inserted: inserted})
+    axios.post(`${url}/api/menu/edit/${req.params.id_menu}`, data)
         .then(response => {
             req.flash('success', response.data.message)
         })
         .catch(err => console.log(err))
         .finally( () => {
-            res.redirect(`/menu/edit/${req.params.id_menu}`);
+            res.redirect(`/menu`);
         });
 
-});
-
-app.post('/delete/(:id_menu)', (req, res, next) => {
-
-    const action = req.body.activo == 0 ? 1 : 0;
-
-    axios.post(`${url}/api/menu/delete/${req.params.id_menu}/${action}`)
-    .then(response => {
-        req.flash('success', response.data.message);
-    }).catch(err => console.log(err))
-    .finally( () => {
-        res.redirect(`/menu/edit/${req.params.id_menu}`);
-    });
 });
 
 module.exports = app;

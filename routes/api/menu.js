@@ -104,30 +104,12 @@ app.post('/edit/(:id_menu)', (req, res) => {
                     })
                 });
             }
-            conn.query(`UPDATE menu SET nombre = ? WHERE id_menu = ?;`, [req.body.nombre, req.params.id_menu], (err, results) => {
+            
+            conn.query(`UPDATE menu SET nombre = ?, activo = ? WHERE id_menu = ?;`, [req.body.nombre, req.body.activo, req.params.id_menu], (err, results) => {
                 if (!err) {
                     res.status(200).send({error: false, message: 'El menú ha sido editado satisfactoriamente'});
                 } else {
                     console.log(err);
-                }
-            })
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });
-});
-
-app.post('/delete/(:id_menu)/(:activo)', (req, res, next) => {
-
-    const resultMessage = req.params.activo == 1 ? `Se ha activado el menú` : `Se ha calcelado el menú`;
-
-    req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(`UPDATE menu SET activo = ? WHERE id_menu = ?`, [req.params.activo, req.params.id_menu], (err, result) => {
-                if (!err) {
-                    res.status(200).send({error: false, result: result, message: resultMessage});
-                } else {
-                    res.status(500).send({error: true, message: err});
                 }
             })
         } else {
