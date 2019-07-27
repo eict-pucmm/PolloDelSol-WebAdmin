@@ -1,10 +1,10 @@
 (function() {
     $("#menu-list option").each((index, option) => {
-        $(`#combo-list option[value='${option.value}']`).remove();
+        $(`#item-list option[value='${option.value}']`).remove();
     });
 
     $('#combo-to-menu').click((e) => {
-        let selectedOpts = $('#combo-list option:selected');
+        let selectedOpts = $('#item-list option:selected:visible');
         if (selectedOpts.length == 0) {
             e.preventDefault();
         }
@@ -14,7 +14,7 @@
     });
 
     $('#all-combo-to-menu').click((e) => {
-        let selectedOpts = $('#combo-list option');
+        let selectedOpts = $('#item-list option:visible');
         if (selectedOpts.length == 0) {
             e.preventDefault();
         }
@@ -24,21 +24,21 @@
     });
 
     $('#menu-to-combo').click((e) => {
-        let selectedOpts = $('#menu-list option:selected');
+        let selectedOpts = $('#menu-list option:selected:visible');
         if (selectedOpts.length == 0) {
             e.preventDefault();
         }
-        $('#combo-list').append($(selectedOpts).clone());
+        $('#item-list').append($(selectedOpts).clone());
         $(selectedOpts).remove();
         e.preventDefault();
     });
 
     $('#all-menu-to-combo').click((e) => {
-        let selectedOpts = $('#menu-list option');
+        let selectedOpts = $('#menu-list option:visible');
         if (selectedOpts.length == 0) {
             e.preventDefault();
         }
-        $('#combo-list').append($(selectedOpts).clone());
+        $('#item-list').append($(selectedOpts).clone());
         $(selectedOpts).remove();
         e.preventDefault();
     });
@@ -47,7 +47,7 @@
         $("#menu-list option").each((index, option) => {
             option.selected = true;
         });
-        $("#combo-list option").each((index, option) => {
+        $("#item-list option").each((index, option) => {
             option.selected = true;
         });
     });
