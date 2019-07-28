@@ -13,67 +13,73 @@
           <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Editar plato del dia</h4>
-                  <% if (data == '') { %>
-                    <p id="result-message" style="color :red">No hay platos registrados</p>
-                  <% } %>
-                  <div class="table-responsive pt-3">
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Dia</th>
-                          <th>Arroz</th>
-                          <th>Carne</th>
-                          <th>Guarnición</th>
-                          <th>Ensalada</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                       <% if (data !== '') { %>
-                         <% data.plato.forEach(function (plato) { %>
-                              <tr>
-                                <td>
-                                  <%= plato.dia %>
-                                </td>
-                                <td> 
-                                    <select class="form-control col-sm-10" id="arroz-<%= plato.id_plato_del_dia %>" name="arroz-<%= plato.id_plato_del_dia %>">
-                                        <% data.arroz.forEach(function (arroz) {%>
-                                            <option value="<% arroz.id_item %>" <% if (plato.id_arroz == arroz.id_item ) { %>selected<% } %> > <%= arroz.nombre %> </option>
+                <form action="/platodeldia/edit/<%= data.menu %>" method="POST"> 
+                  <div class="card-body">
+                    <h4 class="card-title">Editar plato del dia</h4>
+                    <% if (data == '') { %>
+                      <p id="result-message" style="color :red">No hay platos registrados</p>
+                    <% } %>
+                    <div class="table-responsive pt-3">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Dia</th>
+                            <th>Arroz</th>
+                            <th>Carne</th>
+                            <th>Guarnición</th>
+                            <th>Ensalada</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                         <% if (data !== '') { %>
+                           <% data.plato.forEach(function (plato) { %>
+                                <tr>
+                                  <td>
+                                    <%= plato.dia %>
+                                  </td>
+                                  <td> 
+                                      <select class="form-control col-sm-10" id="arroz<%= plato.dia %>" name="arroz<%= plato.dia %>">
+                                        <option value="null" selected>[Seleccione un arroz]</option>
+                                          <% data.arroz.forEach(function (arroz) {%>
+                                              <option value="<%= arroz.id_item %>" <% if (plato.id_arroz == arroz.id_item ) { %>selected<% } %> > <%= arroz.nombre %> </option>
+                                          <% }) %>
+                                        </select>
+                                  </td>
+                                  <td> 
+                                    <select class="form-control col-sm-10" id="carne<%= plato.dia %>" name="carne<%= plato.dia %>">
+                                      <option value="null" selected>[Seleccione una carne]</option>
+                                        <% data.carne.forEach(function (carne) {%>
+                                            <option value="<%= carne.id_item %>" <% if (plato.id_carne == carne.id_item ) { %>selected<% } %> > <%= carne.nombre %> </option>
                                         <% }) %>
                                       </select>
                                 </td>
                                 <td> 
-                                  <select class="form-control col-sm-10" id="carne-<%= plato.id_plato_del_dia %>" name="carne-<%= plato.id_plato_del_dia %>">
-                                      <% data.carne.forEach(function (carne) {%>
-                                          <option value="<% carne.id_item %>" <% if (plato.id_carne == carne.id_item ) { %>selected<% } %> > <%= carne.nombre %> </option>
+                                  <select class="form-control col-sm-10" id="guarnicion<%= plato.dia %>" name="guarnicion<%= plato.dia %>">
+                                    <option value="null" selected>[Seleccione una guarnicion]</option>
+                                      <% data.guarnicion.forEach(function (guarnicion) {%>
+                                          <option value="<%= guarnicion.id_item %>" <% if (plato.id_guarnicion == guarnicion.id_item ) { %>selected<% } %> > <%= guarnicion.nombre %> </option>
                                       <% }) %>
                                     </select>
-                              </td>
-                              <td> 
-                                <select class="form-control col-sm-10" id="guarnicion-<%= plato.id_plato_del_dia %>" name="guarnicion-<%= plato.id_plato_del_dia %>">
-                                    <% data.guarnicion.forEach(function (guarnicion) {%>
-                                        <option value="<% guarnicion.id_item %>" <% if (plato.id_guarnicion == guarnicion.id_item ) { %>selected<% } %> > <%= guarnicion.nombre %> </option>
-                                    <% }) %>
+                                </td>
+                                <td> 
+                                  <select class="form-control col-sm-10" id="ensalada<%= plato.dia %>" name="ensalada<%= plato.dia %>">
+                                      <option value="null" selected>[Seleccione una ensalada]</option>
+                                      <% data.ensalada.forEach(function (ensalada) {%>
+                                        <option value="<%= ensalada.id_item %>" <% if (plato.id_ensalada == ensalada.id_item ) { %>selected<% } %> > <%= ensalada.nombre %> </option>
+                                      <% }) %>
                                   </select>
-                              </td>
-                              <td> 
-                                <select class="form-control col-sm-10" id="ensalada-<%= plato.id_plato_del_dia %>" name="ensalada-<%= plato.id_plato_del_dia %>">
-                                    <% data.ensalada.forEach(function (ensalada) {%>
-                                      <option value="<% ensalada.id %>" <% if (plato.id_ensalada == ensalada.id_item ) { %>selected<% } %> > <%= ensalada.nombre %> </option>
-                                    <% }) %>
-                                </select>
-                              </td>
-                              </tr>
-                         <% }) %>
-                       <% } %>
-                      </tbody>
-                    </table>
+                                </td>
+                                </tr>
+                           <% }) %>
+                         <% } %>
+                        </tbody>
+                      </table>
+                      <span class="separator" ></span>
+                    </div>
                     <span class="separator" ></span>
+                    <button type="submit" class="btn btn-primary mr-2" style="float: right;">Guardar cambios</button>
                   </div>
-                  <span class="separator" ></span>
-                  <button type="submit" class="btn btn-primary mr-2" style="float: right;">Guardar cambios</button>
-                </div>
+                </form>
               </div>
             </div>
           </div>

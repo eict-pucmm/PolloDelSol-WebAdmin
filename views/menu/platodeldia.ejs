@@ -20,24 +20,25 @@
                       <thead>
                         <tr>
                           <th>Fecha</th>
-                          <th>Programado</th>
+                          <th>Activo</th>
+                          <th>Editar</th>
                         </tr>
                       </thead>
                       <tbody>
                        <% if (data !== '') { %>
-                         <% data.forEach(function (platos) { %>
+                         <% data.menu.forEach(function (menu) { %>
                               <tr>
-                                <td><%= platos.fecha %></td>
+                                <td><%= menu.fecha_creacion %></td>
                                 <td>
                                     <div class="form-check">
                                       <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" disabled <% if (plato.programado) { %> checked <% } %>/>
+                                        <input type="checkbox" class="form-check-input" disabled <% if (menu.activo) { %> checked <% } %>/>
                                       </label>
                                     </div>
-                                  </td>
+                                </td>
                                
                                 <td class="image"> 
-                                  <a href='/platodeldia/edit/<%= plato.id_plato %>'> <img src="/images/icons/edit.svg" /> </a>
+                                  <a href='/platodeldia/edit/<%= menu.id_menu %>'> <img src="/images/icons/edit.svg" /> </a>
                                 </td>
                               </tr>
                          <% }) %>
