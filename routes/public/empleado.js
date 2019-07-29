@@ -6,7 +6,10 @@ const firebase = require('firebase/app');
 const multer = require('multer');
 const cloudinary = require('cloudinary');
 const cloudinaryStorage = require('multer-storage-cloudinary');
-const config = require('../../config')
+const config = require('../../config');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+let h;
 
 let app = express();
 
@@ -37,7 +40,6 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/registrar', (req, res, next) => {
-
         res.render('empleado/register', {
             action: 'Registrar',
             employee: {
@@ -50,7 +52,7 @@ app.get('/registrar', (req, res, next) => {
     );
 });
 
-app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
+app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next) => {
 
     const file = req.file;
 
@@ -62,6 +64,31 @@ app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
     let contrasena           = req.sanitize('contrasena').escape().trim();
     let contrasenaconfirmada = req.sanitize('contrasenaconfirmada').escape().trim();
 
+
+    try {
+        
+        h = await bcrypt.hash(contrasena, saltRounds);
+    } catch (error) {
+        console.log(error)
+    }
+    try {
+
+    // bcrypt.compare(contrasena,hashTest, function(err,res) {
+    //     if (res===true){
+    //         console.log("Contrasena exitosamente confirmada")
+    //     }else {
+    //         console.log("Esta vaina ta pasando trabajo", err)
+    //     }
+    // })
+
+        const res = await bcrypt.compare(contrasena,h);
+        console.log(contrasena);
+        console.log(h);
+        console.log(res);
+    } catch(error) {
+        console.log(error);
+    }
+
     let errors = req.validationErrors();
 
     if( !errors ) {
@@ -71,7 +98,8 @@ app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
             nombre:               req.sanitize('nombre').escape(),
             correo:               req.sanitize('correo').escape().trim(),
             rol:                  req.sanitize('rol').escape().trim(),
-            eliminado:            0
+            eliminado:            0,
+            contrasena:           req.sanitize('contrasena').escape().trim(),
         };
 
         if(file === undefined || contrasena !== contrasenaconfirmada) {
@@ -91,16 +119,7 @@ app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
             employee.avatar = file.url;
         
             axios.post(`${url}/api/empleado/registrar`, {data: employee})
-            .then( () => {
-                console.log('Registered employee in database before creating Firebase account');
-                firebase.auth().createUserWithEmailAndPassword(employee.correo, contrasena)
-                .then( () => console.log('Firebase account created'))
-                .catch((error) => {
-                    req.flash('error', error.message);
-                    res.redirect('/empleado/registrar');
-                    console.log(error);
-                });
-      
+            .then( () => {      
                 req.flash('success', 'Empleado registrado satisfactoriamente')
             }).catch(err => {
                 console.log('error in axios');

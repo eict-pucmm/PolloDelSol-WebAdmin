@@ -1,6 +1,8 @@
 const express = require('express');
 const axios = require('axios');
 const url = require('../../config').server.url;
+const bcrypt = require('bcrypt');
+let h;
 let app = express();
 
 app.get('/buscar', (req, res, next) => {
@@ -29,19 +31,54 @@ app.get('/buscar', (req, res, next) => {
     })
 });
 
-app.post('/registrar', (req,res) => {
+app.post('/registrar', async (req,res) => {
 
-    const employee = req.body.data;
+    const employee1 = req.body.data;
+    const employee = {
+        id_empleado: employee1.id_empleado,
+        nombre:      employee1.nombre,
+        correo:      employee1.correo,
+        rol:         employee1.rol,
+        eliminado:   employee1.eliminado,
+        avatar:      employee1.avatar,
+    }
+
 
     if(!employee){
         res.status(400).send({error: true, message: 'Please provide an employee'});
     } else {
+        console.log("Employee data: ",employee)
         req.getConnection((error, conn) => {
             if( !error ) {
-                conn.query(`INSERT INTO empleado SET ?`, employee, (err, results) => {
+                conn.query(`INSERT INTO empleado SET ?`, employee, async (err, results) => {
+                    console.log("Inside Query 1")
+                    let id = results.insertId
                     if (!err) {
-                        res.status(200).send({error: false, result: results, message: 'Employee registered sucessfully'});
+                                try {
+                                    console.log("Lets hash")
+                                    h = await bcrypt.hash(employee1.contrasena, 10);
+                                } catch (error) {
+                                    console.log(error)
+                                }
+                                let credencial = {
+                                    id_credencial: '',
+                                    id_empleado: id,
+                                    hash_password: h,
+                                    fecha: new Date().toISOString().slice(0, 19).replace('T', ' ')
+                                }
+                                console.log("Some nice credentials",credencial)
+                                conn.query(`INSERT INTO credencial SET ?`, credencial, (er) => {
+                                    console.log("last query is in")
+                                    if(!er){
+                                        res.status(200).send({error: false, result: results, message: 'Employee registered sucessfully'});
+                                    }else {
+                                        conn.query(`DELETE FROM empleado WHERE id_empleado = ?`, credencial.id_empleado);
+                                        console.log(er)
+                                    }
+                                })
+                        
                     } else {
+                        console.log("Error in query 1", err)
                         res.status(500).send({error: true, message: err});
                     }
                 })

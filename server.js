@@ -32,7 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(expressFlash());
 app.use(cookieParser('molena'));
-app.use(bcrypt);
+// app.use(bcrypt);
 app.use(expressSession({ 
     secret: 'molena',
     resave: false,
