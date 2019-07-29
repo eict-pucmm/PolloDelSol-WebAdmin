@@ -35,7 +35,21 @@
                            <% data.plato.forEach(function (plato) { %>
                                 <tr>
                                   <td>
-                                    <%= plato.dia %>
+                                    <% if (plato.dia==1) { %>
+                                      Lunes
+                                    <% } else if (plato.dia==2) { %>
+                                      Martes
+                                    <% } else if (plato.dia==3) { %>
+                                      Miercoles
+                                    <% } else if (plato.dia==4) { %>
+                                      Jueves
+                                    <% } else if (plato.dia==5) { %>
+                                      Viernes
+                                    <% } else if (plato.dia==6) { %>
+                                      Sabado
+                                    <% } else if (plato.dia==7) { %>
+                                      Domingo
+                                    <% } %>
                                   </td>
                                   <td> 
                                       <select class="form-control col-sm-10" id="arroz<%= plato.dia %>" name="arroz<%= plato.dia %>">
@@ -77,6 +91,7 @@
                       <span class="separator" ></span>
                     </div>
                     <span class="separator" ></span>
+                    <input type="checkbox" class="form-check-input" <% if (data.menu.activo) { %> checked <% } %>/> Menú activo
                     <button type="submit" class="btn btn-primary mr-2" style="float: right;">Guardar cambios</button>
                   </div>
                 </form>
