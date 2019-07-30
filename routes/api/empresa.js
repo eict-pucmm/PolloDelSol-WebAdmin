@@ -1,13 +1,18 @@
 const express = require('express');
 let app = express();
 
-app.get('/', function (req, res, next) {
+app.get('/', (req, res, next) => {
 
-    let sql_query = `SELECT empresa.id_empresa, cliente.nombre, empresa.rnc, cierre.tipo_de_cierre, DATE_FORMAT(cierre.dia_ajustado, "%d-%m-%Y") as dia_de_cierre, empresa.registrada 
-    FROM empresa, cliente, cierre, empresacierre 
-    WHERE empresacierre.id_cierre = cierre.id_cierre AND empresacierre.id_empresa = empresa.id_empresa AND empresa.id_cliente = cliente.id_cliente`;
+    let sql_query = `SELECT cliente.id_cliente, cliente.nombre, cliente.correo_electronico, cliente.telefono, empresa.id_empresa, empresa.rnc, empresa.aprobada, empresa.eliminado, cierre.dia_ajustado AS dia_de_cierre, cierre.tipo_de_cierre, COUNT(empresausuario.id_empresa) AS cant_empleados
+        FROM cliente, empresa, cierre, empresacierre, empresausuario
+        WHERE cliente.id_cliente = empresa.id_cliente
+            AND empresacierre.id_empresa = empresa.id_empresa
+            AND empresacierre.id_cierre = cierre.id_cierre
+            AND empresausuario.id_empresa = empresa.id_empresa`;
     
     sql_query += req.query.id_empresa ? ` AND empresa.id_empresa = '${req.query.id_empresa}'` : ``;
+
+    sql_query += ` GROUP BY cliente.nombre`;
 
     req.getConnection((error, conn) => {
         conn.query(sql_query, function (err, rows, fields) {
@@ -23,34 +28,32 @@ app.get('/', function (req, res, next) {
  
 app.post('/edit/(:id_empresa)', (req, res) => {
     const id_empresa = req.params.id_empresa;
-    const enterprise = req.body.data;
-    console.log(enterprise);
-    var habilitar;
-    if (enterprise.registrada == "on") {
-        habilitar=1;
-    }else{
-        habilitar=0;
+    const empresa = req.body.empresa;
+    const cierre = req.body.cierre;
+    let sql_query, sql_query2 = '';
+    
+    if (req.body.actualizar_cierre) {
+        sql_query = `UPDATE cierre SET ? WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${id_empresa}');`;
+    } else {
+        sql_query = `INSERT INTO cierre SET ?`;
+        sql_query2 = `INSERT INTO empresacierre VALUES (SELECT id_cierre FROM cierre WHERE tipo_de_cierre = ${cierre.tipo_de_cierre} AND dia_de_cierre = ${cierre.dia_de_cierre}, '${id_empresa}')`;
     }
-    let sql_query = `UPDATE empresa SET registrada = ${habilitar} WHERE id_empresa = '${enterprise.id_empresa}';` 
-    let sql_query0 = `UPDATE cierre SET tipo_de_cierre = ${enterprise.tipo_de_cierre}, dia_de_cierre = STR_TO_DATE('${enterprise.dia_de_corte}','%d-%m-%Y') WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${enterprise.id_empresa}');`;
-    console.log(sql_query);
-    console.log(sql_query0);    
-    if (!enterprise || !id_empresa) {
+ 
+    if (!empresa || !id_empresa) {
         res.status(400).send({error: true, message: 'Please provide an enterprise and enterprise id'});
     } else {
         req.getConnection((error, conn) => {
             if (!error) {
-                conn.query(sql_query, (err, results) => {
-                    if (!err) {
-                        conn.query(sql_query0,(errorx,ress) => {
-                            if(!errorx){
-                                res.status(200).send({error: false, result: results, message: 'empresa modificada exitosamente'});
-                            }else{
-                                res.status(501).send({error: true, message: err});
+                conn.query(`UPDATE empresa SET ? WHERE id_empresa = ?`, [empresa, id_empresa], (err1, res1) => {
+                    if (!err1) {
+                        conn.query(sql_query, cierre, (err2, res2) => {
+                            if(!err2){
+                                if (sql_query2 != '') {
+                                    conn.query(sql_query2, (err2, res2) => {});
+                                }
+                                res.status(200).send({error: false, message: 'Empresa modificada exitosamente'});
                             }
                         });
-                    } else {
-                        res.status(501).send({error: true, message: err});
                     }
                 });
             } else {
@@ -59,4 +62,5 @@ app.post('/edit/(:id_empresa)', (req, res) => {
         });
     }
 });
+
 module.exports = app;

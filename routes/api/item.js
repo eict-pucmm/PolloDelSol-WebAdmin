@@ -163,7 +163,6 @@ app.post('/edit/(:id_item)', (req, res) => {
     
     const id_item = req.params.id_item;
     const item = req.body.data;
-    console.log(req.body.data);
 
     if (!item || !id_item) {
         res.status(400).send({error: true, message: 'Please provide an item and item id'});

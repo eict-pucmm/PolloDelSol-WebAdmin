@@ -15,39 +15,32 @@
               <div class="card">
                 <div class="card-body">
                   <h4 class="card-title">Empresas</h4>
-                  <form action="/empresa?nombre-empresa=" method="GET">
-                    <div class="row">
-                          <div class="col-md-6">
-                              <div class="form-group">
-                                  <label for="nombre-empresa">Buscar por nombre</label>
-                                  <input type="text" class="form-control" id="nombre-empresa" name="Nombre"/>
-                              </div>
-                          </div>
-                          <div class="col-md-6">
-                              <div class="form-group">
-                                  <label for="rnc-empresa">Buscar por RNC</label>
-                                  <input type="text" class="form-control" id="rnc-empresa" name="RNC"/>
-                              </div>
-                          </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <button type="button" class="btn btn-secondary" >Buscar</button>
+                  <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="filtro-rnc">Flitrar por RNC</label>
+                            <input type="text" class="form-control" id="filtro-rnc" onkeyup="filter()"/>
                         </div>
                     </div>
-                    </form>
-                  </form>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="filtro-nombre">Flitrar por nombre</label>
+                            <input type="text" class="form-control" id="filtro-nombre" onkeyup="filter()"/>
+                        </div>
+                    </div>
+                  </div>
                   <% if (data == '') { %>
                     <p id="result-message" style="color :red">No hay empresas con ese nombre</p>
                   <% } %>
                   <div class="table-responsive pt-3">
-                    <table class="table table-bordered">
+                    <table id="empresa-table" class="table table-bordered">
                       <thead>
                         <tr>
-                          <th>Nombre</th>
                           <th>RNC</th>
-                          <th>Periodo de cierre</th>
-                          <th>Próximo día de cierre</th>
+                          <th>Nombre</th>
+                          <th>Teléfono</th>
+                          <th>Correo electrónico</th> 
+                          <th>Cant. de empleados asociados</th>
                           <th>Aprobada</th>
                         </tr>
                       </thead>
@@ -55,14 +48,15 @@
                        <% if (data !== '') { %>
                          <% data.forEach(function (enterprise) { %>
                               <tr>
-                                <td><%- enterprise.nombre %></td>
                                 <td><%- enterprise.rnc %></td>
-                                <td><%- enterprise.tipo_de_cierre %></td>
-                                <td><%= enterprise.dia_de_cierre %></td>
+                                <td><%- enterprise.nombre %></td>
+                                <td><%- enterprise.telefono %></td>
+                                <td><%- enterprise.correo_electronico%></td>
+                                <td><%= enterprise.cant_empleados%></td>
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" disabled <% if (enterprise.registrada) { %> checked <% } %>/>
+                                      <input type="checkbox" class="form-check-input" disabled <% if (enterprise.aprobada) { %> checked <% } %>/>
                                     </label>
                                   </div>
                                 </td>
@@ -93,7 +87,7 @@
   <script src="/scripts/off-canvas.js"></script>
   <script src="/scripts/hoverable-collapse.js"></script>
   <script src="/scripts/template.js"></script>
-  <script src="/scripts/todolist.js"></script>
+  <script src="/scripts/list_empresa.js"></script>
 </body>
 
 </html>

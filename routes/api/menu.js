@@ -3,10 +3,10 @@ let app = express();
 
 app.get('/', (req, res) => {
 
-    let sql_query = `SELECT * FROM menu`;
+    let sql_query = `SELECT * FROM menu WHERE plato_del_dia = 0`;
 
-    sql_query += req.query.id_menu ? ` WHERE id_menu = ${req.query.id_menu};` : ``;
-    sql_query += req.query.activo ? ` WHERE activo = ${req.query.activo};` : ``;
+    sql_query += req.query.id_menu ? ` AND id_menu = ${req.query.id_menu};` : ``;
+    sql_query += req.query.activo ? ` AND activo = ${req.query.activo};` : ``;
 
     req.getConnection((error, conn) => {
         if (!error) {

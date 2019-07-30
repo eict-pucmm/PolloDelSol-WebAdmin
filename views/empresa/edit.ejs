@@ -11,6 +11,8 @@
       <div class="main-panel">
         <div class="content-wrapper">
         <form class="forms-sample" method="POST" action="/empresa/edit/<%= empresa.id_empresa %>">
+        <input name="tipo-cierre-old" type="text" style="display: none;" value="<%= empresa.tipo_de_cierre %>"/>
+        <input name="dia-cierre-old" type="text" style="display: none;" value="<%= empresa.dia_de_cierre %>"/>
           <div class="row">
             <div class="col-lg-12 grid-margin stretch-card mx-auto">
               <div class="card">
@@ -27,7 +29,7 @@
                         <div class="form-group">
                           <label for="nombre">Nombre</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="nombre" disabled class="form-control" id="nombre" placeholder="Nombre" value="<%= empresa.nombre %>"/>
+                            <input type="text" name="nombre" disabled class="form-control" id="nombre" placeholder="Nombre" value="<%- empresa.nombre %>"/>
                           </div>
                         </div>
                       </div>
@@ -35,7 +37,15 @@
                         <div class="form-group">
                           <label for="rnc">RNC</label>
                           <div class="col-sm-12 row">
-                            <input type="text" name="rnc" disabled class="form-control" id="RNC" placeholder="RNC" value="<%= empresa.RNC %>"/>
+                            <input type="text" name="rnc" disabled class="form-control" id="RNC" placeholder="RNC" value="<%- empresa.rnc %>"/>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="correo">Correo electrónico</label>
+                          <div class="col-sm-12 row">
+                            <input type="text" name="correo" disabled class="form-control" id="correo" placeholder="correo" value="<%- empresa.correo_electronico %>"/>
                           </div>
                         </div>
                       </div>
@@ -43,8 +53,16 @@
                     <div class="row">
                       <div class="col-md-4">
                         <div class="form-group">
-                          <label for="tipo-de-corte">Tipo de cierre</label>
-                          <select class="form-control col-sm-11" id="tipo-de-corte" name="tipo-de-corte">
+                          <label for="telefono">Teléfono</label>
+                          <div class="col-sm-12 row">
+                            <input type="text" name="telefono" disabled class="form-control" id="telefono" placeholder="telefono" value="<%- empresa.telefono %>"/>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                          <label for="tipo-de-cierre">Tipo de cierre</label>
+                          <select class="form-control col-sm-11" id="tipo-de-cierre" name="tipo-de-cierre" onchange="updateCierre()">
                             <option value="Semanal" <% if (empresa.tipo_de_cierre == 'Semanal') { %>selected<% } %> >Semanal</option>
                             <option value="Quincenal" <% if (empresa.tipo_de_cierre == 'Quincenal') { %>selected<% } %> >Quincenal</option>
                             <option value="Mensual" <% if (empresa.tipo_de_cierre == 'Mensual') { %>selected<% } %> >Mensual</option>
@@ -53,9 +71,16 @@
                       </div>
                       <div class="col-md-4">
                         <div class="form-group">
-                          <label>Dia de corte</label>
+                          <label>Día de cierre</label>
                           <div class="input-group col-sm-12 row">
-                            <input type="text" id="datepicker" name="dia_de_corte" class="form-control datepicker" value="<%- empresa.dia_de_corte%>">
+                            <input type="text" id="datepicker" name="dia-de-cierre" class="form-control datepicker" value="<%- empresa.dia_de_cierre%>"/>
+                            <select class="form-control col-sm-12" id="dia-de-cierre-cbx" name="dia-de-cierre-week">
+                              <option value="Lunes" <% if (empresa.dia_de_cierre == 'Lunes') { %>selected<% } %> >Lunes</option>
+                              <option value="Martes" <% if (empresa.dia_de_cierre == 'Martes') { %>selected<% } %> >Martes</option>
+                              <option value="Miercoles" <% if (empresa.dia_de_cierre == 'Miercoles') { %>selected<% } %> >Miércoles</option>
+                              <option value="Jueves" <% if (empresa.dia_de_cierre == 'Jueves') { %>selected<% } %> >Jueves</option>
+                              <option value="Viernes" <% if (empresa.dia_de_cierre == 'Viernes') { %>selected<% } %> >Viernes</option>
+                            </select>
                           </div>
                         </div>
                       </div>
@@ -64,13 +89,13 @@
                       <div class="col-md-12">
                         <div class="input-group align-items-center">
                           <div class="form-check">
-                            <%if (empresa.registrada) {%>
+                            <%if (empresa.aprobada) {%>
                             <label class="form-check-label" style="color: green">
-                              <input name="registrada" type="checkbox" class="form-check-input" checked>
+                              <input name="aprobada" type="checkbox" class="form-check-input" checked>
                               La empresa está aprobada. Presione para desaprobar.
                               <%} else {%>
                             <label class="form-check-label" style="color: red">
-                              <input name="registrada" type="checkbox" class="form-check-input">
+                              <input name="aprobada" type="checkbox" class="form-check-input">
                               La empresa está desaprobada. Presione para aprobar.
                               <%}%>
                             <i class="input-helper"></i></label>
