@@ -60,7 +60,7 @@ app.get('/edit/(:id_empresa)', (req, res, next) => {
 
 app.post('/edit/(:id_empresa)', (req, res, next) => {
 
-    let data = {};
+    let data = { cierre: {}};
 
     data.cierre.tipo_de_cierre = req.sanitize('tipo-de-cierre').escape().trim();
 

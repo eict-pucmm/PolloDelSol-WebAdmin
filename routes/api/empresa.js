@@ -15,13 +15,17 @@ app.get('/', (req, res, next) => {
     sql_query += ` GROUP BY cliente.nombre`;
 
     req.getConnection((error, conn) => {
-        conn.query(sql_query, function (err, rows, fields) {
-            if (!err) {
-                res.status(200).send({error: false, empresa: rows});
-            } else {
-                res.status(500).send({error: true, message: err});
-            }
-        });
+        if (!error) {
+            conn.query(sql_query, function (err, rows, fields) {
+                if (!err) {
+                    res.status(200).send({error: false, empresa: rows});
+                } else {
+                    res.status(500).send({error: true, message: err});
+                }
+            });
+        } else {
+            res.status(500).send({error: true, message: error});
+        }
     })
 });
 
