@@ -1,11 +1,45 @@
 const express = require('express');
-let app = express();
+const axios =   require('axios');
+const url =     require('../../config').server.url;
+
+let app =       express();
 
 app.get('/', function (req, res, next) {
-        res.render('login/login')
+        console.log('login');
+        res.render('login/login', {
+                emailuser: '',
+                contrasena: ''
+        })
 });
 
 app.post('/', function(req,res,next){
+        console.log("login inside")
+
+        req.assert('emailuser','El usuario no puede estar vacío').notEmpty();
+        req.assert('contrasena','La contraseña no puede estar vacía').notEmpty();
+
+        let errors = req.validationErrors();
+        console.log(errors);
+        if(!errors) {
+                const user = {
+                        emailuser: req.sanitize('emailuser').escape().trim(),
+                        contrasena: req.sanitize('contrasena').escape().trim(),
+                }
+                console.log(user);
+
+                axios.post(`${url}/api/empleado/login/${user.emailuser}/${user.contrasena}`, {data: user})
+                .then( () => {
+                        //render Index
+                })
+                .catch( err => {
+                        console.log('Error in login axios')
+                        res.redirect('/login/')
+                });
+
+        }else {
+                req.flash('error', errors[0].msg);
+                res.redirect('/login/')
+        }
 
 });
 

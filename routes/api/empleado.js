@@ -12,6 +12,9 @@ app.get('/buscar', (req, res, next) => {
     if (req.query.id_empleado) {
         sql_query += ` WHERE empleado.id_empleado = ${req.query.id_empleado}`;
     }
+    if (req.query.correo) {
+        sql_query += ` WHERE empleado.correo = "${req.query.correo}"`;
+    }
     req.getConnection((error,conn) => {
         if(!error) {
             conn.query(sql_query, (err, rows, fields) => {
@@ -31,6 +34,32 @@ app.get('/buscar', (req, res, next) => {
     })
 });
 
+app.get('/buscarContrasena', (req,res,next) => {
+    let sql_query = `SELECT * FROM credencial`;
+
+    if(req.query.id_empleado) {
+        sql_query += ` WHERE credencial.id_empleado = ${req.query.id_empleado}`
+    }
+
+    req.getConnection((error,conn) => {
+        if(!error) {
+            conn.query(sql_query, (err, rows, fields) => {
+                if(!err){
+                    if(rows.length > 0) {
+                        res.status(200).send({error: false, credencial: rows});
+                    } else {
+                        res.status(204).send({error: false, message: 'Server request successful but data was not found'})
+                    }
+                }else {
+                    res.status(500).send({error: true, message: err});
+                }
+            })
+        } else {
+            res.status(500).send({error: true, message: err});
+        }
+    });
+});
+
 app.post('/registrar', async (req,res) => {
 
     const employee1 = req.body.data;
@@ -42,7 +71,7 @@ app.post('/registrar', async (req,res) => {
         eliminado:   employee1.eliminado,
         avatar:      employee1.avatar,
     }
-
+    console.log(employee1)
 
     if(!employee){
         res.status(400).send({error: true, message: 'Please provide an employee'});
@@ -60,6 +89,7 @@ app.post('/registrar', async (req,res) => {
                                 } catch (error) {
                                     console.log(error)
                                 }
+                                console.log(h);
                                 let credencial = {
                                     id_credencial: '',
                                     id_empleado: id,
@@ -146,6 +176,31 @@ app.post('/eliminar/(:id_empleado)', (req, res, next) => {
                 res.status(500).send({error: true, message: error});
             }
         })
+    })
+});
+
+app.post('/login/(:emailuser)/(:contrasena)', async (req,res,next) => {
+    
+    let employee;
+
+    await axios.get(`${url}/api/empleado/buscar?correo=${req.params.emailuser}`)
+    .then(result => {
+        employee = result.data.employee[0];
+        console.log(employee.correo, employee.id_empleado);
+    })
+    .catch(err => {console.log(err)});
+
+    await axios.get(`${url}/api/empleado/buscarContrasena?id_empleado=${employee.id_empleado}`)
+    .then(result => {
+        credencial = result.data.credencial[0];
+        console.log(credencial.id_credencial , credencial.id_empleado);
+    })
+
+    let hashedPass = new Buffer.from(credencial.hash_password).toString('UTF-8');
+    
+    await bcrypt.compare(req.params.contrasena, hashedPass)
+    .then(res => {
+        console.log("res result",res)
     })
 });
 

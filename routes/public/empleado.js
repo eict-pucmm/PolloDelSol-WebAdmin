@@ -64,31 +64,6 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
     let contrasena           = req.sanitize('contrasena').escape().trim();
     let contrasenaconfirmada = req.sanitize('contrasenaconfirmada').escape().trim();
 
-
-    try {
-        
-        h = await bcrypt.hash(contrasena, saltRounds);
-    } catch (error) {
-        console.log(error)
-    }
-    try {
-
-    // bcrypt.compare(contrasena,hashTest, function(err,res) {
-    //     if (res===true){
-    //         console.log("Contrasena exitosamente confirmada")
-    //     }else {
-    //         console.log("Esta vaina ta pasando trabajo", err)
-    //     }
-    // })
-
-        const res = await bcrypt.compare(contrasena,h);
-        console.log(contrasena);
-        console.log(h);
-        console.log(res);
-    } catch(error) {
-        console.log(error);
-    }
-
     let errors = req.validationErrors();
 
     if( !errors ) {

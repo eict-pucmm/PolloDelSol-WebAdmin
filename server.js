@@ -9,7 +9,6 @@ const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session');
 const config            = require('./config');              //config values for server and database
 const cors              = require('cors');
-const bcrypt            = require('bcrypt');
 
 
 //visual routes
