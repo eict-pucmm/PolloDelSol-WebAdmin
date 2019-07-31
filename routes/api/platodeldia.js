@@ -18,6 +18,7 @@ app.get('/', (req, res, next) => {
 
 app.get('/edit/(:id_menu)', function (req, res, next) {
     const menu = req.params.id_menu;
+    let menu_query          = `SELECT activo FROM menu WHERE id_menu = ${menu}`
     let plato_query         = `SELECT PlatoDelDia.id_plato_del_dia, PlatoDelDia.dia, PlatoDelDia.id_arroz, PlatoDelDia.id_carne, PlatoDelDia.id_guarnicion, PlatoDelDia.id_ensalada FROM PlatoDelDia, menu_PlatoDelDia WHERE menu_platodeldia.id_menu = '${menu}' AND PlatoDelDia.id_plato_del_dia = menu_platodeldia.id_plato_del_dia`;
     let arroz_query         = `SELECT id_item, nombre FROM item where id_categoria = 142 AND id_subcategoria = 152`;
     let guarnicion_query    = `SELECT id_item, nombre FROM item where id_categoria = 62 AND id_subcategoria = 112`;
@@ -34,7 +35,9 @@ app.get('/edit/(:id_menu)', function (req, res, next) {
                                     if (!err3) {
                                         conn.query(ensalada_query, function (err4, ensaladaRows, fields) {
                                             if (!err4) {
-                                                res.status(200).send({error: false, plato: platoRows, arroz: arrozRows, guarnicion: guarnicionRows, carne: carneRows, ensalada: ensaladaRows, menu: menu});
+                                                conn.query(menu_query, function(err5, menuRows, fields){
+                                                    res.status(200).send({error: false, plato: platoRows, arroz: arrozRows, guarnicion: guarnicionRows, carne: carneRows, ensalada: ensaladaRows, menu: menu, menu_activo: menuRows});
+                                                });
                                             } else {
                                                 res.status(500).send({error: true, message: err4});
                                             }
@@ -69,6 +72,7 @@ app.post('/edit/(:id_menu)', function (req, res, next) {
     } else {
         req.getConnection((error, conn) => {
             if (!error) {
+                conn.query(`UPDATE menu SET activo = ${platos.activo} WHERE id_menu = ${id_menu}`)
                 platos.plato.forEach(plate => {
                     conn.query(`UPDATE platodeldia SET dia = ${plate.dia}, id_arroz = '${plate.id_arroz}', id_carne = '${plate.id_carne}', id_guarnicion = '${plate.id_guarnicion}', id_ensalada = '${plate.id_ensalada}' WHERE id_plato_del_dia = '${plate.id_plato_del_dia}'`, (err, results) => {
                         resultados = results;

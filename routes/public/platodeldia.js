@@ -28,6 +28,12 @@ app.get('/edit/(:id_menu)', function (req, res, next) {
 
 app.post('/edit/(:id_menu)', (req, res, next) => {
     const id_menu = req.params.id_menu;
+    console.log(req.body.menu_activo);
+    var menu_activo=0;
+    if (req.body.menu_activo=="on"){
+        menu_activo=1
+    }
+    console.log(menu_activo);
     arroz1 = req.sanitize('arroz1').escape().trim();
     arroz2 = req.sanitize('arroz2').escape().trim();
     arroz3 = req.sanitize('arroz3').escape().trim();
@@ -62,6 +68,7 @@ app.post('/edit/(:id_menu)', (req, res, next) => {
     }).then(data => {
             //console.log(datos);
             let datosUpdate = {
+                activo: menu_activo,
                 plato:  [
                     {
                         id_plato_del_dia: data.plato[0].id_plato_del_dia,

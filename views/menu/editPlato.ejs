@@ -91,7 +91,9 @@
                       <span class="separator" ></span>
                     </div>
                     <span class="separator" ></span>
-                    <input type="checkbox" class="form-check-input" <% if (data.menu.activo) { %> checked <% } %>/> Menú activo
+                    <label>
+                        <input type="checkbox" class="form-check-input" id="menu_activo" name="menu_activo" <% if (data.menu_activo) { %> checked <% } %>/> Menú activo
+                    </label>
                     <button type="submit" class="btn btn-primary mr-2" style="float: right;">Guardar cambios</button>
                   </div>
                 </form>
