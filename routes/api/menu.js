@@ -56,7 +56,7 @@ app.get('/items/(:id_menu)', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-    let sql_query = `INSERT INTO menu (nombre) VALUES ('${req.body.name}');`;
+    let sql_query = `INSERT INTO menu (nombre, plato_del_dia) VALUES ('${req.body.name}', ${req.body.plato_del_dia});`;
 
     req.getConnection((error, conn) => {
         if (!error) {
@@ -66,7 +66,7 @@ app.post('/register', (req, res) => {
                 } else {
                     res.status(500).send({error: true, message: err});
                 }
-            })
+            });
         } else {
             res.status(500).send({error: true, message: error});
         }
