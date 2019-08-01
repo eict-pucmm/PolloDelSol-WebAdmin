@@ -4,10 +4,14 @@ const url = require('../../config').server.url;
 let app = express();
 
 app.get('/', (req, res, next) => {
+
+    let sql_query = `SELECT * FROM menu WHERE plato_del_dia = 1`;
+
+    sql_query += req.query.id_menu ? ` AND id_menu = ${req.query.id_menu}` : ``;
     
     req.getConnection((error, conn) => {
         if (!error) {
-            conn.query(`SELECT id_menu, nombre, activo, fecha_creacion FROM menu WHERE plato_del_dia = 1`, (err, rows, fields) => {
+            conn.query(sql_query, (err, rows, fields) => {
                 if(!err) {
                     res.status(200).send({error: false, menu: rows});
                 }
@@ -22,13 +26,13 @@ app.get('/edit/(:id_menu)', (req, res, next) => {
 
     axios.get(`${url}/api/item/get?categoria=Plato del Dia`)
     .then(items => {
-        axios.get(`${url}/api/menu?id_menu=${req.params.id_menu}`)
+        axios.get(`${url}/api/platodeldia?id_menu=${req.params.id_menu}`)
         .then(menu => {
             req.getConnection((error, conn) => {
                 if (!error) {
                     conn.query(`SELECT * FROM platodeldia WHERE id_menu = ?`, req.params.id_menu, (err, rows, fields) => {
                         if (!err) {
-                            res.status(200).send({error: false, items: items.data.items, menu: menu.data.menus[0], plato: rows});
+                            res.status(200).send({error: false, items: items.data.items, menu: menu.data.menu[0], plato: rows});
                         }
                     });
                 } else {
