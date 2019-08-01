@@ -29,4 +29,6 @@ const values = {
      }
 }
 
-module.exports = values;
+let loggedIn = false;
+
+module.exports = {values: values, loggedIn: loggedIn};

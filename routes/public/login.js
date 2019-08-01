@@ -1,6 +1,6 @@
 const express = require('express');
 const axios =   require('axios');
-const url =     require('../../config').server.url;
+const url =     require('../../config').values.server.url;
 
 let app =       express();
 
@@ -19,7 +19,6 @@ app.post('/', function(req,res,next){
         req.assert('contrasena','La contraseña no puede estar vacía').notEmpty();
 
         let errors = req.validationErrors();
-        console.log(errors);
         if(!errors) {
                 const user = {
                         emailuser: req.sanitize('emailuser').escape().trim(),
@@ -30,6 +29,7 @@ app.post('/', function(req,res,next){
                 axios.post(`${url}/api/empleado/login/${user.emailuser}/${user.contrasena}`, {data: user})
                 .then( () => {
                         //render Index
+                        res.redirect('/');
                 })
                 .catch( err => {
                         console.log('Error in login axios')

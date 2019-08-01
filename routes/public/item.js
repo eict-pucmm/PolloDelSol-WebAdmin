@@ -21,7 +21,8 @@ const parser = multer({ storage: storage });
 
 app.get('/', (req, res, next) => {
 
-    axios.get(`${config.server.url}/api/item/get`)
+    if(config.loggedIn){
+        axios.get(`${config.server.url}/api/item/get`)
         .then(result => {
             return result.data.items;
         }).then(items => {
@@ -33,6 +34,11 @@ app.get('/', (req, res, next) => {
             })
             .catch(err => res.send(err))
         }).catch(err => res.send(err));
+    }else {
+        res.redirect('/login')
+    }
+
+    
 
 });
 
@@ -53,8 +59,8 @@ app.get('/register', (req, res, next) => {
             eliminado: 0
         }
     }
-
-    axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
+    if(config.loggedIn){
+        axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
         .then(result => {
             return result;
         }).then(guarniciones => {
@@ -78,6 +84,11 @@ app.get('/register', (req, res, next) => {
                     .catch(err => res.send(err))
                 }).catch(err => res.send(err))
         }).catch(err => res.send(err));
+    }else {
+        res.redirect('/login')
+    }
+
+    
 });
 
 app.post('/register', parser.single('image'), (req, res, next) => {
@@ -152,7 +163,8 @@ app.get('/edit/(:id_item)', (req, res, next) => {
 
     let item, combo = '', itemCombo = '';
 
-    axios.get(`${config.server.url}/api/item/get?id_item=${req.params.id_item}`)
+    if(config.loggedIn) {
+        axios.get(`${config.server.url}/api/item/get?id_item=${req.params.id_item}`)
         .then(result => {
             item = result.data.items[0];
             if (result.data.items[0].categoria == 'Combo') {
@@ -188,6 +200,11 @@ app.get('/edit/(:id_item)', (req, res, next) => {
                     .catch(err => res.send(err))
                 }).catch(err => res.send(err))
         }).catch(err => res.send(err));
+    }else {
+        res.redirect('/login')
+    }
+
+    
 });
 
 app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {

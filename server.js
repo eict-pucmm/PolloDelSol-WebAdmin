@@ -21,10 +21,12 @@ const loginRoute        = require('./routes/public/login');
 //api routes
 const indexApi          = require('./routes/api/index');
 
+// let loggedIn            = false;
+
 let app = express();
 
 app.set('view engine', 'ejs');
-app.use(myConnection(mysql, config.database, 'pool'));
+app.use(myConnection(mysql, config.values.database, 'pool'));
 app.use(cors());
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -55,6 +57,7 @@ app.use(methodOverride((req, res) => {
     }
   });*/
 //routes
+console.log("logged in :",config.loggedIn);
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
 app.use('/empleado', empleadoRoute);
@@ -63,6 +66,6 @@ app.use('/empresa', empresaRoute);
 app.use('/login', loginRoute);
 app.use('/api', indexApi);
 app.use(express.static(__dirname + '/views/public'));
-app.listen(process.env.PORT || config.server.port, function () {
-    console.log(`Server running at ${config.server.url}`);
+app.listen(process.env.PORT || config.values.server.port, function () {
+    console.log(`Server running at ${config.values.server.url}`);
 });

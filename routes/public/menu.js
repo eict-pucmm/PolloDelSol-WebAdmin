@@ -1,6 +1,7 @@
 const express = require('express');
 const axios   = require('axios');
-const url = require('../../config').server.url;
+const config = require('../../config')
+const url = require('../../config').values.server.url;
 
 let app = express();
 
@@ -9,12 +10,17 @@ const checkIfString = myString => {
 }
 
 app.get('/', (req, res) => {
-    axios.get(`${url}/api/menu`)
+    if(config.loggedI) {
+        axios.get(`${url}/api/menu`)
         .then(result => {
             res.render('menu/gestionar', {
                 menus: result.data.menus
             });
         }).catch(err => console.log(err));
+    }else {
+        res.redirect('/login')
+    }
+    
 });
 
 app.post('/register', (req, res) => {
@@ -40,7 +46,8 @@ app.post('/register', (req, res) => {
 
 app.get('/edit/(:id_menu)', (req, res) => {
 
-    axios.get(`${url}/api/item/get?categoria=Combo`)
+    if(config.loggedIn) {
+        axios.get(`${url}/api/item/get?categoria=Combo`)
         .then(combos => {
             axios.get(`${url}/api/menu?id_menu=${req.params.id_menu}`)
             .then(menu => {
@@ -54,6 +61,11 @@ app.get('/edit/(:id_menu)', (req, res) => {
                     }).catch(err => console.log(err));
             }).catch(err => console.log(err));
         }).catch(err => console.log(err));
+    }else {
+        res.redirect('/login')
+    }
+
+    
 
 });
 

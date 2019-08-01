@@ -1,7 +1,8 @@
-const express = require('express');
-const axios = require('axios');
-const url = require('../../config').server.url;
-const bcrypt = require('bcrypt');
+const express   = require('express');
+const axios     = require('axios');
+const config    = require('../../config');
+const bcrypt    = require('bcrypt');
+// let logIn       = require('../../config').loggedIn.loggedIn;
 let h;
 let app = express();
 
@@ -147,7 +148,7 @@ app.post('/eliminar/(:id_empleado)', (req, res, next) => {
 
     let employee;
 
-    axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
+    axios.get(`${config.values.server.url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
     .then(result => {
         employee = result.data.employee[0];
     })
@@ -183,14 +184,14 @@ app.post('/login/(:emailuser)/(:contrasena)', async (req,res,next) => {
     
     let employee;
 
-    await axios.get(`${url}/api/empleado/buscar?correo=${req.params.emailuser}`)
+    await axios.get(`${config.values.server.url}/api/empleado/buscar?correo=${req.params.emailuser}`)
     .then(result => {
         employee = result.data.employee[0];
         console.log(employee.correo, employee.id_empleado);
     })
     .catch(err => {console.log(err)});
 
-    await axios.get(`${url}/api/empleado/buscarContrasena?id_empleado=${employee.id_empleado}`)
+    await axios.get(`${config.values.server.url}/api/empleado/buscarContrasena?id_empleado=${employee.id_empleado}`)
     .then(result => {
         credencial = result.data.credencial[0];
         console.log(credencial.id_credencial , credencial.id_empleado);
@@ -199,8 +200,19 @@ app.post('/login/(:emailuser)/(:contrasena)', async (req,res,next) => {
     let hashedPass = new Buffer.from(credencial.hash_password).toString('UTF-8');
     
     await bcrypt.compare(req.params.contrasena, hashedPass)
-    .then(res => {
-        console.log("res result",res)
+    .then((result,error) => {
+        console.log("res result",result)
+        if(result) {
+            if(employee.rol === 'Administrador'){
+                config.loggedIn = true;
+                console.log(config.loggedIn);
+                res.status(200).send({error: false, result: result, message: `Usuario ${employee.nombre} ha iniciado sesion`});
+                
+            }
+        }else {
+            console.log(error)
+            res.status(500).send({error: true, message: error})
+        }
     })
 });
 

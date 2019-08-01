@@ -1,13 +1,19 @@
 const express = require('express');
 const axios = require('axios'); 
+const config = require('../../config');
 
 let app = express();
 
 app.get('/', function (req, res, next) {
-    axios.get('http://localhost:5000/api/empresa')
+    if(config.loggedIn){
+        axios.get('http://localhost:5000/api/empresa')
         .then(result => {
             res.render('empresa/list', {data: result.data.empresa})
         });
+    }else {
+        res.redirect('/login')
+    }
+    
 });
 
 app.get('/edit/(:id_empresa)', function(req, res, next){

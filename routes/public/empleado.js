@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const url = require('../../config').server.url;
+const url = require('../../config').values.server.url;
 const firebase = require('firebase/app');
                  require('firebase/auth');
 const multer = require('multer');
@@ -31,15 +31,23 @@ console.log('Initialized firebase on employee public api');
 
 app.get('/', (req, res, next) => {
 
-    axios.get(`${url}/api/empleado/buscar`).
-    then(result => {
-        res.render('empleado/list', {data: result.data.employee})
-    }).catch(error => {
-        res.send(error)
-    })
+    if(config.loggedIn){
+        axios.get(`${url}/api/empleado/buscar`).
+        then(result => {
+            res.render('empleado/list', {data: result.data.employee})
+        }).catch(error => {
+            res.send(error)
+        })
+    }else {
+        res.redirect('/login')
+    }
+
+    
 });
 
 app.get('/registrar', (req, res, next) => {
+    
+    if(config.loggedIn){
         res.render('empleado/register', {
             action: 'Registrar',
             employee: {
@@ -49,7 +57,10 @@ app.get('/registrar', (req, res, next) => {
                 rol: '',
             },
         }
-    );
+        );
+    }else {
+        res.redirect('/login')
+    }
 });
 
 app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next) => {
@@ -113,7 +124,8 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
 app.get('/modificar/(:id_empleado)', (req,res,next) =>{
 
 
-    axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
+    if(config.loggedIn){
+        axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
     .then(result => {
         let employee = {
             id_empleado: result.data.employee[0].id_empleado,
@@ -133,6 +145,10 @@ app.get('/modificar/(:id_empleado)', (req,res,next) =>{
     }).catch(err => {
         res.send(err); 
     });
+    }else {
+        res.redirect('/login')
+    }
+    
 
 
 });
