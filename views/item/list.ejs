@@ -58,7 +58,7 @@
                           <th>Precio (DOP$)</th>
                           <th>Categoria</th>
                           <th>Subcategoria</th>
-                          <th>Cancelado</th>
+                          <th>En operación</th>
                         </tr>
                       </thead>
                       <tbody id="item-list">
@@ -73,7 +73,7 @@
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" disabled <% if (item.eliminado) { %> checked <% } %>/>
+                                      <input type="checkbox" class="form-check-input" disabled <% if (!item.eliminado) { %> checked <% } %>/>
                                     </label>
                                   </div>
                                 </td>

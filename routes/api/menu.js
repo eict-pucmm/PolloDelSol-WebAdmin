@@ -3,9 +3,10 @@ let app = express();
 
 app.get('/', (req, res) => {
 
-    let sql_query = `SELECT * FROM menu`;
+    let sql_query = `SELECT * FROM menu WHERE plato_del_dia = 0`;
 
-    sql_query += req.query.id_menu ? ` WHERE id_menu = '${req.query.id_menu}';` : `;`;
+    sql_query += req.query.id_menu ? ` AND id_menu = ${req.query.id_menu};` : ``;
+    sql_query += req.query.activo ? ` AND activo = ${req.query.activo};` : ``;
 
     req.getConnection((error, conn) => {
         if (!error) {
@@ -26,15 +27,19 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/items/(:id_menu)', (req, res) => {
+app.get('/items', (req, res) => {
 
     let sql_query = `SELECT combo.id_item, combo.nombre, combo.descripcion, combo.categoria, combo.subcategoria, combo.precio, combo.puntos, combo.eliminado, combo.imagen  
         FROM (SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.puntos, item.eliminado, item.imagen 
                 FROM item, categoria AS categoria, categoria AS subcategoria 
                 WHERE item.id_categoria = categoria.id_categoria 
-                AND item.id_subcategoria = subcategoria.id_categoria) AS combo, menuitem
-        WHERE combo.id_item = menuitem.id_item
-        AND id_menu = ${req.params.id_menu};`;
+                AND item.id_subcategoria = subcategoria.id_categoria) AS combo, menuitem`
+    
+    sql_query += req.query.activo ? ', menu' : '';
+        
+    sql_query += ` WHERE combo.id_item = menuitem.id_item`;
+    
+    sql_query += req.query.activo ? ` AND menuitem.id_menu = menu.id_menu AND menu.activo = ${req.query.activo}` : ` AND menuitem.id_menu = ${req.query.id_menu}`;
 
     req.getConnection((error, conn) => {
         if (!error) {
@@ -99,25 +104,12 @@ app.post('/edit/(:id_menu)', (req, res) => {
                     })
                 });
             }
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });
-
-    res.status(200).send(`Operation successful`);
-});
-
-app.post('/delete/(:id_menu)/(:activo)', (req, res, next) => {
-
-    const resultMessage = req.params.activo ? `Se ha activado el item con Id = ${req.params.id_menu}` : `Se ha calcelado el item con Id = ${req.params.id_menu}`;
-
-    req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(`UPDATE menu SET activo = ? WHERE id_menu = ?`, [req.params.activo, req.params.id_menu], (err, result) => {
+            
+            conn.query(`UPDATE menu SET nombre = ?, activo = ? WHERE id_menu = ?;`, [req.body.nombre, req.body.activo, req.params.id_menu], (err, results) => {
                 if (!err) {
-                    res.status(200).send({error: false, result: result, message: resultMessage});
+                    res.status(200).send({error: false, message: 'El menú ha sido editado satisfactoriamente'});
                 } else {
-                    res.status(500).send({error: true, message: err});
+                    console.log(err);
                 }
             })
         } else {

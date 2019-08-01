@@ -16,6 +16,11 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <h4 class="card-title">Editar menú: <%-menu.nombre%></h4>
+                                        <% if (messages.error) { %>
+                                        <p id="result-message" style="color:red"><%- messages.error %></p>
+                                        <% } else if (messages.success) { %>
+                                        <p id="result-message" style="color:green"><%- messages.success %></p>
+                                        <% } %>
                                         <div class="row">
                                             <div class="col-md-5">
                                                 <div class="form-group">
@@ -28,13 +33,34 @@
                                             </div>
                                         </div>
                                         <div class="row">
+                                            <div class="col-md-12"><label></label></div>
+                                            <div class="col-md-2-5">
+                                                <div class="form-group">
+                                                    <label for="categoria-item">Categoria</label>
+                                                    <select onchange="updateSubcategorias()" class="form-control col-sm-10" id="categoria-cbx" name="categoria">
+                                                        <option value="" selected>Todas</option>
+                                                    <%categorias.forEach(cat => {%>
+                                                        <option value="<%=cat.id_categoria%>"><%=cat.nombre%></option>
+                                                    <%})%>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2-5">
+                                                <div class="form-group">
+                                                    <label for="subcategoria-item">Subcategoria</label>
+                                                    <select onchange="updateList()" class="form-control col-sm-10" id="subcategoria-cbx" name="subcategoria">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
                                             <div class="col-md-5">
                                                 <div class="form-group">
-                                                    <label>Lista de combos</label>
-                                                    <select class="form-control col-sm-12" name="combo-items" id="combo-list" size="10" multiple="multiple">
-                                                    <% if (combos) {%>
-                                                    <% combos.forEach(combo => {%>
-                                                        <option value="<%=combo.id_item%>"><%-combo.nombre%></option>
+                                                    <label></label>
+                                                    <select class="form-control col-sm-12" name="item-list" id="item-list" size="10" multiple="multiple">
+                                                    <% if (items) {%>
+                                                    <% items.forEach(item => {%>
+                                                        <option title="<%-item.categoria%> <%-item.subcategoria%>" value="<%=item.id_item%>"><%-item.nombre%></option>
                                                     <%});%>
                                                     <%}%>
                                                     </select>
@@ -56,10 +82,9 @@
                                                     </button>
                                                 </div>
                                             </div>
-    
                                             <div class="col-md-5">
                                                 <div class="form-group">
-                                                    <label>Menú</label>
+                                                    <label></label>
                                                     <select class="form-control col-sm-12" name="menu-items" id="menu-list" size="10" multiple="multiple">
                                                     <% if (menuItems) {%>
                                                     <% menuItems.forEach(item => {%>
@@ -73,23 +98,31 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="input-group align-items-center">
-                                                    <button id="save-menu" type="submit" class="btn btn-primary mr-2">Guardar</button>
-                                                    <input type="text" name="activo" value="<%=menu.activo%>" style="display: none;"/>
-                                                    <%if (menu.activo) { %>
-                                                    <button id="del-button" type="submit" class="btn btn-danger" formmethod="POST" formaction="/menu/delete/<%=menu.id_menu%>">Cancelar menú</button>
-                                                    <span class="separator-horizontal" ></span>
-                                                    <p id="result-message" style="color:green">El menú esta activado</p>
-                                                    <%} else {%>
-                                                    <button id="act-button" type="submit" class="btn btn-success" formmethod="POST" formaction="/menu/delete/<%=menu.id_menu%>">Activar menú</button>
-                                                    <span class="separator-horizontal" ></span>
-                                                    <p id="result-message" style="color:red">El menú esta cancelado</p>
-                                                    <%}%>
+                                                    <div class="form-check">
+                                                        <%if (menu.activo) {%>
+                                                        <label class="form-check-label" style="color: green">
+                                                        <input id="activo" name="activo" type="checkbox" class="form-check-input" checked>
+                                                        El menú está activo. Presione para desactivar.
+                                                        <%} else {%>
+                                                        <label class="form-check-label" style="color: red">
+                                                        <input id="activo" name="activo" type="checkbox" class="form-check-input">
+                                                        El menú está desactivado. Presione para activar.
+                                                        <%}%>
+                                                        <i class="input-helper"></i></label>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">
+                                <button id="save-menu" type="submit" class="btn btn-primary btn-lg btn-block mr-2">Guardar cambios</button>
+                            </div>
+                            <div class="col-md-4"></div>
                         </div>
                     </form>
                 </div>
@@ -102,6 +135,10 @@
             </div>
         </footer>
     </div>
+    <script>
+        const categorias = <%-JSON.stringify(categorias)%>;
+        const subcategorias = <%-JSON.stringify(subcategorias)%>;
+    </script>
     <script src="/vendors/base/vendor.bundle.base.js"></script>
     <script src="/scripts/off-canvas.js"></script>
     <script src="/scripts/hoverable-collapse.js"></script>

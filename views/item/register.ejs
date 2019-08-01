@@ -10,9 +10,9 @@
       <% include ../public/layouts/sidebar.ejs %>
       <div class="main-panel">
         <div class="content-wrapper">
-          <% if (action === 'Registrar') {%>
+          <% if (action === 'Registrar item') {%>
           <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
-          <% } else if (action === 'Modificar') { %>
+          <% } else if (action === 'Modificar item') { %>
           <form method="POST" action="/item/edit/<%-item.id_item%>" onkeydown="return event.key != 'Enter';">
           <% } %>
               <div class="row">
@@ -32,9 +32,8 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="input-group">
-                          <input id="image-text" name="image-text" type="text" class="form-control file-upload-info" disabled placeholder="Subir imagen">
-                          <label class="btn btn-primary mr-2">
-                            <input type="file" name="image" id="image" accept="image/png, image/jpeg" onchange="readURL(this)" style="display: none;">
+                          <label for="image" class="btn btn-primary btn-lg btn-block reg-employee">
+                            <input type="file" name="image" id="image" accept="image/png, image/jpeg" onchange="readURL(this)"  style="display: none;">
                             Buscar Imagen
                           </label>
                         </div>
@@ -131,23 +130,26 @@
                             </div>
                           </div>
                         </div>
+                        <%if (action === 'Modificar item') {%>
                         <div class="row">
                           <div class="col-md-12">
                             <div class="input-group align-items-center">
-                              <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-item"><%= action %></button>
-                              <% if (action === 'Modificar') { %>
-                              <%if (item.eliminado) { %>
-                              <button id="del-button" name="delete" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-danger">Cancelar item</button>
-                              <span class="separator-horizontal" ></span>
-                              <p id="result-message" name="eliminado" style="color:green">El item esta activado</p>
-                              <%} else {%>
-                              <button id="act-button" name="sucess" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-success">Activar item</button>
-                              <span class="separator-horizontal" ></span>
-                              <p id="result-message" name="eliminado" style="color:red">El item esta cancelado</p>
-                              <%}%>
+                              <div class="form-check">
+                                <%if (!item.eliminado) {%>
+                                <label class="form-check-label" style="color: green">
+                                  <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input" checked>
+                                  El item está en operación. Presione para cancelar.
+                                  <%} else {%>
+                                <label class="form-check-label" style="color: red">
+                                  <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input">
+                                  El item está cancelado. Presione para poner en operación.
+                                  <%}%>
+                                <i class="input-helper"></i></label>
+                              </div>
                             </div>
                           </div>
                         </div>
+                        <%}%>
                       </div>
                     </div>
                   </div>
@@ -221,7 +223,7 @@
                                 </li>
                                 <% }); %>
                                 <%} else {%>
-                                <p style="color:red">No hay guarniciones registradas</p>
+                                <p style="color:red">No hay guarniciones en operación</p>
                                 <%}%>
                             </ul>
                           </div>
@@ -254,7 +256,7 @@
                                 </li>
                                 <% }); %>
                                 <%} else {%>
-                                <p style="color:red">No hay bebidas registradas</p>
+                                <p style="color:red">No hay bebidas en operación</p>
                                 <%}%>
                             </ul>
                           </div>
@@ -264,6 +266,13 @@
                   </div>
                 </div>
               </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                <button id="reg-button" type="submit" class="btn btn-primary btn-lg btn-block mr-2 reg-item"><%- action %></button>
+              </div>
+              <div class="col-md-4"></div>
             </div>
           </form>
         </div>

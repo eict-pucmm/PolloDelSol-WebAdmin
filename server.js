@@ -12,6 +12,7 @@ const cors              = require('cors');
 //visual routes
 const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
+const empleadoRoute     = require('./routes/public/empleado');
 const empresaRoute      = require('./routes/public/empresa');
 const platoRoute      = require('./routes/public/platodeldia');
 const menuRoute         = require('./routes/public/menu');
@@ -44,6 +45,7 @@ app.use(methodOverride((req, res) => {
 //routes
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
+app.use('/empleado', empleadoRoute);
 app.use('/menu', menuRoute);
 app.use('/empresa', empresaRoute);
 app.use('/platodeldia', platoRoute);

@@ -1,11 +1,11 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
         <li class="nav-item">
-        <a class="nav-link" href="/">
-            <!-- <i class="ti-shield menu-icon"></i> -->
-            <img class="menu-icon" src="/images/icons/home.svg" width="18px" />
-            <span class="menu-title">Inicio</span>
-        </a>
+            <a class="nav-link" href="/">
+                <!-- <i class="ti-shield menu-icon"></i> -->
+                <img class="menu-icon" src="/images/icons/home.svg" width="18px" />
+                <span class="menu-title">Inicio</span>
+            </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#menu" aria-expanded="false" aria-controls="menu">
@@ -17,6 +17,7 @@
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="/menu">Gestionar menú</a> </li>
                 <li class="nav-item"> <a class="nav-link" href="/platodeldia">Plato del día</a></li>
+                <li class="nav-item" style="display: none"> <a id="edit-menu-link" class="nav-link" href="#">Editar menú</a> </li>
             </ul>
             </div>
         </li>
@@ -30,6 +31,7 @@
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="/item/register">Registrar</a> </li>
                 <li class="nav-item"> <a class="nav-link" href="/item">Listar</a> </li>
+                <li class="nav-item" style="display: none"> <a id="edit-item-link" class="nav-link" href="#">Editar item</a> </li>
             </ul>
             </div>
         </li>
@@ -42,8 +44,9 @@
             </a>
             <div class="collapse" id="empleados">
                 <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="#">Registrar</a></li>
-                <li class="nav-item"> <a class="nav-link" href="#">Listar</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/empleado/registrar">Registrar</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/empleado">Listar</a></li>
+                <li class="nav-item" style="display: none"> <a id="edit-employee-link" class="nav-link" href="#">Editar empleado</a> </li>
                 </ul>
             </div>
         </li>
@@ -57,6 +60,7 @@
         <div class="collapse" id="empresas">
             <ul class="nav flex-column sub-menu">
             <li class="nav-item"> <a class="nav-link" href="/empresa">Listar</a></li>
+            <li class="nav-item" style="display: none"> <a id="edit-enterprise-link" class="nav-link" href="#">Editar empresa</a> </li>
             </ul>
         </div>
         </li>
