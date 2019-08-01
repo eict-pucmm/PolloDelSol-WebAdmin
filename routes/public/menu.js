@@ -24,7 +24,7 @@ app.post('/register', (req, res) => {
     let errors = req.validationErrors();
 
     if (!errors) {
-        axios.post(`${url}/api/menu/register`, {name: req.body.nombre})
+        axios.post(`${url}/api/menu/register`, {name: req.body.nombre, plato_de_dia: 0})
         .then( () => {
             req.flash('success', 'Menu registrado satisfactoriamente');
         }).catch(err => {
