@@ -1,8 +1,6 @@
 const express = require('express');
 const axios = require('axios');
 const url = require('../../config').values.server.url;
-const firebase = require('firebase/app');
-                 require('firebase/auth');
 const multer = require('multer');
 const cloudinary = require('cloudinary');
 const cloudinaryStorage = require('multer-storage-cloudinary');
@@ -24,10 +22,6 @@ const storage = cloudinaryStorage({
 console.log('Initialized Cloudinary on employee public api');
 
 const parser = multer({ storage: storage });
-
-// Initialize Firebase
-firebase.initializeApp(config.values.firebaseConfig);
-console.log('Initialized firebase on employee public api');
 
 app.get('/', (req, res, next) => {
     console.log(config.loggedIn)
@@ -179,7 +173,6 @@ app.post('/modificar/(:id_empleado)', (req, res, next) => {
 
         axios.post(`${url}/api/empleado/modificar/${req.params.id_empleado}`, {data: employee})
         .then( () => {
-            console.log('Registered employee in database before creating Firebase account');  
             req.flash('success', 'Empleado modificado satisfactoriamente')
         }).catch(err => {
             console.log('error in axios');
