@@ -58,7 +58,7 @@
                           <th>Precio (DOP$)</th>
                           <th>Categoria</th>
                           <th>Subcategoria</th>
-                          <th>Cancelado</th>
+                          <th>En operación</th>
                         </tr>
                       </thead>
                       <tbody id="item-list">
@@ -73,7 +73,7 @@
                                 <td>
                                   <div class="form-check">
                                     <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" disabled <% if (item.eliminado) { %> checked <% } %>/>
+                                      <input type="checkbox" class="form-check-input" disabled <% if (!item.eliminado) { %> checked <% } %>/>
                                     </label>
                                   </div>
                                 </td>
@@ -91,12 +91,6 @@
             </div>
           </div>
         </div>
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018 <a href="https://www.templatewatch.com/" target="_blank">Templatewatch</a>. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
       </div>
     </div>
   </div>

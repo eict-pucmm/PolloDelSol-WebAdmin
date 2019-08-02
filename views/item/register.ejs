@@ -10,9 +10,9 @@
       <% include ../public/layouts/sidebar.ejs %>
       <div class="main-panel">
         <div class="content-wrapper">
-          <% if (action === 'Registrar') {%>
+          <% if (action === 'Registrar item') {%>
           <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
-          <% } else if (action === 'Modificar') { %>
+          <% } else if (action === 'Modificar item') { %>
           <form method="POST" action="/item/edit/<%-item.id_item%>" onkeydown="return event.key != 'Enter';">
           <% } %>
               <div class="row">
@@ -32,9 +32,8 @@
                     <div class="row">
                       <div class="col-md-12">
                         <div class="input-group">
-                          <input id="image-text" name="image-text" type="text" class="form-control file-upload-info" disabled placeholder="Subir imagen">
-                          <label class="btn btn-primary mr-2">
-                            <input type="file" name="image" id="image" accept="image/png, image/jpeg" onchange="readURL(this)" style="display: none;">
+                          <label for="image" class="btn btn-primary btn-lg btn-block reg-employee">
+                            <input type="file" name="image" id="image" accept="image/png, image/jpeg" onchange="readURL(this)"  style="display: none;">
                             Buscar Imagen
                           </label>
                         </div>
@@ -131,24 +130,26 @@
                             </div>
                           </div>
                         </div>
+                        <%if (action === 'Modificar item') {%>
                         <div class="row">
                           <div class="col-md-12">
                             <div class="input-group align-items-center">
-                              <button id="reg-button" type="submit" class="btn btn-primary mr-2 reg-item"><%= action %></button>
-                              <% if (action === 'Modificar') { %>
-                              <%if (!item.eliminado) { %>
-                              <button id="del-button" name="delete" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-danger">Cancelar item</button>
-                              <span class="separator-horizontal" ></span>
-                              <p id="result-message" name="eliminado" style="color:green">El item esta activado</p>
-                              <%} else {%>
-                              <button id="act-button" name="sucess" type="submit" formmethod="POST" formaction="/item/delete/<%-item.id_item%>" class="btn btn-success">Activar item</button>
-                              <span class="separator-horizontal" ></span>
-                              <p id="result-message" name="eliminado" style="color:red">El item esta cancelado</p>
-                              <%}%>
-                              <%}%>
+                              <div class="form-check">
+                                <%if (!item.eliminado) {%>
+                                <label class="form-check-label" style="color: green">
+                                  <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input" checked>
+                                  El item está en operación. Presione para cancelar.
+                                  <%} else {%>
+                                <label class="form-check-label" style="color: red">
+                                  <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input">
+                                  El item está cancelado. Presione para poner en operación.
+                                  <%}%>
+                                <i class="input-helper"></i></label>
+                              </div>
                             </div>
                           </div>
                         </div>
+                        <%}%>
                       </div>
                     </div>
                   </div>
@@ -167,11 +168,9 @@
                                   <span class="input-group-text bg-primary text-white">Guarnicion</span>
                                 </div>
                                 <%if (guarniciones) {%>
-                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1"
-                                  class="form-control" value="1">
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1" class="form-control" value="<%= combo !== undefined ? combo.max_guarnicion : 1%>">
                                 <%} else {%>
-                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0"
-                                  class="form-control" value="0">
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0" class="form-control" value="0">
                                 <%}%>
                           </div>
                         </div>
@@ -185,12 +184,11 @@
                               <span class="input-group-text bg-primary text-white">Bebida</span>
                             </div>
                             <%if (bebidas) {%>
-                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="1"
-                                  class="form-control" value="1">
-                                <%} else {%>
-                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0"
-                                  class="form-control" value="0">
-                                <%}%>
+                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="1" class="form-control" value="<%= combo !== undefined ? combo.max_bebida : 1%>">
+                              <%} else {%>
+                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0"
+                                class="form-control" value="0">
+                              <%}%>
                           </div>
                         </div>
                       </div>
@@ -222,7 +220,7 @@
                                 </li>
                                 <% }); %>
                                 <%} else {%>
-                                <p style="color:red">No hay guarniciones registradas</p>
+                                <p style="color:red">No hay guarniciones en operación</p>
                                 <%}%>
                             </ul>
                           </div>
@@ -255,7 +253,7 @@
                                 </li>
                                 <% }); %>
                                 <%} else {%>
-                                <p style="color:red">No hay bebidas registradas</p>
+                                <p style="color:red">No hay bebidas en operación</p>
                                 <%}%>
                             </ul>
                           </div>
@@ -266,16 +264,15 @@
                 </div>
               </div>
             </div>
+            <div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                <button id="reg-button" type="submit" class="btn btn-primary btn-lg btn-block mr-2 reg-item"><%- action %></button>
+              </div>
+              <div class="col-md-4"></div>
+            </div>
           </form>
         </div>
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018 <a
-                href="https://www.templatewatch.com/" target="_blank">Templatewatch</a>. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i
-                class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
       </div>
     </div>
   </div>

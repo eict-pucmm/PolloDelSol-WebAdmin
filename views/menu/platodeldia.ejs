@@ -10,10 +10,10 @@
             <div id="reg-menu" class="modal-container" <% if (messages.error) { %> style="display: flex;" <% } %>>
                 <div class="modal">
                     <div class="modal-content">
-                        <form method="POST" action="/menu/register">
+                        <form method="POST" action="/platodeldia/register">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Añadir menú</h4>
+                                    <h4 class="card-title">Añadir menú de Plato del Dia</h4>
                                     <% if (messages.error) { %>
                                     <p id="result-message" style="color:red"><%- messages.error %></p>
                                     <% } %>
@@ -41,7 +41,7 @@
                         <div class="col-12 grid-margin stretch-card mx-auto">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Menús</h4>
+                                    <h4 class="card-title">Listado de menús del Plato del Día</h4>
                                     <% if (messages.success) { %> <p id="result-message" style="color:green">
                                     <%- messages.success %></p>
                                     <% } %>
@@ -49,17 +49,15 @@
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
-                                                    <th class="col-6">Menu</th>
-                                                    <th>Cantidad de items</th>
+                                                    <th class="col-6">Menú de Plato del Día</th>
                                                     <th>Activo</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <%if (menus) {%>
-                                                <%menus.forEach(menu => {%>
+                                                <%if (data) {%>
+                                                <%data.forEach(menu => {%>
                                                 <tr title="<%-menu.id_menu%>">
                                                     <td><%- menu.nombre %></td>
-                                                    <td><%= menu.cant_items%></td>
                                                     <td>
                                                         <div class="form-check">
                                                         <label class="form-check-label">
@@ -68,13 +66,13 @@
                                                         </div>
                                                     </td>
                                                     <td class="image">
-                                                        <a href="/menu/edit/<%=menu.id_menu%>"> <img src="/images/icons/edit.svg" />
+                                                        <a href="/platodeldia/edit/<%=menu.id_menu%>"> <img src="/images/icons/edit.svg" />
                                                         </a>
                                                     </td>
                                                 </tr>
                                                 <%});%>
                                                 <%} else {%>
-                                                <p id="result-message" style="color:red">No hay menus registrados</p>
+                                                <p id="result-message" style="color:red">No hay menús de Plato del Díá registrados</p>
                                                 <%}%>
                                             </tbody>
                                         </table>

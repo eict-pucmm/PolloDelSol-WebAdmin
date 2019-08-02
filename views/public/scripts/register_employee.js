@@ -40,7 +40,8 @@ function readURL(input) {
 const picText = document.getElementById('ProfilePicText');
 const pic = document.getElementById('ProfilePic');
 
-if (document.getElementById('reg-button').innerHTML === 'Modificar') {
+if (document.getElementById('reg-button').innerHTML === 'Modificar empleado') {
+    document.getElementById('edit-employee-link').href = `'${window.location.href}'`;
     pic.src = employee.avatar;
     pic.value = employee.avatar;
     pic.style.width = '10rem';

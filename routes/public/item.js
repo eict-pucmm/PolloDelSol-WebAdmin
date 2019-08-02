@@ -60,16 +60,16 @@ app.get('/register', (req, res, next) => {
         }
     }
     if(config.loggedIn){
-        axios.get(`${config.values.server.url}/api/item/get?subcategoria=Guarnicion`)
+        axios.get(`${config.values.server.url}/api/item/get?subcategoria=Guarnicion?eliminado=0`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida`)
+            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida?eliminado=0`)
                 .then(bebidas => {
                     axios.get(`${config.values.server.url}/api/item/categories`)
                     .then(result => {
                         return {
-                            action: 'Registrar', 
+                            action: 'Registrar item', 
                             item: item, 
                             categorias: result.data.categorias, 
                             subcategorias: result.data.subcategorias,
@@ -185,7 +185,7 @@ app.get('/edit/(:id_item)', (req, res, next) => {
                     axios.get(`${config.values.server.url}/api/item/categories`)
                     .then(result => {
                         return {
-                            action: 'Modificar', 
+                            action: 'Modificar item', 
                             item: item, 
                             categorias: result.data.categorias, 
                             subcategorias: result.data.subcategorias,
@@ -208,11 +208,13 @@ app.get('/edit/(:id_item)', (req, res, next) => {
 });
 
 app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
+
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
     req.assert('puntos', 'Los puntos no pueden estar vacío').notEmpty();
 
+    let updateCombo = false, itemCombo, comboData;
     let errors = req.validationErrors()
     let item = {
         id_item: req.params.id_item,
@@ -222,7 +224,27 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
         puntos: req.sanitize('puntos').escape().trim(),
-        eliminado: req.body.eliminado,
+        eliminado: req.body.eliminado !== undefined ? 0 : 1,
+    }
+
+    if (req.body['selected-category'] == 'Combo') {
+        updateCombo = true;
+        itemCombo = [];
+        comboData = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
+        if (Array.isArray(req.body.bebidas)) {
+            req.body.bebidas.forEach(bebida => {
+                itemCombo.push({id_combo: item.id_item, id_item: bebida})
+            });
+        } else {
+            itemCombo.push({id_combo: item.id_item, id_item: req.body.bebidas});
+        }
+        if (Array.isArray(req.body.guarniciones)) {
+            req.body.guarniciones.forEach(guarnicion => {
+                itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
+            });
+        } else {
+            itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
+        }
     }
 
     item.imagen = req.file ? req.file.url : req.body.imagen;
@@ -232,49 +254,23 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         .then( response => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
-                if (req.body['selected-category'] == 'Combo') {
-                    let itemCombo = [], combo = {};
-                    combo = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
-                    if (Array.isArray(req.body.bebidas)) {
-                        req.body.bebidas.forEach(bebida => {
-                            itemCombo.push({id_combo: item.id_item, id_item: bebida})
-                        });
-                    } else {
-                        itemCombo.push({id_combo: item.id_item, id_item: req.body.bebidas});
-                    }
-                    if (Array.isArray(req.body.guarniciones)) {
-                        req.body.guarniciones.forEach(guarnicion => {
-                            itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
-                        });
-                    } else {
-                        itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
-                    }
-
-                    axios.post(`${config.values.server.url}/api/item/edit/combo`, {combo: combo, itemCombo: itemCombo})
-                        .then(result => {})
-                        .catch(err => console.log(err));
+                if (updateCombo) {
+                    axios.post(`${config.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
+                    .then(comboRes => {console.log(comboRes)})
+                    .catch(err => console.log(err));
                 }
-                res.redirect('/item');
             } else {
                 req.flash('error', response.data.message);
                 res.redirect(`/item/edit/${item.id_item}`);
             }
-        }).catch(err => console.log(err));
+        }).catch(err => console.log(err))
+        .finally( () => {
+            res.redirect('/item');
+        });
     } else {
         req.flash('error', errors[0].msg);
         res.redirect(`/item/edit/${item.id_item}`);
     }
-});
-
-app.post('/delete/(:id_item)', (req, res, next) => {
-
-    axios.post(`${config.values.server.url}/api/item/delete/${req.params.id_item}`)
-    .then(response => {
-        req.flash('success', response.data.message);
-    }).catch(err => console.log(err))
-    .finally( () => {
-        res.redirect(`/item/edit/${req.params.id_item}`);
-    });
 });
 
 module.exports = app;

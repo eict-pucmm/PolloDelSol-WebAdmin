@@ -148,7 +148,8 @@ let setCheckBoxes = () => {
 }
 
 //manage case Modificar
-if (document.getElementById('reg-button').innerHTML === 'Modificar') {
+if (document.getElementById('reg-button').innerHTML === 'Modificar item') {
+    document.getElementById('edit-item-link').href = `'${window.location.href}'`;
     document.getElementById('id-item').disabled = true;
     updateSubcategorias();
     setSelectedComboBox(subcategoriaCbx, item.subcategoria);

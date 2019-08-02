@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<% include ../public/layouts/header.ejs %>
+<body>
+  <div class="container-scroller">
+  <% include ../public/layouts/navbar.ejs %>
+  <div class="container-fluid page-body-wrapper">
+    <% include ../public/layouts/sidebar.ejs %>
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <form action="/platodeldia/edit/<%= data.menu.id_menu %>" method="POST"> 
+                  <div class="card-body">
+                    <h4 class="card-title">Programacion semanal</h4>
+                    <% if (data == '') { %>
+                      <p id="result-message" style="color :red">No hay platos registrados</p>
+                    <% } %>
+                     <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label for="nombre">Nombre</label>
+                                <div class="col-sm-12" style="padding-left: 0; padding-right: 0;"> 
+                                <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%- data.menu.nombre %>" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive pt-3">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Dia</th>
+                            <th>Arroz</th>
+                            <th>Habichuela</th>
+                            <th>Carne</th>
+                            <th>Guarnición</th>
+                            <th>Ensalada</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                         <% if (data !== '') { %>
+                           <% data.plato.forEach((plato) => { %>
+                                <tr>
+                                  <td>
+                                    <% if (plato.dia==1) { %>
+                                      Lunes
+                                    <% } else if (plato.dia==2) { %>
+                                      Martes
+                                    <% } else if (plato.dia==3) { %>
+                                      Miercoles
+                                    <% } else if (plato.dia==4) { %>
+                                      Jueves
+                                    <% } else if (plato.dia==5) { %>
+                                      Viernes
+                                    <% } else if (plato.dia==6) { %>
+                                      Sabado
+                                    <% } else if (plato.dia==7) { %>
+                                      Domingo
+                                    <% } %>
+                                  </td>
+                                  <td> 
+                                    <select class="form-control col-sm-12" id="arroz" name="arroz">
+                                      <option value="null" selected>Seleccione un arroz</option>
+                                        <% data.items.forEach((arroz) => { %>
+                                        <% if (arroz.subcategoria == 'Arroz') { %>
+                                        <option value="<%- arroz.id_item %>" <% if (plato.id_arroz == arroz.id_item ) { %>selected<% } %> > <%- arroz.nombre %> </option>
+                                        <% } %>
+                                        <% }) %>
+                                      </select>
+                                  </td>
+                                  <td> 
+                                    <select class="form-control col-sm-12" id="habichuela" name="habichuela">
+                                      <option value="null" selected>Seleccione una habichuela</option>
+                                      <% data.items.forEach((habichuela) => { %>
+                                      <% if (habichuela.subcategoria == 'Habichuela') { %>
+                                      <option value="<%- habichuela.id_item %>" <% if (habichuela.id_habichuela == habichuela.id_item ) { %>selected<% } %> > <%- habichuela.nombre %> </option>
+                                      <% } %>
+                                      <% }) %>
+                                    </select>
+                                  </td>
+                                  <td> 
+                                    <select class="form-control col-sm-12" id="carne" name="carne">
+                                      <option value="null" selected>Seleccione una carne</option>
+                                        <% data.items.forEach((carne) => {%>
+                                        <% if (carne.subcategoria == 'Carne') { %>
+                                        <option value="<%- carne.id_item %>" <% if (carne.id_carne == carne.id_item ) { %>selected<% } %> > <%- carne.nombre %> </option>
+                                        <% } %>
+                                        <% }) %>
+                                      </select>
+                                </td>
+                                <td> 
+                                  <select class="form-control col-sm-12" id="guarnicion" name="guarnicion">
+                                    <option value="null" selected>Seleccione una guarnicion</option>
+                                      <% data.items.forEach((guarnicion) => {%>
+                                      <% if (guarnicion.subcategoria == 'Guarnicion') { %>
+                                      <option value="<%- guarnicion.id_item %>" <% if (guarnicion.id_carne == guarnicion.id_item ) { %>selected<% } %> > <%- guarnicion.nombre %> </option>
+                                      <% } %>
+                                      <% }) %>
+                                    </select>
+                                </td>
+                                <td> 
+                                  <select class="form-control col-sm-12" id="ensalada" name="ensalada">
+                                      <option value="null" selected>Seleccione una ensalada</option>
+                                      <% data.items.forEach((ensalada) => {%>
+                                      <% if (ensalada.nombre == 'Ensalada') { %>
+                                      <option value="<%- ensalada.id_item %>" <% if (plato.id_ensalada == ensalada.id_item ) { %>selected<% } %> > <%- ensalada.nombre %> </option>
+                                      <% } %>
+                                      <% }) %>
+                                  </select>
+                                </td>
+                                </tr>
+                           <% }) %>
+                         <% } %>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="input-group align-items-center">
+                                <div class="form-check">
+                                    <%if (data.menu.activo) {%>
+                                    <label class="form-check-label" style="color: green">
+                                    <input id="activo" name="activo" type="checkbox" class="form-check-input" checked>
+                                    El menú está activo. Presione para desactivar.
+                                    <%} else {%>
+                                    <label class="form-check-label" style="color: red">
+                                    <input id="activo" name="activo" type="checkbox" class="form-check-input">
+                                    El menú está desactivado. Presione para activar.
+                                    <%}%>
+                                    <i class="input-helper"></i></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+            <div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                <button id="save-menu" type="submit" class="btn btn-primary btn-lg btn-block mr-2">Guardar cambios</button>
+              </div>
+              <div class="col-md-4"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="/vendors/base/vendor.bundle.base.js"></script>
+  <script src="/scripts/off-canvas.js"></script>
+  <script src="/scripts/hoverable-collapse.js"></script>
+  <script src="/scripts/template.js"></script>
+  <script>document.getElementById('edit-menu-link').href = `'${window.location.href}'`;</script>
+</body>
+
+</html>

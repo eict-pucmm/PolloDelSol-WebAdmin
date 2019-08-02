@@ -44,7 +44,7 @@ app.get('/registrar', (req, res, next) => {
     
     if(config.loggedIn){
         res.render('empleado/register', {
-            action: 'Registrar',
+            action: 'Registrar empleado',
             employee: {
                 avatar: '',
                 nombre: '',
@@ -87,7 +87,7 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
             req.flash('error', file === undefined ? 'La imagen no puede estar vacía' : 'Las contraseñas deben ser iguales');
             res.render(
                 'empleado/register', {
-                    action: 'Registrar',
+                    action: 'Registrar empleado',
                     employee: {
                         avatar: employee.avatar,
                         nombre: employee.nombre,
@@ -132,7 +132,7 @@ app.get('/modificar/(:id_empleado)', (req,res,next) =>{
         }
 
         let data = {
-            action: 'Modificar',
+            action: 'Modificar empleado',
             employee: employee,
         }
         
@@ -164,7 +164,7 @@ app.post('/modificar/(:id_empleado)', (req, res, next) => {
             nombre:               req.sanitize('nombre').escape(),
             correo:               req.sanitize('correo').escape().trim(),
             rol:                  req.sanitize('rol').escape().trim(),
-            eliminado:            0
+            eliminado:            req.body.eliminado !== undefined ? 0 : 1,
         };
 
         if (req.file) {
@@ -185,20 +185,6 @@ app.post('/modificar/(:id_empleado)', (req, res, next) => {
         req.flash('error', errors[0].msg);
         res.redirect('/empleado/register')
     }
-});
-
-
-app.post('/eliminar/(:id_empleado)', (req, res, next) => {
-
-
-    axios.post(`${url}/api/empleado/eliminar/${req.params.id_empleado}`)
-    .then(response => {
-        req.flash('success', response.data.message);
-    })
-    .catch(err => console.log(err.message))
-    .finally(() => {
-        res.redirect(`/empleado/modificar/${req.params.id_empleado}`);
-    })
 });
 
 module.exports = app;

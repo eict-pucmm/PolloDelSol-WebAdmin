@@ -3,10 +3,10 @@ let app = express();
 
 app.get('/', (req, res) => {
 
-    let sql_query = `SELECT * FROM menu`;
+    let sql_query = `SELECT * FROM menu WHERE plato_del_dia = 0`;
 
-    sql_query += req.query.id_menu ? ` WHERE id_menu = ${req.query.id_menu};` : ``;
-    sql_query += req.query.activo ? ` WHERE activo = ${req.query.activo};` : ``;
+    sql_query += req.query.id_menu ? ` AND id_menu = ${req.query.id_menu};` : ``;
+    sql_query += req.query.activo ? ` AND activo = ${req.query.activo};` : ``;
 
     req.getConnection((error, conn) => {
         if (!error) {
@@ -61,7 +61,7 @@ app.get('/items', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-    let sql_query = `INSERT INTO menu (nombre) VALUES ('${req.body.name}');`;
+    let sql_query = `INSERT INTO menu (nombre, plato_del_dia) VALUES ('${req.body.name}', ${req.body.plato_del_dia});`;
 
     req.getConnection((error, conn) => {
         if (!error) {
@@ -71,7 +71,7 @@ app.post('/register', (req, res) => {
                 } else {
                     res.status(500).send({error: true, message: err});
                 }
-            })
+            });
         } else {
             res.status(500).send({error: true, message: error});
         }
@@ -104,30 +104,12 @@ app.post('/edit/(:id_menu)', (req, res) => {
                     })
                 });
             }
-            conn.query(`UPDATE menu SET nombre = ? WHERE id_menu = ?;`, [req.body.nombre, req.params.id_menu], (err, results) => {
+            
+            conn.query(`UPDATE menu SET nombre = ?, activo = ? WHERE id_menu = ?;`, [req.body.nombre, req.body.activo, req.params.id_menu], (err, results) => {
                 if (!err) {
                     res.status(200).send({error: false, message: 'El menú ha sido editado satisfactoriamente'});
                 } else {
                     console.log(err);
-                }
-            })
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });
-});
-
-app.post('/delete/(:id_menu)/(:activo)', (req, res, next) => {
-
-    const resultMessage = req.params.activo == 1 ? `Se ha activado el menú` : `Se ha calcelado el menú`;
-
-    req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(`UPDATE menu SET activo = ? WHERE id_menu = ?`, [req.params.activo, req.params.id_menu], (err, result) => {
-                if (!err) {
-                    res.status(200).send({error: false, result: result, message: resultMessage});
-                } else {
-                    res.status(500).send({error: true, message: err});
                 }
             })
         } else {
