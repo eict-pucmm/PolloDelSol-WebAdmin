@@ -19,6 +19,7 @@
   "homepage": "https://github.com/lyriad/PolloDelSol-WebAdmin#readme",
   "dependencies": {
     "axios": "^0.19.0",
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "browser-image-compression": "^1.0.5",
     "cloudinary": "^1.14.0",
@@ -30,7 +31,6 @@
     "express-myconnection": "^1.0.4",
     "express-session": "^1.16.1",
     "express-validator": "^5.3.1",
-    "firebase": "^6.2.3",
     "method-override": "^3.0.0",
     "multer": "^1.4.1",
     "multer-storage-cloudinary": "^2.2.1",

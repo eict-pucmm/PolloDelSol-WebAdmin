@@ -1,8 +1,13 @@
 const express = require('express');
+const config  = require('../../config')
 let app = express();
 
 app.get('/', (req, res) => {
-    res.render('index');
+    if(config.loggedIn){
+        res.render('index');
+    }else {
+        res.redirect('/login')
+    }
 });
 
 module.exports = app;

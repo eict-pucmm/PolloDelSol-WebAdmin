@@ -20585,7 +20585,7 @@ dl li {
 }
 
 .auth .brand-logo img {
-  width: 150px;
+  width: 250px;
 }
 
 .auth form .form-group {
@@ -21082,7 +21082,6 @@ dl li {
 .navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-profile img {
   width: 40px;
   height: 40px;
-  border-radius: 100%;
 }
 
 .navbar .navbar-menu-wrapper .navbar-nav .nav-item.nav-profile.dropdown .dropdown-toggle:after {

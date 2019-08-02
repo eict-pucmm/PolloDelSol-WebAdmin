@@ -1,16 +1,17 @@
 const express = require('express');
 const axios = require('axios');
-const url = require('../../config').server.url;
-const firebase = require('firebase/app');
-                 require('firebase/auth');
+const url = require('../../config').values.server.url;
 const multer = require('multer');
 const cloudinary = require('cloudinary');
 const cloudinaryStorage = require('multer-storage-cloudinary');
-const config = require('../../config')
+const config = require('../../config');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+let h;
 
 let app = express();
 
-cloudinary.config(config.cloudinary);
+cloudinary.config(config.values.cloudinary);
 
 const storage = cloudinaryStorage({
     cloudinary: cloudinary,
@@ -22,22 +23,26 @@ console.log('Initialized Cloudinary on employee public api');
 
 const parser = multer({ storage: storage });
 
-// Initialize Firebase
-firebase.initializeApp(config.firebaseConfig);
-console.log('Initialized firebase on employee public api');
-
 app.get('/', (req, res, next) => {
+    console.log(config.loggedIn)
+    if(config.loggedIn){
 
-    axios.get(`${url}/api/empleado/buscar`).
-    then(result => {
-        res.render('empleado/list', {data: result.data.employee})
-    }).catch(error => {
-        res.send(error)
-    })
+        axios.get(`${url}/api/empleado/buscar`).
+        then(result => {
+            res.render('empleado/list', {data: result.data.employee})
+        }).catch(error => {
+            res.send(error)
+        })
+    }else {
+        res.redirect('/login')
+    }
+
+    
 });
 
 app.get('/registrar', (req, res, next) => {
-
+    
+    if(config.loggedIn){
         res.render('empleado/register', {
             action: 'Registrar empleado',
             employee: {
@@ -45,12 +50,15 @@ app.get('/registrar', (req, res, next) => {
                 nombre: '',
                 correo: '',
                 rol: '',
-            },
+            }
         }
-    );
+        );
+    }else {
+        res.redirect('/login')
+    }
 });
 
-app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
+app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next) => {
 
     const file = req.file;
 
@@ -71,7 +79,8 @@ app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
             nombre:               req.sanitize('nombre').escape(),
             correo:               req.sanitize('correo').escape().trim(),
             rol:                  req.sanitize('rol').escape().trim(),
-            eliminado:            0
+            eliminado:            0,
+            contrasena:           req.sanitize('contrasena').escape().trim(),
         };
 
         if(file === undefined || contrasena !== contrasenaconfirmada) {
@@ -91,16 +100,7 @@ app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
             employee.avatar = file.url;
         
             axios.post(`${url}/api/empleado/registrar`, {data: employee})
-            .then( () => {
-                console.log('Registered employee in database before creating Firebase account');
-                firebase.auth().createUserWithEmailAndPassword(employee.correo, contrasena)
-                .then( () => console.log('Firebase account created'))
-                .catch((error) => {
-                    req.flash('error', error.message);
-                    res.redirect('/empleado/registrar');
-                    console.log(error);
-                });
-      
+            .then( () => {      
                 req.flash('success', 'Empleado registrado satisfactoriamente')
             }).catch(err => {
                 console.log('error in axios');
@@ -119,7 +119,8 @@ app.post('/registrar', parser.single('ProfilePicSelect'), (req, res, next) => {
 app.get('/modificar/(:id_empleado)', (req,res,next) =>{
 
 
-    axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
+    if(config.loggedIn){
+        axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
     .then(result => {
         let employee = {
             id_empleado: result.data.employee[0].id_empleado,
@@ -139,6 +140,10 @@ app.get('/modificar/(:id_empleado)', (req,res,next) =>{
     }).catch(err => {
         res.send(err); 
     });
+    }else {
+        res.redirect('/login')
+    }
+    
 
 
 });
@@ -168,7 +173,6 @@ app.post('/modificar/(:id_empleado)', (req, res, next) => {
 
         axios.post(`${url}/api/empleado/modificar/${req.params.id_empleado}`, {data: employee})
         .then( () => {
-            console.log('Registered employee in database before creating Firebase account');  
             req.flash('success', 'Empleado modificado satisfactoriamente')
         }).catch(err => {
             console.log('error in axios');

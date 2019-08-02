@@ -1,6 +1,6 @@
 const express = require('express');
 const axios   = require('axios');
-const url = require('../../config').server.url;
+const config = require('../../config');
 
 let app = express();
 
@@ -9,12 +9,18 @@ const checkIfString = myString => {
 }
 
 app.get('/', (req, res) => {
-    axios.get(`${url}/api/menu`)
+    if(config.loggedIn) {
+        axios.get(`${url}/api/menu`)
         .then(result => {
             res.render('menu/gestionar', {
-                menus: result.data.menus
+                menus: result.data.menus,
+               
             });
         }).catch(err => console.log(err));
+    }else {
+        res.redirect('/login')
+    }
+    
 });
 
 app.post('/register', (req, res) => {
@@ -40,13 +46,14 @@ app.post('/register', (req, res) => {
 
 app.get('/edit/(:id_menu)', (req, res) => {
 
-    axios.get(`${url}/api/item/get?eliminado=0`)
+    if (config.loggedIn) {
+        axios.get(`${config.values.server.url}/api/item/get?eliminado=0`)
         .then(combos => {
-            axios.get(`${url}/api/item/categories`)
+            axios.get(`${config.values.server.url}/api/item/categories`)
             .then(result => {
-                axios.get(`${url}/api/menu?id_menu=${req.params.id_menu}`)
+                axios.get(`${config.values.server.url}/api/menu?id_menu=${req.params.id_menu}`)
                 .then(menu => {
-                    axios.get(`${url}/api/menu/items?id_menu=${req.params.id_menu}`)
+                    axios.get(`${config.values.server.url}/api/menu/items?id_menu=${req.params.id_menu}`)
                         .then(menu_items => {
                             res.render('menu/edit', {
                                 categorias: result.data.categorias,
@@ -60,6 +67,11 @@ app.get('/edit/(:id_menu)', (req, res) => {
             })
             .catch(err => console.log(err));
         }).catch(err => console.log(err));
+    }else {
+        res.redirect('/login')
+    }
+
+    
 
 });
 
@@ -72,7 +84,7 @@ app.post('/edit/(:id_menu)', (req, res) => {
         activo: req.body.activo !== undefined ? 1 : 0
     }
     
-    axios.post(`${url}/api/menu/edit/${req.params.id_menu}`, data)
+    axios.post(`${config.values.server.url}/api/menu/edit/${req.params.id_menu}`, data)
         .then(response => {
             req.flash('success', response.data.message)
         })

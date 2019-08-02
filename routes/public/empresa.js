@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios'); 
-const url = require('../../config').server.url;
+const config = require('../../config');
 
 let app = express();
 
@@ -36,15 +36,20 @@ const parseDiaDeCierre = (dia_de_cierre, tipo_cierre, action) => {
     return dateStr;
 }
 
-app.get('/', (req, res, next) => {
-    axios.get(`${url}/api/empresa`)
+app.get('/', function (req, res, next) {
+    if(config.loggedIn){
+        axios.get(`${config.values.server.url}/api/empresa`)
         .then(result => {
             res.render('empresa/list', {data: result.data.empresa})
         });
+    }else {
+        res.redirect('/login')
+    }
+    
 });
 
 app.get('/edit/(:id_empresa)', (req, res, next) => {
-    axios.get(`${url}/api/empresa?id_empresa=${req.params.id_empresa}`)
+    axios.get(`${config.values.server.url}/api/empresa?id_empresa=${req.params.id_empresa}`)
         .then(result => {
             if(result.data.empresa == null){
                 req.flash('error', `No se encontro la empresa con Id = "${req.params.id_empresa}"`);
@@ -71,7 +76,7 @@ app.post('/edit/(:id_empresa)', (req, res, next) => {
         aprobada: req.body.aprobada ? 1 : 0
     }
 
-    axios.post(`${url}/api/empresa/edit/${req.params.id_empresa}`, data)
+    axios.post(`${config.values.server.url}/api/empresa/edit/${req.params.id_empresa}`, data)
     .then(response => {
         req.flash('success', response.data.message);
     }).catch(err => console.log(err))
