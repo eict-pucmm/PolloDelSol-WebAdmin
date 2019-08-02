@@ -168,11 +168,9 @@
                                   <span class="input-group-text bg-primary text-white">Guarnicion</span>
                                 </div>
                                 <%if (guarniciones) {%>
-                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1"
-                                  class="form-control" value="1">
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="1" class="form-control" value="<%= combo !== undefined ? combo.max_guarnicion : 1%>">
                                 <%} else {%>
-                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0"
-                                  class="form-control" value="0">
+                                <input id="max-guarnicion" type="number" name="max-guarnicion" step="1" min="0" max="0" class="form-control" value="0">
                                 <%}%>
                           </div>
                         </div>
@@ -186,12 +184,11 @@
                               <span class="input-group-text bg-primary text-white">Bebida</span>
                             </div>
                             <%if (bebidas) {%>
-                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="1"
-                                  class="form-control" value="1">
-                                <%} else {%>
-                                <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0"
-                                  class="form-control" value="0">
-                                <%}%>
+                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="1" class="form-control" value="<%= combo !== undefined ? combo.max_bebida : 1%>">
+                              <%} else {%>
+                              <input id="max-bebida" type="number" name="max-bebida" step="1" min="0" max="0"
+                                class="form-control" value="0">
+                              <%}%>
                           </div>
                         </div>
                       </div>
@@ -276,14 +273,6 @@
             </div>
           </form>
         </div>
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2018 <a
-                href="https://www.templatewatch.com/" target="_blank">Templatewatch</a>. All rights reserved.</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i
-                class="ti-heart text-danger ml-1"></i></span>
-          </div>
-        </footer>
       </div>
     </div>
   </div>

@@ -183,37 +183,41 @@ app.post('/edit/(:id_item)', (req, res) => {
     }
 });
 
-app.post('/edit/combo', (req, res) => {
+app.post('/combo/edit', (req, res) => {
+
+    console.log(req.body);
 
     const combo = req.body.combo;
     const itemCombo = req.body.itemCombo;
+    let errores = [], resultados = [];
 
     if (!combo || !itemCombo) {
         res.status(400).send({error: true, message: 'Please provide combo data'});
     } else {
         req.getConnection((error, conn) => {
             if (!error) {
-                conn.query(`UPDATE INTO combo SET ? WHERE id_combo = ?`, [combo, combo.id_combo], (err, results) => {
-                    if (!err) {
-                        res.status(200).send({error: false, result: results, message: 'Combo registered sucessfully'});
-                    } else {
-                        res.status(500).send({error: true, message: err});
-                    }
+                conn.query(`UPDATE combo SET ? WHERE id_combo = ?`, [combo, combo.id_combo], (err, results) => {
+                    resultados.push(results);
+                    errores.push(err);
                 })
 
                 conn.query(`DELETE FROM itemcombo WHERE id_combo = ?`, combo.id_combo, (err, results) => {
-                    if (err) {
-                        res.status(500).send({error: true, message: err});
-                    }
+                    resultados.push(results);
+                    errores.push(err);
                 });
 
                 itemCombo.forEach(entry => {
                     conn.query(`INSERT INTO itemcombo SET ?`, entry, (err, results) => {
-                        if (err) {
-                            res.status(500).send({error: true, message: err});
-                        }
+                        resultados.push(results);
+                        errores.push(err);
                     })
                 });
+
+                if (errores.length > 0) {
+                    res.status(500).send({error: true, message: errores});
+                } else {
+                    res.status(200).send({error: false, result: resultados, message: 'Combo registered sucessfully'});
+                }
             } else {
                 res.status(500).send({error: true, message: error});
             }

@@ -197,6 +197,7 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
     req.assert('puntos', 'Los puntos no pueden estar vacío').notEmpty();
 
+    let updateCombo = false, itemCombo, comboData;
     let errors = req.validationErrors()
     let item = {
         id_item: req.params.id_item,
@@ -209,6 +210,26 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         eliminado: req.body.eliminado !== undefined ? 0 : 1,
     }
 
+    if (req.body['selected-category'] == 'Combo') {
+        updateCombo = true;
+        itemCombo = [];
+        comboData = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
+        if (Array.isArray(req.body.bebidas)) {
+            req.body.bebidas.forEach(bebida => {
+                itemCombo.push({id_combo: item.id_item, id_item: bebida})
+            });
+        } else {
+            itemCombo.push({id_combo: item.id_item, id_item: req.body.bebidas});
+        }
+        if (Array.isArray(req.body.guarniciones)) {
+            req.body.guarniciones.forEach(guarnicion => {
+                itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
+            });
+        } else {
+            itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
+        }
+    }
+
     item.imagen = req.file ? req.file.url : req.body.imagen;
 
     if (!errors) {
@@ -216,34 +237,19 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         .then( response => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
-                if (req.body['selected-category'] == 'Combo') {
-                    let itemCombo = [], combo = {};
-                    combo = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
-                    if (Array.isArray(req.body.bebidas)) {
-                        req.body.bebidas.forEach(bebida => {
-                            itemCombo.push({id_combo: item.id_item, id_item: bebida})
-                        });
-                    } else {
-                        itemCombo.push({id_combo: item.id_item, id_item: req.body.bebidas});
-                    }
-                    if (Array.isArray(req.body.guarniciones)) {
-                        req.body.guarniciones.forEach(guarnicion => {
-                            itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
-                        });
-                    } else {
-                        itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
-                    }
-
-                    axios.post(`${config.server.url}/api/item/edit/combo`, {combo: combo, itemCombo: itemCombo})
-                        .then(result => {})
-                        .catch(err => console.log(err));
+                if (updateCombo) {
+                    axios.post(`${config.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
+                    .then(comboRes => {console.log(comboRes)})
+                    .catch(err => console.log(err));
                 }
-                res.redirect('/item');
             } else {
                 req.flash('error', response.data.message);
                 res.redirect(`/item/edit/${item.id_item}`);
             }
-        }).catch(err => console.log(err));
+        }).catch(err => console.log(err))
+        .finally( () => {
+            res.redirect('/item');
+        });
     } else {
         req.flash('error', errors[0].msg);
         res.redirect(`/item/edit/${item.id_item}`);
