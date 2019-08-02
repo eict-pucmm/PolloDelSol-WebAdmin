@@ -10,7 +10,8 @@ app.get('/', function (req, res, next) {
         console.log('login');
         res.render('login/login', {
                 emailuser: '',
-                contrasena: ''
+                contrasena: '',
+                
         })
 });
 

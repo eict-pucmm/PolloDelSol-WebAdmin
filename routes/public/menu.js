@@ -14,7 +14,8 @@ app.get('/', (req, res) => {
         axios.get(`${url}/api/menu`)
         .then(result => {
             res.render('menu/gestionar', {
-                menus: result.data.menus
+                menus: result.data.menus,
+               
             });
         }).catch(err => console.log(err));
     }else {
@@ -56,7 +57,8 @@ app.get('/edit/(:id_menu)', (req, res) => {
                         res.render('menu/edit', {
                             menu: menu.data.menus[0],
                             combos: combos.data.items,
-                            menuItems: menu_items.data.menu_items
+                            menuItems: menu_items.data.menu_items,
+                           
                         });
                     }).catch(err => console.log(err));
             }).catch(err => console.log(err));

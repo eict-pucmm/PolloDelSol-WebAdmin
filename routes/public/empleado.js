@@ -13,7 +13,7 @@ let h;
 
 let app = express();
 
-cloudinary.config(config.cloudinary);
+cloudinary.config(config.values.cloudinary);
 
 const storage = cloudinaryStorage({
     cloudinary: cloudinary,
@@ -26,7 +26,7 @@ console.log('Initialized Cloudinary on employee public api');
 const parser = multer({ storage: storage });
 
 // Initialize Firebase
-firebase.initializeApp(config.firebaseConfig);
+firebase.initializeApp(config.values.firebaseConfig);
 console.log('Initialized firebase on employee public api');
 
 app.get('/', (req, res, next) => {
@@ -56,7 +56,7 @@ app.get('/registrar', (req, res, next) => {
                 nombre: '',
                 correo: '',
                 rol: '',
-            },
+            }
         }
         );
     }else {

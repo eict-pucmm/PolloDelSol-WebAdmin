@@ -8,7 +8,7 @@ const config = require('../../config');
 let app = express();
 let regItem;
 
-cloudinary.config(config.cloudinary);
+cloudinary.config(config.values.cloudinary);
 
 const storage = cloudinaryStorage({
     cloudinary: cloudinary,

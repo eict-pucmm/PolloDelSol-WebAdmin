@@ -57,7 +57,7 @@ app.use(methodOverride((req, res) => {
     }
   });*/
 //routes
-console.log("logged in :",config.loggedIn);
+
 app.use('/', indexRoute);
 app.use('/item', itemRoute);
 app.use('/empleado', empleadoRoute);

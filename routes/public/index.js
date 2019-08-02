@@ -4,7 +4,7 @@ let app = express();
 
 app.get('/', (req, res) => {
     if(config.loggedIn){
-        res.render('index', {utils : config});
+        res.render('index');
     }else {
         res.redirect('/login')
     }
