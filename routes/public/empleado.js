@@ -30,8 +30,9 @@ firebase.initializeApp(config.firebaseConfig);
 console.log('Initialized firebase on employee public api');
 
 app.get('/', (req, res, next) => {
-
+    console.log(config.loggedIn)
     if(config.loggedIn){
+
         axios.get(`${url}/api/empleado/buscar`).
         then(result => {
             res.render('empleado/list', {data: result.data.employee})

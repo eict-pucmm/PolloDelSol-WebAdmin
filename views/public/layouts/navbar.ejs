@@ -12,8 +12,8 @@
             <li class="nav-item dropdown">
               <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#"
                 data-toggle="dropdown">
-                <i class="ti-bell mx-0"></i>
-                <span class="count"></span>
+                <!-- <i class="ti-bell mx-0"></i> -->
+                <!-- <span class="count"></span> -->
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="notificationDropdown">
                 <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
@@ -60,14 +60,14 @@
             </li>
             <li class="nav-item nav-profile dropdown">
               <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-                <img src="/images/faces/face28.jpg" alt="profile" />
+                <img src = "<%= utils.employee.avatar%>" alt="profile" id="userImg" />
               </a>
               <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                <a class="dropdown-item">
+                <!-- <a class="dropdown-item">
                   <i class="ti-settings text-primary"></i>
                   Settings
-                </a>
-                <a class="dropdown-item">
+                </a> -->
+                <a class="dropdown-item" href="/login">
                   <i class="ti-power-off text-primary"></i>
                   Logout
                 </a>

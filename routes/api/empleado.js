@@ -185,35 +185,41 @@ app.post('/login/(:emailuser)/(:contrasena)', async (req,res,next) => {
     let employee;
 
     await axios.get(`${config.values.server.url}/api/empleado/buscar?correo=${req.params.emailuser}`)
-    .then(result => {
-        employee = result.data.employee[0];
-        console.log(employee.correo, employee.id_empleado);
+    .then(async function(result) {
+        // console.log("supuesto undefined", result)
+        if(result.status == 204) {
+            res.status(204).send({error: false, message: 'Server request successful but data was not found'});        
+        }else {
+            employee = result.data.employee[0];
+            await axios.get(`${config.values.server.url}/api/empleado/buscarContrasena?id_empleado=${employee.id_empleado}`)
+            .then(result => {
+                credencial = result.data.credencial[0];
+                console.log(credencial.id_credencial , credencial.id_empleado);
+            })
+
+            let hashedPass = new Buffer.from(credencial.hash_password).toString('UTF-8');
+            
+            await bcrypt.compare(req.params.contrasena, hashedPass)
+            .then((result,error) => {
+                console.log("res result",result)
+                if(result) {
+                    if(employee.rol === 'Administrador'){
+                        config.loggedIn = true;
+                        config.employee = employee
+                        res.status(200).send({error: false, result: result, message: `Usuario ${employee.nombre} ha iniciado sesion`});
+                        
+                    }
+                }else {
+                    console.log(error)
+                    res.status(500).send({error: true, message: error})
+                }
+            })
+        }
+        
     })
     .catch(err => {console.log(err)});
 
-    await axios.get(`${config.values.server.url}/api/empleado/buscarContrasena?id_empleado=${employee.id_empleado}`)
-    .then(result => {
-        credencial = result.data.credencial[0];
-        console.log(credencial.id_credencial , credencial.id_empleado);
-    })
-
-    let hashedPass = new Buffer.from(credencial.hash_password).toString('UTF-8');
     
-    await bcrypt.compare(req.params.contrasena, hashedPass)
-    .then((result,error) => {
-        console.log("res result",result)
-        if(result) {
-            if(employee.rol === 'Administrador'){
-                config.loggedIn = true;
-                console.log(config.loggedIn);
-                res.status(200).send({error: false, result: result, message: `Usuario ${employee.nombre} ha iniciado sesion`});
-                
-            }
-        }else {
-            console.log(error)
-            res.status(500).send({error: true, message: error})
-        }
-    })
 });
 
 module.exports = app;

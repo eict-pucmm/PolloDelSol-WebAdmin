@@ -1,10 +1,12 @@
 const express = require('express');
 const axios =   require('axios');
 const url =     require('../../config').values.server.url;
+const config =  require('../../config')
 
 let app =       express();
 
 app.get('/', function (req, res, next) {
+        config.loggedIn = false;
         console.log('login');
         res.render('login/login', {
                 emailuser: '',
@@ -30,6 +32,8 @@ app.post('/', function(req,res,next){
                 .then( () => {
                         //render Index
                         res.redirect('/');
+                        setTimeout(function(){config.loggedIn = false, console.log("logged off")}, 3600000)
+
                 })
                 .catch( err => {
                         console.log('Error in login axios')

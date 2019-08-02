@@ -10,7 +10,7 @@ const checkIfString = myString => {
 }
 
 app.get('/', (req, res) => {
-    if(config.loggedI) {
+    if(config.loggedIn) {
         axios.get(`${url}/api/menu`)
         .then(result => {
             res.render('menu/gestionar', {

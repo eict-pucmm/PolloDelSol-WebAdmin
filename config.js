@@ -30,5 +30,6 @@ const values = {
 }
 
 let loggedIn = false;
+let employee = {}
 
-module.exports = {values: values, loggedIn: loggedIn};
+module.exports = {values: values, loggedIn: loggedIn, employee: employee};

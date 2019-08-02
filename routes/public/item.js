@@ -22,11 +22,11 @@ const parser = multer({ storage: storage });
 app.get('/', (req, res, next) => {
 
     if(config.loggedIn){
-        axios.get(`${config.server.url}/api/item/get`)
+        axios.get(`${config.values.server.url}/api/item/get`)
         .then(result => {
             return result.data.items;
         }).then(items => {
-            axios.get(`${config.server.url}/api/item/categories`)
+            axios.get(`${config.values.server.url}/api/item/categories`)
             .then(result => {
                 return {data: items, categorias: result.data.categorias, subcategorias: result.data.subcategorias};
             }).then(datos => {
@@ -60,13 +60,13 @@ app.get('/register', (req, res, next) => {
         }
     }
     if(config.loggedIn){
-        axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
+        axios.get(`${config.values.server.url}/api/item/get?subcategoria=Guarnicion`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida`)
+            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida`)
                 .then(bebidas => {
-                    axios.get(`${config.server.url}/api/item/categories`)
+                    axios.get(`${config.values.server.url}/api/item/categories`)
                     .then(result => {
                         return {
                             action: 'Registrar', 
@@ -120,7 +120,7 @@ app.post('/register', parser.single('image'), (req, res, next) => {
     regItem.categoria = req.body['selected-category'];
 
     if (!errors) {
-        axios.post(`${config.server.url}/api/item/register`, {data: item})
+        axios.post(`${config.values.server.url}/api/item/register`, {data: item})
         .then( () => {
             req.flash('success', 'Item registrado satisfactoriamente');
         }).then( () => {
@@ -143,7 +143,7 @@ app.post('/register', parser.single('image'), (req, res, next) => {
                     itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
                 }
 
-                axios.post(`${config.server.url}/api/item/register/combo`, {combo: combo, itemCombo: itemCombo})
+                axios.post(`${config.values.server.url}/api/item/register/combo`, {combo: combo, itemCombo: itemCombo})
                     .then(result => {})
                     .catch(err => console.log(err));
             }
@@ -164,11 +164,11 @@ app.get('/edit/(:id_item)', (req, res, next) => {
     let item, combo = '', itemCombo = '';
 
     if(config.loggedIn) {
-        axios.get(`${config.server.url}/api/item/get?id_item=${req.params.id_item}`)
+        axios.get(`${config.values.server.url}/api/item/get?id_item=${req.params.id_item}`)
         .then(result => {
             item = result.data.items[0];
             if (result.data.items[0].categoria == 'Combo') {
-                axios.get(`${config.server.url}/api/item/get/combo?id_combo=${result.data.items[0].id_item}`)
+                axios.get(`${config.values.server.url}/api/item/get/combo?id_combo=${result.data.items[0].id_item}`)
                     .then(comboData => {
                         combo = comboData.data.combo[0];
                         itemCombo = comboData.data.itemCombo;
@@ -176,13 +176,13 @@ app.get('/edit/(:id_item)', (req, res, next) => {
             }
         }).catch(err => console.log(err));
 
-    axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
+    axios.get(`${config.values.server.url}/api/item/get?subcategoria=Guarnicion`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida`)
+            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida`)
                 .then(bebidas => {
-                    axios.get(`${config.server.url}/api/item/categories`)
+                    axios.get(`${config.values.server.url}/api/item/categories`)
                     .then(result => {
                         return {
                             action: 'Modificar', 
@@ -228,7 +228,7 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
     item.imagen = req.file ? req.file.url : req.body.imagen;
 
     if (!errors) {
-        axios.post(`${config.server.url}/api/item/edit/${item.id_item}`, {data: item})
+        axios.post(`${config.values.server.url}/api/item/edit/${item.id_item}`, {data: item})
         .then( response => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
@@ -250,7 +250,7 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
                         itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
                     }
 
-                    axios.post(`${config.server.url}/api/item/edit/combo`, {combo: combo, itemCombo: itemCombo})
+                    axios.post(`${config.values.server.url}/api/item/edit/combo`, {combo: combo, itemCombo: itemCombo})
                         .then(result => {})
                         .catch(err => console.log(err));
                 }
@@ -268,7 +268,7 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
 
 app.post('/delete/(:id_item)', (req, res, next) => {
 
-    axios.post(`${config.server.url}/api/item/delete/${req.params.id_item}`)
+    axios.post(`${config.values.server.url}/api/item/delete/${req.params.id_item}`)
     .then(response => {
         req.flash('success', response.data.message);
     }).catch(err => console.log(err))
