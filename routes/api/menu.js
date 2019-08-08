@@ -61,6 +61,7 @@ app.get('/items', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
+    console.log(req.body);
     let sql_query = `INSERT INTO menu (nombre, plato_del_dia) VALUES ('${req.body.name}', ${req.body.plato_del_dia});`;
 
     req.getConnection((error, conn) => {

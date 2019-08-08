@@ -55,16 +55,18 @@ app.get('/register', (req, res, next) => {
             categoria: '',
             subcategoria: '',
             precio: '',
-            puntos: '',
             eliminado: 0
         }
     }
     if(config.loggedIn){
-        axios.get(`${config.values.server.url}/api/item/get?subcategoria=Guarnicion?eliminado=0`)
+        axios.get(`${config.values.server.url}/api/item/get?categoria=Individual&subcategoria=Guarnicion&eliminado=0`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida?eliminado=0`)
+            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida&eliminado=0`)
+                .then(result2 => {
+                    return result2;
+                })
                 .then(bebidas => {
                     axios.get(`${config.values.server.url}/api/item/categories`)
                     .then(result => {
@@ -82,7 +84,8 @@ app.get('/register', (req, res, next) => {
                         res.render('item/register', datos)
                     })
                     .catch(err => res.send(err))
-                }).catch(err => res.send(err))
+                })
+                .catch(err => res.send(err))
         }).catch(err => res.send(err));
     }else {
         res.redirect('/login')
@@ -97,7 +100,6 @@ app.post('/register', parser.single('image'), (req, res, next) => {
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
-    req.assert('puntos', 'Los puntos no pueden estar vacíos').notEmpty();
 
     if (req.body['selected-category'] == 'Combo') {
         req.assert('bebidas', 'Debe seleccionar al menos una opcion de bebida').notEmpty();
@@ -112,7 +114,6 @@ app.post('/register', parser.single('image'), (req, res, next) => {
         id_categoria: parseInt(req.sanitize('categoria-cbx').escape().trim()),
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
-        puntos: req.sanitize('puntos').escape().trim(),
         eliminado: 0,
         imagen: req.file.url
     }
@@ -212,7 +213,6 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
     req.assert('precio', 'El precio no puede estar vacío').notEmpty();
-    req.assert('puntos', 'Los puntos no pueden estar vacío').notEmpty();
 
     let updateCombo = false, itemCombo, comboData;
     let errors = req.validationErrors()
@@ -223,7 +223,6 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         id_categoria: parseInt(req.sanitize('categoria-cbx').escape().trim()),
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
-        puntos: req.sanitize('puntos').escape().trim(),
         eliminado: req.body.eliminado !== undefined ? 0 : 1,
     }
 

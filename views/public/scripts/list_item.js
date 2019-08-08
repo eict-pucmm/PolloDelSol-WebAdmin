@@ -1,7 +1,7 @@
-let categoriaCbx = document.getElementById('categoria-cbx');
-let subcategoriaCbx = document.getElementById('subcategoria-cbx');
-let canceladoCbx = document.getElementById('cancelado-cbx');
-let itemList = document.getElementById('item-list').rows;
+const categoriaCbx = document.getElementById('categoria-cbx');
+const subcategoriaCbx = document.getElementById('subcategoria-cbx');
+const canceladoCbx = document.getElementById('cancelado-cbx');
+const itemList = document.getElementById('item-list').rows;
 let cat_selected;
 
 let updateSubcategorias = () => {
@@ -43,13 +43,13 @@ let updateList = () => {
       if (selected_cat === 'Todas') {
         if (selected_subcat === 'Todas') {
           itemList[i].style.display = 'table-row';
-        } else if (itemList[i].title.includes(selected_subcat)) {
+        } else if (itemList[i].cells[4].innerHTML == selected_subcat) {
           itemList[i].style.display = 'table-row';
         }
-      } else if (itemList[i].title.includes(selected_cat)) {
+      } else if (itemList[i].cells[3].innerHTML == selected_cat) {
         if (selected_subcat === 'Todas') {
           itemList[i].style.display = 'table-row';
-        } else if (itemList[i].title.includes(selected_subcat)) {
+        } else if (itemList[i].cells[4].innerHTML == selected_subcat) {
           itemList[i].style.display = 'table-row';
         }
       }

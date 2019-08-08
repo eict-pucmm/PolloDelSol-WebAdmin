@@ -103,13 +103,13 @@
                               <div class="input-group align-items-center">
                                 <div class="form-check">
                                   <%if (!employee.eliminado) {%>
-                                  <label class="form-check-label" style="color: green">
-                                    <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input" checked>
-                                    El empleado está en operación. Presione para cancelar.
-                                    <%} else {%>
                                   <label class="form-check-label" style="color: red">
+                                    <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input" checked>
+                                    Cancelar
+                                    <%} else {%>
+                                  <label class="form-check-label" style="color: green">
                                     <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input">
-                                    El empleado está cancelado. Presione para poner en operación.
+                                    Activar
                                     <%}%>
                                   <i class="input-helper"></i></label>
                                 </div>

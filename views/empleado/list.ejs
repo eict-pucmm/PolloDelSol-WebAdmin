@@ -48,7 +48,7 @@
                           <th>Nombre</th>
                           <th>Correo</th>
                           <th>Rol</th>
-                          <th>En operación</th>
+                          <th>Estado</th>
                         </tr>
                       </thead>
                       <tbody id="employee-list">
@@ -61,11 +61,11 @@
                                 <td><%= employee.correo %></td>
                                 <td><%= employee.rol %></td>
                                 <td>
-                                  <div class="form-check">
-                                    <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" disabled <% if (!employee.eliminado) { %> checked <% } %>/>
-                                    </label>
-                                  </div>
+                                  <% if (!employee.eliminado) { %>
+                                  <p id="result-message" style="color:green">Activado</p>
+                                  <% } else { %>
+                                  <p id="result-message" style="color:red">Cancelado</p>
+                                  <% } %>
                                 </td>
                                 <td class="image"> 
                                   <a href='/empleado/modificar/<%= employee.id_empleado %>'> <img src="/images/icons/edit.svg" /> </a>

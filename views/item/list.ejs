@@ -1,90 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<% include ../public/layouts/header.ejs %>
-
-<body>
-  <% let cat_padre_id = 0; %>
-  <div class="container-scroller">
-  <% include ../public/layouts/navbar.ejs %>
-  <div class="container-fluid page-body-wrapper">
-    <% include ../public/layouts/sidebar.ejs %>
-      <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="row">
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Items</h4>
+  <% include ../public/layouts/header.ejs %>
+  <body>
+    <% let cat_padre_id = 0; %>
+    <div class="container-scroller">
+      <% include ../public/layouts/navbar.ejs %>
+      <div class="container-fluid page-body-wrapper">
+        <% include ../public/layouts/sidebar.ejs %>
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Items</h4>
                     <div class="row">
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="categoria-item">Categoria</label>
-                          <select onchange="updateSubcategorias()" class="form-control col-sm-10" id="categoria-cbx" name="categoria">
+                          <select onchange="updateSubcategorias()" class="form-control col-sm-12" id="categoria-cbx" name="categoria">
                             <option value="" selected>Todas</option>
-                          <%categorias.forEach(cat => {%>
+                            <%categorias.forEach(cat => {%>
                             <option value="<%=cat.id_categoria%>"><%=cat.nombre%></option>
-                          <%})%>
+                            <%})%>
                           </select>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="subcategoria-item">Subcategoria</label>
-                          <select onchange="updateList()" class="form-control col-sm-10" id="subcategoria-cbx" name="subcategoria">
+                          <select onchange="updateList()" class="form-control col-sm-12" id="subcategoria-cbx" name="subcategoria">
                           </select>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
-                          <label for="cancelado-item">Cancelado</label>
-                          <select onchange="updateList()" class="form-control col-sm-10" id="cancelado-cbx" name="cancelado">
+                          <label for="cancelado-item">Estado</label>
+                          <select onchange="updateList()" class="form-control col-sm-12" id="cancelado-cbx" name="cancelado">
                             <option value="" selected>Todos</option>
-                            <option value="0" >En operacion</option>
-                            <option value="1" >Cancelados</option>
+                            <option value="0">Activados</option>
+                            <option value="1">Desactivados</option>
                           </select>
                         </div>
                       </div>
                     </div>
-                  <% if (!data) { %>
+                    <% if (!data) { %>
                     <p id="result-message" style="color:red">No hay items registrados</p>
-                  <% } %>
-                  <div class="table-responsive pt-3">
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Id</th>
-                          <th>Nombre</th>
-                          <th>Precio (DOP$)</th>
-                          <th>Categoria</th>
-                          <th>Subcategoria</th>
-                          <th>En operación</th>
-                        </tr>
-                      </thead>
-                      <tbody id="item-list">
-                       <% if (data) { %>
-                         <% data.forEach(function (item) { %>
-                              <tr title="<%=item.categoria%> <%=item.subcategoria%> <%=item.eliminado%>">
-                                <td><%- item.id_item %></td>
-                                <td><%- item.nombre %></td>
-                                <td><%= item.precio %></td>
-                                <td><%- item.categoria %></td>
-                                <td><%- item.subcategoria %></td>
-                                <td>
-                                  <div class="form-check">
-                                    <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" disabled <% if (!item.eliminado) { %> checked <% } %>/>
-                                    </label>
-                                  </div>
-                                </td>
-                                <td class="image"> 
-                                  <a href='/item/edit/<%- item.id_item %>'> <img src="/images/icons/edit.svg" /> </a>
-                                </td>
-                              </tr>
-                         <% }) %>
-                       <% } %>
-                      </tbody>
-                    </table>
+                    <% } %>
+                    <div class="table-responsive pt-3">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Nombre</th>
+                            <th>Precio (DOP$)</th>
+                            <th>Categoria</th>
+                            <th>Subcategoria</th>
+                            <th>Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody id="item-list">
+                          <% if (data) { %>
+                          <% data.forEach(function (item) { %>
+                          <tr>
+                            <td><%- item.id_item %></td>
+                            <td><%- item.nombre %></td>
+                            <td><%= item.precio %></td>
+                            <td><%- item.categoria %></td>
+                            <td><%- item.subcategoria %></td>
+                            <td>
+                              <% if (!item.eliminado) {%>
+                              <p id="result-message" style="color:green">Activado</p>
+                              <% } else {%>
+                              <p id="result-message" style="color:red">Desactivado</p>
+                              <% }%>
+                            </td>
+                            <td class="image"> 
+                              <a href='/item/edit/<%- item.id_item %>'> <img src="/images/icons/edit.svg" /> </a>
+                            </td>
+                          </tr>
+                          <% }) %>
+                          <% } %>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -93,16 +92,15 @@
         </div>
       </div>
     </div>
-  </div>
-  <script>
-    let categorias = <%- JSON.stringify(categorias)%>;
-    let subcategorias = <%- JSON.stringify(subcategorias)%>;
-    let items = <%- JSON.stringify(data)%>;
-  </script>
-  <script src="/vendors/base/vendor.bundle.base.js"></script>
-  <script src="/scripts/off-canvas.js"></script>
-  <script src="/scripts/hoverable-collapse.js"></script>
-  <script src="/scripts/template.js"></script>
-  <script src="/scripts/list_item.js"></script>
-</body>
+    <script>
+      let categorias = <%- JSON.stringify(categorias)%>;
+      let subcategorias = <%- JSON.stringify(subcategorias)%>;
+      let items = <%- JSON.stringify(data)%>;
+    </script>
+    <script src="/vendors/base/vendor.bundle.base.js"></script>
+    <script src="/scripts/off-canvas.js"></script>
+    <script src="/scripts/hoverable-collapse.js"></script>
+    <script src="/scripts/template.js"></script>
+    <script src="/scripts/list_item.js"></script>
+  </body>
 </html>

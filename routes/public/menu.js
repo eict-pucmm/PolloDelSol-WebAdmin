@@ -10,7 +10,7 @@ const checkIfString = myString => {
 
 app.get('/', (req, res) => {
     if(config.loggedIn) {
-        axios.get(`${url}/api/menu`)
+        axios.get(`${config.values.server.url}/api/menu`)
         .then(result => {
             res.render('menu/gestionar', {
                 menus: result.data.menus,
@@ -30,7 +30,7 @@ app.post('/register', (req, res) => {
     let errors = req.validationErrors();
 
     if (!errors) {
-        axios.post(`${url}/api/menu/register`, {name: req.body.nombre, plato_de_dia: 0})
+        axios.post(`${config.values.server.url}/api/menu/register`, {name: req.sanitize('nombre').escape().trim(), plato_del_dia: 0})
         .then( () => {
             req.flash('success', 'Menu registrado satisfactoriamente');
         }).catch(err => {

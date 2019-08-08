@@ -8,11 +8,9 @@ app.get('/categories', (req, res) => {
     let categorias = [], subcategorias = [];
     let sql_query = `SELECT * FROM categoria`;
 
-    if (req.query.nombre) {
-        sql_query += ` WHERE categoria.nombre = '${req.query.nombre}'`;
-    } else if (req.query.id_categoria) {
-        sql_query += ` WHERE categoria.id_categoria = ${req.query.id_categoria}`;
-    }
+    sql_query += req.query.nombre ? ` AND categoria.nombre = '${req.query.nombre}'` : ``;
+    sql_query += req.query.id_categoria ? ` AND categoria.id_categoria = ${req.query.id_categoria}` : ``;
+    
     req.getConnection((error, conn) => {
         if (!error) {
             conn.query(sql_query, (err, rows, fields) => {
@@ -41,7 +39,7 @@ app.get('/categories', (req, res) => {
 
 app.get('/get', (req, res) => {
 
-    let sql_query = `SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.puntos, item.eliminado, item.imagen 
+    let sql_query = `SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.eliminado, item.imagen 
         FROM item, categoria AS categoria, categoria AS subcategoria 
         WHERE item.id_categoria = categoria.id_categoria 
         AND item.id_subcategoria = subcategoria.id_categoria`;
