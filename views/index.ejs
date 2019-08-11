@@ -1,25 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<% include ./public/layouts/header.ejs %>
-
-<body>
-  <div class="container-scroller">
-    <% include ./public/layouts/navbar.ejs %>
-    <div class="container-fluid page-body-wrapper">
-      <% include ./public/layouts/sidebar.ejs %>
-      <div class="main-panel">
-        <img src="/images/logo.svg" alt="logo" style="margin-top: auto;margin-bottom: auto; max-width: 80%;margin-left: auto; margin-right: auto">
+  <% include ./public/layouts/header.ejs %>
+  <body>
+    <div class="container-scroller">
+      <% include ./public/layouts/navbar.ejs %>
+      <div class="container-fluid page-body-wrapper">
+        <% include ./public/layouts/sidebar.ejs %>
+          <div id="punto-peso-modal" class="modal-container">
+            <div class="modal">
+              <div class="modal-content">
+                <form method="POST" action="/puntos">
+                  <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Cambiar relación punto-peso</h4>
+                      <% if (messages.error) { %>
+                      <p id="result-message" style="color:red"><%- messages.error %></p>
+                      <% } %>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label>1 punto equivale a </label>
+                            <div class="input-group col-sm-12 p-0">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text bg-primary text-white">DOP$</span>
+                              </div>
+                              <input type="number" name="puntos" step="1" min="1" class="form-control">
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="submit" class="btn btn-sm btn-primary">Guardar cambios</button>
+                      <button type="button" class="btn btn-sm btn-danger" onclick="switchModal('punto-peso-modal', 'none')">Cancelar</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+        </div>
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="row">
+              <div class="col-md-3-5 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <p class="card-title text-md-center text-xl-left">Relación punto-peso</p>
+                    <div class="d-flex  justify-content-between align-items-baseline">
+                      <p class="lead">1 punto es igual a </p>
+                      <h3><%=valor_puntos%></h3>
+                      <p class="lead"> pesos</p>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm btn-block" onclick="switchModal('punto-peso-modal', 'flex')">Cambiar relación</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <script src="./vendors/base/vendor.bundle.base.js"></script>
-  <script src="./vendors/chart.public/scripts/Chart.min.js"></script>
-  <script src="./scripts/off-canvas.js"></script>
-  <script src="./scripts/hoverable-collapse.js"></script>
-  <script src="./scripts/template.js"></script>
-  <script src="./scripts/todolist.js"></script>
-  <script src="./scripts/dashboard.js"></script>
-</body>
-
+    <script src="/vendors/base/vendor.bundle.base.js"></script>
+    <script src="/vendors/chart.public/scripts/Chart.min.js"></script>
+    <script src="/scripts/off-canvas.js"></script>
+    <script src="/scripts/hoverable-collapse.js"></script>
+    <script src="/scripts/template.js"></script>
+    <script src="/scripts/gestion_menu.js"></script>
+  </body>
 </html>
