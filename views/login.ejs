@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Pollo del Sol - Login</title>
+  <title>Pollo del Sol - Iniciar Sesión</title>
   <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" href="../../vendors/base/vendor.bundle.base.css">
   <link rel="stylesheet" href="../../css/style.css">
@@ -21,9 +21,12 @@
               <div class="brand-logo text-center">
                 <img src="../../images/logo.svg" alt="logo">
               </div>
-              <form class="pt-3" method="POST" action="/login/">
+              <% if (messages.error) { %>
+              <p id="result-message" style="color:red"><%- messages.error %></p>
+              <% } %>
+              <form class="pt-3" method="POST" action="/login">
                 <div class="form-group">
-                  <input name="emailuser" type="text" class="form-control" id="emailuser" placeholder="Correo" value="<%=emailuser%>">
+                  <input name="correo" type="text" class="form-control" id="correo" placeholder="Correo" value="<%= correo%>">
                 </div>
                 <div class="form-group">
                   <input name="contrasena" type="password" class="form-control" id="exampleInputPassword1" placeholder="Contraseña" value="<%=contrasena%>">

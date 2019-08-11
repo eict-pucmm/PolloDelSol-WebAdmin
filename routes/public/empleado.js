@@ -5,9 +5,6 @@ const multer = require('multer');
 const cloudinary = require('cloudinary');
 const cloudinaryStorage = require('multer-storage-cloudinary');
 const config = require('../../config');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-let h;
 
 let app = express();
 
@@ -60,53 +57,51 @@ app.get('/registrar', (req, res, next) => {
 
 app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next) => {
 
-    const file = req.file;
-
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('correo', 'El correo no puede estar vacío').notEmpty();
+    req.assert('correo', 'Debe insertar una dirección de correo válida').isEmail().normalizeEmail();
     req.assert('contrasena', 'La contrasena no puede estar vacía.').notEmpty();
     req.assert('contrasenaconfirmada', 'La verificación de contrasena no puede estar vacía.').notEmpty();
 
-    let contrasena           = req.sanitize('contrasena').escape().trim();
+    let contrasena = req.sanitize('contrasena').escape().trim();
     let contrasenaconfirmada = req.sanitize('contrasenaconfirmada').escape().trim();
 
     let errors = req.validationErrors();
 
     if( !errors ) {
 
-        const employee = {
-            id_empleado:          '',
-            nombre:               req.sanitize('nombre').escape(),
-            correo:               req.sanitize('correo').escape().trim(),
-            rol:                  req.sanitize('rol').escape().trim(),
-            eliminado:            0,
-            contrasena:           req.sanitize('contrasena').escape().trim(),
+        let empleado = {
+            nombre: req.sanitize('nombre').escape(),
+            correo: req.sanitize('correo').escape().trim(),
+            rol: req.sanitize('rol').escape().trim(),
         };
 
-        if(file === undefined || contrasena !== contrasenaconfirmada) {
-            req.flash('error', file === undefined ? 'La imagen no puede estar vacía' : 'Las contraseñas deben ser iguales');
+        if (contrasena.length < 8) {
+            if(contrasena !== contrasenaconfirmada) {
+                req.flash('error', 'Las contraseñas deben ser iguales');
+            } else {
+                req.flash('error', 'La contraseña debe tener al menos 8 caracteres');
+            }
+
             res.render(
                 'empleado/register', {
                     action: 'Registrar empleado',
                     employee: {
-                        avatar: employee.avatar,
-                        nombre: employee.nombre,
-                        correo: employee.correo,
-                        rol: employee.rol,
+                        nombre: empleado.nombre,
+                        correo: empleado.correo,
+                        rol: empleado.rol,
                     },
                 }
             );
         } else {
-            employee.avatar = file.url;
+            empleado.avatar = req.file ? req.file.url : '';
         
-            axios.post(`${url}/api/empleado/registrar`, {data: employee})
+            axios.post(`${url}/api/empleado/registrar`, {empleado: empleado, contrasena: contrasena})
             .then( () => {      
-                req.flash('success', 'Empleado registrado satisfactoriamente')
+                req.flash('success', 'Empleado registrado satisfactoriamente. Se ha enviado un correo de verificación')
             }).catch(err => {
-                console.log('error in axios');
                 req.flash('error', err);
             }).finally(() => {
-                console.log('redirected to employee register');
                 res.redirect('/empleado/registrar')
             });
         }
@@ -116,74 +111,55 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
     }
 });
 
-app.get('/modificar/(:id_empleado)', (req,res,next) =>{
+app.get('/modificar/(:id_empleado)', (req, res, next) => {
 
 
     if(config.loggedIn){
         axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
-    .then(result => {
-        let employee = {
-            id_empleado: result.data.employee[0].id_empleado,
-            avatar: result.data.employee[0].avatar,
-            nombre: result.data.employee[0].nombre,
-            correo: result.data.employee[0].correo,
-            rol: result.data.employee[0].rol,
-            eliminado: result.data.employee[0].eliminado,
-        }
-
-        let data = {
-            action: 'Modificar empleado',
-            employee: employee,
-        }
-        
-        res.render('empleado/register', data);
-    }).catch(err => {
-        res.send(err); 
-    });
-    }else {
+        .then(result => {
+            res.render('empleado/register', {
+                action: 'Modificar empleado',
+                employee: result.data.employee[0],
+            });
+        }).catch(err => {
+            res.send(err); 
+        });
+    } else {
         res.redirect('/login')
     }
-    
-
-
 });
 
 app.post('/modificar/(:id_empleado)', (req, res, next) => {
 
-    const file = req.file;
-
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
-    req.assert('correo', 'El correo no puede estar vacío').notEmpty();
 
     let errors = req.validationErrors();
 
     if(!errors) {
 
-        const employee = {
-            id_empleado:          req.params.id_empleado,
-            nombre:               req.sanitize('nombre').escape(),
-            correo:               req.sanitize('correo').escape().trim(),
-            rol:                  req.sanitize('rol').escape().trim(),
-            eliminado:            req.body.eliminado !== undefined ? 0 : 1,
+        let empleado = {
+            nombre: req.sanitize('nombre').escape(),
+            rol: req.sanitize('rol').escape().trim(),
         };
 
-        if (req.file) {
-            employee.avatar = file.url;
-        }  
+        if (req.body.activar) {
+            empleado.activo = 1;
+        } else if (req.body.cancelar) {
+            empleado.activo = 0;
+        }
 
-        axios.post(`${url}/api/empleado/modificar/${req.params.id_empleado}`, {data: employee})
-        .then( () => {
-            req.flash('success', 'Empleado modificado satisfactoriamente')
+        axios.post(`${url}/api/empleado/modificar/${req.params.id_empleado}`, {empleado: empleado})
+        .then( response => {
+            req.flash('success', response.data.message)
         }).catch(err => {
-            console.log('error in axios');
-            req.flash('error', err);
+            req.flash('error', 'Error al modificar empleado');
         }).finally(() => {
             res.redirect('/empleado')
         });
 
     } else {
         req.flash('error', errors[0].msg);
-        res.redirect('/empleado/register')
+        res.redirect(`/empleado/modificar/${req.params.id_empleado}`)
     }
 });
 

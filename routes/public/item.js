@@ -55,15 +55,15 @@ app.get('/register', (req, res, next) => {
             categoria: '',
             subcategoria: '',
             precio: '',
-            eliminado: 0
+            activo: 0
         }
     }
     if(config.loggedIn){
-        axios.get(`${config.values.server.url}/api/item/get?categoria=Individual&subcategoria=Guarnicion&eliminado=0`)
+        axios.get(`${config.values.server.url}/api/item/get?categoria=Individual&subcategoria=Guarnicion&activo=0`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida&eliminado=0`)
+            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida&activo=0`)
                 .then(result2 => {
                     return result2;
                 })
@@ -114,7 +114,7 @@ app.post('/register', parser.single('image'), (req, res, next) => {
         id_categoria: parseInt(req.sanitize('categoria-cbx').escape().trim()),
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
-        eliminado: 0,
+        activo: 0,
         imagen: req.file.url
     }
     regItem = Object.assign({}, item);
@@ -217,58 +217,62 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
     let updateCombo = false, itemCombo, comboData;
     let errors = req.validationErrors()
     let item = {
-        id_item: req.params.id_item,
         nombre: req.sanitize('nombre').escape().trim(),
         descripcion: req.sanitize('descripcion').escape().trim(),
         id_categoria: parseInt(req.sanitize('categoria-cbx').escape().trim()),
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
-        eliminado: req.body.eliminado !== undefined ? 0 : 1,
+    }
+
+    if (req.body.activar) {
+        item.activo = 1;
+    } else if (req.body.cancelar) {
+        item.activo = 0;
     }
 
     if (req.body['selected-category'] == 'Combo') {
         updateCombo = true;
         itemCombo = [];
-        comboData = {id_combo: item.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
+        comboData = {id_combo: req.params.id_item, max_guarnicion: parseInt(req.body['max-guarnicion']), max_bebida: parseInt(req.body['max-bebida'])}
         if (Array.isArray(req.body.bebidas)) {
             req.body.bebidas.forEach(bebida => {
-                itemCombo.push({id_combo: item.id_item, id_item: bebida})
+                itemCombo.push({id_combo: req.params.id_item, id_item: bebida})
             });
         } else {
-            itemCombo.push({id_combo: item.id_item, id_item: req.body.bebidas});
+            itemCombo.push({id_combo: req.params.id_item, id_item: req.body.bebidas});
         }
         if (Array.isArray(req.body.guarniciones)) {
             req.body.guarniciones.forEach(guarnicion => {
-                itemCombo.push({id_combo: item.id_item, id_item: guarnicion})
+                itemCombo.push({id_combo: req.params.id_item, id_item: guarnicion})
             });
         } else {
-            itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
+            itemCombo.push({id_combo: req.params.id_item, id_item: req.body.guarniciones});
         }
     }
 
     item.imagen = req.file ? req.file.url : req.body.imagen;
 
     if (!errors) {
-        axios.post(`${config.values.server.url}/api/item/edit/${item.id_item}`, {data: item})
+        axios.post(`${config.values.server.url}/api/item/edit/${req.params.id_item}`, {data: item})
         .then( response => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
                 if (updateCombo) {
-                    axios.post(`${config.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
-                    .then(comboRes => {console.log(comboRes)})
-                    .catch(err => console.log(err));
+                    axios.post(`${config.values.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
+                    .then(comboRes => console.log(comboRes.response.data.message))
+                    .catch(err => console.log(err.response.data.message));
                 }
+                res.redirect('/item');
             } else {
                 req.flash('error', response.data.message);
-                res.redirect(`/item/edit/${item.id_item}`);
+                res.redirect(`/item/edit/${req.params.id_item}`);
             }
-        }).catch(err => console.log(err))
-        .finally( () => {
-            res.redirect('/item');
+        }).catch(err => {
+            res.redirect(`/item/edit/${req.params.id_item}`);
         });
     } else {
         req.flash('error', errors[0].msg);
-        res.redirect(`/item/edit/${item.id_item}`);
+        res.redirect(`/item/edit/${req.params.id_item}`);
     }
 });
 

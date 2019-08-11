@@ -39,7 +39,7 @@ let updateList = () => {
     let selected_cat = categoriaCbx.options[categoriaCbx.selectedIndex].innerHTML;
     let selected_subcat = subcategoriaCbx.options[subcategoriaCbx.selectedIndex].innerHTML;
     
-    if (itemList[i].title.includes(canceladoCbx.value)) {
+    if (itemList[i].cells[5].innerHTML.includes(canceladoCbx.value)) {
       if (selected_cat === 'Todas') {
         if (selected_subcat === 'Todas') {
           itemList[i].style.display = 'table-row';

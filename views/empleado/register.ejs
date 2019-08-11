@@ -10,12 +10,11 @@
       <% include ../public/layouts/sidebar.ejs %>
       <div class="main-panel">
         <div class="content-wrapper">
-        <% if (action === 'Registrar empleado') {%>
+          <% if (action === 'Registrar empleado') {%>
           <form class="forms-sample" method="POST" action="/empleado/registrar" enctype="multipart/form-data">
-        <% } else if (action === 'Modificar empleado') { %>
-          <input name="id_empleado" type="text" style="display: none;" value="<%= employee.id_empleado %>"/>
-          <form class="forms-sample" method="POST" action="/empleado/modificar/<%=employee.id_empleado%>">
-        <% } %>
+          <% } else if (action === 'Modificar empleado') { %>
+          <form class="forms-sample" method="POST" action="/empleado/modificar/<%= employee.id_empleado%>">
+          <% } %>
             <div class="row">
                   <div class="col-3 grid-margin stretch-card text-center">
                     <div class="card">
@@ -53,25 +52,15 @@
                           <div class="col-md-6">
                             <div class="form-group">
                               <label for="nombre">Nombre completo</label>
-                              <div class="col-sm-12 row">
+                              <div class="col-sm-12 p-0">
                                 <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre" value="<%= employee.nombre %>"/>
                               </div>
                             </div>
                           </div>
-                          <div class="col-md-6" id="correo-field">
-                            <div class="form-group">
-                              <label for="correo">Correo electrónico</label>
-                              <div class="col-sm-12 row">
-                                <input type="text" name="correo" class="form-control" id="correo" placeholder="Correo" value="<%= employee.correo %>">
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
                           <div class="col-md-6">
                             <div class="form-group">
                               <label for="rol">Rol</label>
-                              <select class="form-control col-sm-11" id="rol" name="rol">
+                              <select class="form-control col-sm-12" id="rol" name="rol">
                                 <option value="Administrador" <% if (employee.rol == 'Administrador') { %>selected<% } %> >Administrador</option>
                                 <option value="Cajero" <% if (employee.rol == 'Cajero') { %>selected<% } %> >Cajero</option>
                                 <option value="Delivery" <% if (employee.rol == 'Delivery') { %>selected<% } %> >Delivery</option>
@@ -79,11 +68,21 @@
                             </div>
                           </div>
                         </div>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label for="correo">Correo electrónico</label>
+                              <div class="col-sm-12 p-0">
+                                <input type="text" name="correo" class="form-control" id="correo" placeholder="Correo" value="<%= employee.correo %>" <% if (action === 'Modificar empleado') { %> disabled <% } %>>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                         <div class="row" id="contrasena-field">
                           <div class="col-md-6">
                             <div class="form-group">
                               <label for="contrasena">Contraseña</label>
-                              <div class="col-sm-12 row">
+                              <div class="col-sm-12 p-0">
                                 <input type="password" name="contrasena" class="form-control" id="contrasena" placeholder="Contraseña">
                               </div>
                             </div>
@@ -91,7 +90,7 @@
                           <div class="col-md-6">
                             <div class="form-group">
                                 <label for="contrasenaconfirmada">Confirmar contraseña</label>
-                                <div class="col-sm-12 row">
+                                <div class="col-sm-12 p-0">
                                   <input type="password" name="contrasenaconfirmada" class="form-control" id="contrasenaconfirmada" placeholder="Contraseña">
                                 </div>
                               </div>
@@ -102,15 +101,15 @@
                             <div class="col-md-12">
                               <div class="input-group align-items-center">
                                 <div class="form-check">
-                                  <%if (!employee.eliminado) {%>
+                                  <%if (employee.activo) {%>
                                   <label class="form-check-label" style="color: red">
-                                    <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input" checked>
-                                    Cancelar
-                                    <%} else {%>
+                                  <input id="cancelar" name="cancelar" type="checkbox" class="form-check-input">
+                                  Cancelar
+                                  <% } else { %>
                                   <label class="form-check-label" style="color: green">
-                                    <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input">
-                                    Activar
-                                    <%}%>
+                                  <input id="activar" name="activar" type="checkbox" class="form-check-input">
+                                  Activar
+                                  <% } %>
                                   <i class="input-helper"></i></label>
                                 </div>
                               </div>

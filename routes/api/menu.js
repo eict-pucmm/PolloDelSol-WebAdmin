@@ -29,8 +29,8 @@ app.get('/', (req, res) => {
 
 app.get('/items', (req, res) => {
 
-    let sql_query = `SELECT combo.id_item, combo.nombre, combo.descripcion, combo.categoria, combo.subcategoria, combo.precio, combo.eliminado, combo.imagen  
-        FROM (SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.eliminado, item.imagen 
+    let sql_query = `SELECT combo.id_item, combo.nombre, combo.descripcion, combo.categoria, combo.subcategoria, combo.precio, combo.activo, combo.imagen  
+        FROM (SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.activo, item.imagen 
                 FROM item, categoria AS categoria, categoria AS subcategoria 
                 WHERE item.id_categoria = categoria.id_categoria 
                 AND item.id_subcategoria = subcategoria.id_categoria) AS combo, menuitem`
@@ -81,6 +81,7 @@ app.post('/edit/(:id_menu)', (req, res) => {
 
     const toDelete = req.body.deleted;
     const toInsert = req.body.inserted;
+    const menu = req.body.menu;
 
     req.getConnection((error, conn) => {
         if (!error) {
@@ -104,7 +105,7 @@ app.post('/edit/(:id_menu)', (req, res) => {
                 });
             }
             
-            conn.query(`UPDATE menu SET nombre = ?, activo = ? WHERE id_menu = ?;`, [req.body.nombre, req.body.activo, req.params.id_menu], (err, results) => {
+            conn.query(`UPDATE menu SET ? WHERE id_menu = ?;`, [menu, req.params.id_menu], (err, results) => {
                 if (!err) {
                     res.status(200).send({error: false, message: 'El menú ha sido editado satisfactoriamente'});
                 } else {

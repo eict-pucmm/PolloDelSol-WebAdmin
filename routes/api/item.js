@@ -39,7 +39,7 @@ app.get('/categories', (req, res) => {
 
 app.get('/get', (req, res) => {
 
-    let sql_query = `SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.eliminado, item.imagen 
+    let sql_query = `SELECT item.id_item, item.nombre, item.descripcion, categoria.nombre AS categoria, subcategoria.nombre AS subcategoria, item.precio, item.activo, item.imagen 
         FROM item, categoria AS categoria, categoria AS subcategoria 
         WHERE item.id_categoria = categoria.id_categoria 
         AND item.id_subcategoria = subcategoria.id_categoria`;
@@ -48,7 +48,7 @@ app.get('/get', (req, res) => {
     sql_query += req.query.nombre ? ` AND item.nombre = '${req.query.nombre}'` : ``;
     sql_query += req.query.categoria ? ` AND categoria.nombre = '${req.query.categoria}'` : ``;
     sql_query += req.query.subcategoria ? ` AND subcategoria.nombre = '${req.query.subcategoria}'` : ``;
-    sql_query += req.query.eliminado ? ` AND item.eliminado = ${req.query.eliminado}` : ``;
+    sql_query += req.query.activo ? ` AND item.activo = ${req.query.activo}` : ``;
 
     req.getConnection((error, conn) => {
         if (!error) {
@@ -214,7 +214,7 @@ app.post('/combo/edit', (req, res) => {
                 if (errores.length > 0) {
                     res.status(500).send({error: true, message: errores});
                 } else {
-                    res.status(200).send({error: false, result: resultados, message: 'Combo registered sucessfully'});
+                    res.status(200).send({error: false, result: resultados, message: 'Combo registrado satisfactoriamente'});
                 }
             } else {
                 res.status(500).send({error: true, message: error});

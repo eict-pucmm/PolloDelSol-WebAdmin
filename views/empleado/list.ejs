@@ -19,7 +19,7 @@
                       <div class="col-md-3">
                         <div class="form-group">
                           <label>Rol</label>
-                            <select class="form-control col-sm-10" id="rol-cbx" name="rol-cbx" onchange="updateList()">
+                            <select class="form-control col-sm-12" id="rol-cbx" name="rol-cbx" onchange="updateList()">
                               <option value="" selected>Todos</option>
                               <option value="Administrador">Administrador</option>
                               <option value="Cajero">Cajero</option>
@@ -30,10 +30,10 @@
                       <div class="col-md-3">
                         <div class="form-group">
                           <label>Cancelado</label>
-                            <select class="form-control col-sm-10" id="cancelado-cbx" name="cancelado-cbx" onchange="updateList()">
+                            <select class="form-control col-sm-12" id="cancelado-cbx" name="cancelado-cbx" onchange="updateList()">
                               <option value="" selected>Todos</option>
-                              <option value="0">En operación</option>
-                              <option value="1">Cancelado</option>
+                              <option value="Activado">Activos</option>
+                              <option value="Cancelado">Cancelados</option>
                             </select>
                         </div>
                       </div>
@@ -52,21 +52,17 @@
                         </tr>
                       </thead>
                       <tbody id="employee-list">
-                      <!--Code to fill table with employees data-->
-                       <% if (data !== '' && data !== undefined) { %>
-                        <input id= 'data-input'style="display: none" value="<%=data%>">
+                       <% if (data) { %>
                          <% data.forEach(function (employee) { %>
-                              <tr title="<%-employee.rol%> <%=employee.eliminado%>">
-                                <td><%= employee.nombre %></td>
-                                <td><%= employee.correo %></td>
-                                <td><%= employee.rol %></td>
-                                <td>
-                                  <% if (!employee.eliminado) { %>
-                                  <p id="result-message" style="color:green">Activado</p>
-                                  <% } else { %>
-                                  <p id="result-message" style="color:red">Cancelado</p>
-                                  <% } %>
-                                </td>
+                              <tr>
+                                <td><%- employee.nombre %></td>
+                                <td><%- employee.correo %></td>
+                                <td><%- employee.rol %></td>
+                                <% if (employee.activo) { %>
+                                <td style="color:green">Activado</td>
+                                <% } else { %>
+                                <td  style="color:red">Cancelado</td>
+                                <% } %>
                                 <td class="image"> 
                                   <a href='/empleado/modificar/<%= employee.id_empleado %>'> <img src="/images/icons/edit.svg" /> </a>
                                 </td>

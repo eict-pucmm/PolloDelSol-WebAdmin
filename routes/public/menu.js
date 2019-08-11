@@ -47,7 +47,7 @@ app.post('/register', (req, res) => {
 app.get('/edit/(:id_menu)', (req, res) => {
 
     if (config.loggedIn) {
-        axios.get(`${config.values.server.url}/api/item/get?eliminado=0`)
+        axios.get(`${config.values.server.url}/api/item/get?activo=1`)
         .then(combos => {
             axios.get(`${config.values.server.url}/api/item/categories`)
             .then(result => {
@@ -70,21 +70,28 @@ app.get('/edit/(:id_menu)', (req, res) => {
     }else {
         res.redirect('/login')
     }
-
-    
-
 });
 
 app.post('/edit/(:id_menu)', (req, res) => {
 
-    const data = {
-        deleted: checkIfString(req.body['item-list']) ? [req.body['item-list']] : req.body['item-list'],
-        inserted: checkIfString(req.body['menu-items']) ? [req.body['menu-items']] : req.body['menu-items'],
-        nombre: req.body.nombre,
-        activo: req.body.activo !== undefined ? 1 : 0
-    }
+    req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
+
+    let errors = req.validationErrors();
+
+    if (!errors) {
+        let data = {
+            deleted: checkIfString(req.body['item-list']) ? [req.body['item-list']] : req.body['item-list'],
+            inserted: checkIfString(req.body['menu-items']) ? [req.body['menu-items']] : req.body['menu-items'],
+            menu: {nombre: req.body.nombre},
+        }
     
-    axios.post(`${config.values.server.url}/api/menu/edit/${req.params.id_menu}`, data)
+        if (req.body.activar) {
+            data.menu.activo = 1;
+        } else if (req.body.desactivar) {
+            data.menu.activo = 0;
+        }
+
+        axios.post(`${config.values.server.url}/api/menu/edit/${req.params.id_menu}`, data)
         .then(response => {
             req.flash('success', response.data.message)
         })
@@ -92,6 +99,10 @@ app.post('/edit/(:id_menu)', (req, res) => {
         .finally( () => {
             res.redirect(`/menu`);
         });
+    } else {
+        req.flash('error', errors[0].msg);
+        res.redirect(`/menu/edit/${req.params.id_menu}`);
+    }
 
 });
 

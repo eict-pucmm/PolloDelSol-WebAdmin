@@ -110,5 +110,5 @@ let updateList = () => {
     }
 }
   
-  updateSubcategorias();
-  updateList();
+updateSubcategorias();
+updateList();

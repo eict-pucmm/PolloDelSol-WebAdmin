@@ -49,7 +49,7 @@
                                                 <tr>
                                                     <th class="col-6">Menu</th>
                                                     <th>Cantidad de items</th>
-                                                    <th>Activo</th>
+                                                    <th>Estado</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -58,13 +58,11 @@
                                                 <tr title="<%-menu.id_menu%>">
                                                     <td><%- menu.nombre %></td>
                                                     <td><%= menu.cant_items%></td>
-                                                    <td>
-                                                        <div class="form-check">
-                                                        <label class="form-check-label">
-                                                            <input type="checkbox" class="form-check-input" disabled <% if (menu.activo) { %> checked <% } %>/>
-                                                        </label>
-                                                        </div>
-                                                    </td>
+                                                    <% if (menu.activo) {%>
+                                                    <td id="result-message" style="color:green">Activado</td>
+                                                    <% } else {%>
+                                                    <td id="result-message" style="color:red">Desactivado</td>
+                                                    <% }%>
                                                     <td class="image">
                                                         <a href="/menu/edit/<%=menu.id_menu%>"> <img src="/images/icons/edit.svg" />
                                                         </a>

@@ -18,10 +18,10 @@
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="categoria-item">Categoria</label>
-                          <select onchange="updateSubcategorias()" class="form-control col-sm-12" id="categoria-cbx" name="categoria">
+                          <select onchange="updateSubcategorias()" class="form-control col-sm-12" id="categoria-cbx">
                             <option value="" selected>Todas</option>
                             <%categorias.forEach(cat => {%>
-                            <option value="<%=cat.id_categoria%>"><%=cat.nombre%></option>
+                            <option value="<%= cat.id_categoria%>"><%=cat.nombre%></option>
                             <%})%>
                           </select>
                         </div>
@@ -29,17 +29,17 @@
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="subcategoria-item">Subcategoria</label>
-                          <select onchange="updateList()" class="form-control col-sm-12" id="subcategoria-cbx" name="subcategoria">
+                          <select onchange="updateList()" class="form-control col-sm-12" id="subcategoria-cbx">
                           </select>
                         </div>
                       </div>
                       <div class="col-md-3">
                         <div class="form-group">
                           <label for="cancelado-item">Estado</label>
-                          <select onchange="updateList()" class="form-control col-sm-12" id="cancelado-cbx" name="cancelado">
+                          <select onchange="updateList()" class="form-control col-sm-12" id="cancelado-cbx">
                             <option value="" selected>Todos</option>
-                            <option value="0">Activados</option>
-                            <option value="1">Desactivados</option>
+                            <option value="Activado">Activados</option>
+                            <option value="Desactivado">Desactivados</option>
                           </select>
                         </div>
                       </div>
@@ -68,13 +68,11 @@
                             <td><%= item.precio %></td>
                             <td><%- item.categoria %></td>
                             <td><%- item.subcategoria %></td>
-                            <td>
-                              <% if (!item.eliminado) {%>
-                              <p id="result-message" style="color:green">Activado</p>
-                              <% } else {%>
-                              <p id="result-message" style="color:red">Desactivado</p>
-                              <% }%>
-                            </td>
+                            <% if (item.activo) {%>
+                            <td id="result-message" style="color:green">Activado</td>
+                            <% } else {%>
+                            <td id="result-message" style="color:red">Desactivado</td>
+                            <% }%>
                             <td class="image"> 
                               <a href='/item/edit/<%- item.id_item %>'> <img src="/images/icons/edit.svg" /> </a>
                             </td>

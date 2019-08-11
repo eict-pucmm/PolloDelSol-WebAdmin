@@ -17,21 +17,28 @@
                   <h4 class="card-title">Empresas</h4>
                   <div class="row">
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="filtro-rnc">Flitrar por RNC</label>
-                            <input type="text" class="form-control" id="filtro-rnc" onkeyup="filter()"/>
-                        </div>
+                      <div class="form-group">
+                        <label for="filtro-rnc">Flitrar por RNC</label>
+                        <input type="text" class="form-control" id="filtro-rnc" onkeyup="filter()"/>
+                      </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="filtro-nombre">Flitrar por nombre</label>
-                            <input type="text" class="form-control" id="filtro-nombre" onkeyup="filter()"/>
-                        </div>
+                      <div class="form-group">
+                        <label for="filtro-nombre">Flitrar por nombre</label>
+                        <input type="text" class="form-control" id="filtro-nombre" onkeyup="filter()"/>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label for="aprobada-cbx">Estado</label>
+                        <select onchange="filter()" class="form-control col-sm-12" id="aprobada-cbx">
+                          <option value="" selected>Todas</option>
+                          <option value="Aprobada">Aprobadas</option>
+                          <option value="Pendiente">Pendientes</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
-                  <% if (data == '') { %>
-                    <p id="result-message" style="color :red">No hay empresas con ese nombre</p>
-                  <% } %>
                   <div class="table-responsive pt-3">
                     <table id="empresa-table" class="table table-bordered">
                       <thead>
@@ -41,31 +48,29 @@
                           <th>Teléfono</th>
                           <th>Correo electrónico</th> 
                           <th>Cant. de empleados asociados</th>
-                          <th>Aprobada</th>
+                          <th>Estado</th>
                         </tr>
                       </thead>
-                      <tbody>
-                       <% if (data !== '') { %>
-                         <% data.forEach(function (enterprise) { %>
-                              <tr>
-                                <td><%- enterprise.rnc %></td>
-                                <td><%- enterprise.nombre %></td>
-                                <td><%- enterprise.telefono %></td>
-                                <td><%- enterprise.correo_electronico%></td>
-                                <td><%= enterprise.cant_empleados%></td>
-                                <td>
-                                  <div class="form-check">
-                                    <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input" disabled <% if (enterprise.aprobada) { %> checked <% } %>/>
-                                    </label>
-                                  </div>
-                                </td>
-                                <td class="image"> 
-                                  <a href='/empresa/edit/<%= enterprise.id_empresa %>'> <img src="/images/icons/edit.svg" /> </a>
-                                </td>
-                              </tr>
-                         <% }) %>
-                       <% } %>
+                      <tbody id="empresa-list">
+                        <% if (data !== '') { %>
+                        <% data.forEach((empresa) => { %>
+                        <tr>
+                          <td><%- empresa.rnc %></td>
+                          <td><%- empresa.nombre %></td>
+                          <td><%- empresa.telefono %></td>
+                          <td><%- empresa.correo_electronico%></td>
+                          <td><%= empresa.cant_empleados%></td>
+                          <% if (empresa.aprobada) {%>
+                          <td id="result-message" style="color:green">Aprobada</td>
+                          <% } else {%>
+                          <td id="result-message" style="color:red">Pendiente</td>
+                          <% }%>
+                          <td class="image"> 
+                            <a href='/empresa/edit/<%= empresa.id_empresa %>'> <img src="/images/icons/edit.svg" /> </a>
+                          </td>
+                        </tr>
+                        <% }) %>
+                        <% } %>
                       </tbody>
                     </table>
                   </div>

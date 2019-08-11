@@ -16047,13 +16047,11 @@ button.bg-dark:focus {
 }
 
 .mt-2, .template-demo > .btn-group,
-.template-demo > .btn-group-vertical,
 .my-2 {
   margin-top: 0.5rem !important;
 }
 
-.mr-2, .template-demo > .btn, .template-demo > .btn-group,
-.template-demo > .btn-group-vertical, .template-demo > .dropdown,
+.mr-2, .template-demo > .btn, .template-demo > .btn-group, .template-demo > .dropdown,
 .mx-2 {
   margin-right: 0.5rem !important;
 }

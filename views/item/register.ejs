@@ -115,16 +115,16 @@
                         <div class="col-md-12">
                           <div class="input-group align-items-center">
                             <div class="form-check">
-                              <%if (!item.eliminado) {%>
+                              <%if (item.activo) {%>
                               <label class="form-check-label" style="color: red">
-                                <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input" checked>
-                                Descativar
+                              <input id="cancelar" name="cancelar" type="checkbox" class="form-check-input">
+                              Descativar
                               <%} else {%>
-                                <label class="form-check-label" style="color: green">
-                                <input id="eliminado" name="eliminado" type="checkbox" class="form-check-input">
-                                Activar
+                              <label class="form-check-label" style="color: green">
+                              <input id="activar" name="activar" type="checkbox" class="form-check-input">
+                              Activar
                               <%}%>
-                                <i class="input-helper"></i>
+                              <i class="input-helper"></i>
                               </label>
                             </div>
                           </div>

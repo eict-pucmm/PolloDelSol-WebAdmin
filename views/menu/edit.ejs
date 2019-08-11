@@ -23,7 +23,7 @@
                                         <% } %>
                                         <div class="row">
                                             <div class="col-md-5">
-                                                <div class="form-group">
+                                                <div class="form-group mb-0">
                                                     <label for="nombre">Nombre</label>
                                                     <div class="col-sm-12" style="padding-left: 0; padding-right: 0;"> 
                                                     <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Nombre"
@@ -39,9 +39,9 @@
                                                     <label for="categoria-item">Categoria</label>
                                                     <select onchange="updateSubcategorias()" class="form-control col-sm-10" id="categoria-cbx" name="categoria">
                                                         <option value="" selected>Todas</option>
-                                                    <%categorias.forEach(cat => {%>
+                                                        <%categorias.forEach(cat => {%>
                                                         <option value="<%=cat.id_categoria%>"><%=cat.nombre%></option>
-                                                    <%})%>
+                                                        <%})%>
                                                     </select>
                                                 </div>
                                             </div>
@@ -55,8 +55,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-5">
-                                                <div class="form-group">
-                                                    <label></label>
+                                                <div class="form-group mb-0">
                                                     <select class="form-control col-sm-12" name="item-list" id="item-list" size="10" multiple="multiple">
                                                     <% if (items) {%>
                                                     <% items.forEach(item => {%>
@@ -66,8 +65,8 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="template-demo mt-4 col-md-2 text-center">
-                                                <div class="btn-group-vertical" role="group" style="padding: 0;">
+                                            <div class="template-demo col-md-2 text-center">
+                                                <div class="btn-group-vertical p-0" role="group">
                                                     <button id="all-menu-to-combo" type="button" class="btn btn-outline-secondary">
                                                         <i class="ti-angle-double-left"></i>
                                                     </button>
@@ -83,8 +82,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-5">
-                                                <div class="form-group">
-                                                    <label></label>
+                                                <div class="form-group mb-0">
                                                     <select class="form-control col-sm-12" name="menu-items" id="menu-list" size="10" multiple="multiple">
                                                     <% if (menuItems) {%>
                                                     <% menuItems.forEach(item => {%>
@@ -100,12 +98,12 @@
                                                 <div class="input-group align-items-center">
                                                     <div class="form-check">
                                                         <%if (menu.activo) {%>
-                                                        <label class="form-check-label" style="color: green">
-                                                        <input id="activo" name="activo" type="checkbox" class="form-check-input" checked>
-                                                        Desactivar
-                                                        <%} else {%>
                                                         <label class="form-check-label" style="color: red">
-                                                        <input id="activo" name="activo" type="checkbox" class="form-check-input">
+                                                        <input id="desactivar" name="desactivar" type="checkbox" class="form-check-input"/>
+                                                        Desactivar
+                                                        <% } else { %>
+                                                        <label class="form-check-label" style="color: green">
+                                                        <input id="activar" name="activar" type="checkbox" class="form-check-input"/>
                                                         Activar
                                                         <%}%>
                                                         <i class="input-helper"></i></label>
