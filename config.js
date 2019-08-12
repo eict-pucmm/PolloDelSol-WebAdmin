@@ -11,12 +11,18 @@ const values = {
         // url to call API
         // set to http://localhost:5000 if working locally
         // set to http://pollo-del-sol.herokuapp.com if deploying to heroku
-        url: `http://pollo-del-sol.herokuapp.com`
+        url: 'http://localhost:5000'
     },
     cloudinary: {
         cloud_name: 'pollo-del-sol',
         api_key: '298841141886296',
         api_secret: 'ZvhqmTdEn5Xbnqlvn-wjagJ11cA'
+    },
+    azure:{
+        user: 'PolloAdmin',
+        password: '9e38A45c'
+        server: 'pollo-del-sol.database.windows.net',
+        database: 'pollo-test'
     }
 }
 

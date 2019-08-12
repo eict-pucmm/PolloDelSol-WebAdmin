@@ -9,13 +9,13 @@ const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session');
 const config            = require('./config');              //config values for server and database
 const cors              = require('cors');
-
+const mssql             = require('mssql')
 //visual routes
 const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
 const empleadoRoute     = require('./routes/public/empleado');
 const empresaRoute      = require('./routes/public/empresa');
-const platoRoute      = require('./routes/public/platodeldia');
+const platoRoute        = require('./routes/public/platodeldia');
 const menuRoute         = require('./routes/public/menu');
 const loginRoute        = require('./routes/public/login');
 //api routes
