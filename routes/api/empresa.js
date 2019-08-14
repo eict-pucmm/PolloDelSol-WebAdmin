@@ -1,9 +1,58 @@
 const express = require('express');
+const {poolPromise} = require('../../db')
 let app = express();
+const config = require('../../config');
 
-app.get('/', (req, res, next) => {
 
-    let sql_query = `SELECT cliente.id_cliente, cliente.nombre, cliente.correo_electronico, cliente.telefono, empresa.id_empresa, empresa.rnc, empresa.aprobada, empresa.eliminado, cierre.dia_ajustado AS dia_de_cierre, cierre.tipo_de_cierre, COUNT(empresausuario.id_empresa) AS cant_empleados
+app.get('/', async (req, res, next) => {
+    //Vainita SQL SERVER
+    try {
+        const pool = await poolPromise
+        const result = await pool.request()
+            .query(`select 
+            cliente.id_cliente, 
+            cliente.nombre, 
+            cliente.correo_electronico, 
+            cliente.telefono, 
+            empresa.id_empresa, 
+            empresa.rnc, 
+            empresa.aprobada, 
+            empresa.eliminado, 
+            cierre.dia_ajustado dia_de_cierre, 
+            cierre.tipo_de_cierre, 
+            count(empresausuario.id_empresa) cant_empleados
+        from 
+            cliente, 
+            empresa, 
+            cierre, 
+            empresacierre, 
+            empresausuario
+        where 
+            cliente.id_cliente = empresa.id_cliente
+            and empresacierre.id_empresa = empresa.id_empresa
+            and empresacierre.id_cierre = cierre.id_cierre
+            and empresausuario.id_empresa = empresa.id_empresa
+        group by
+            cliente.id_cliente, 
+            cliente.nombre, 
+            cliente.correo_electronico, 
+            cliente.telefono, 
+            empresa.id_empresa, 
+            empresa.rnc, 
+            empresa.aprobada, 
+            empresa.eliminado, 
+            cierre.dia_ajustado, 
+            cierre.tipo_de_cierre;`)      
+    
+        res.status(200).send({error: false, empresa: result.recordset});
+    } catch (err) {
+        res.status(500).send({error: true, message: err});
+    } 
+
+
+
+    //Vainita MySQL
+    /*let sql_query = `SELECT cliente.id_cliente, cliente.nombre, cliente.correo_electronico, cliente.telefono, empresa.id_empresa, empresa.rnc, empresa.aprobada, empresa.eliminado, cierre.dia_ajustado AS dia_de_cierre, cierre.tipo_de_cierre, COUNT(empresausuario.id_empresa) AS cant_empleados
         FROM cliente, empresa, cierre, empresacierre, empresausuario
         WHERE cliente.id_cliente = empresa.id_cliente
             AND empresacierre.id_empresa = empresa.id_empresa
@@ -26,7 +75,7 @@ app.get('/', (req, res, next) => {
         } else {
             res.status(500).send({error: true, message: error});
         }
-    })
+    })*/
 });
 
  
@@ -36,6 +85,7 @@ app.post('/edit/(:id_empresa)', (req, res) => {
     const cierre = req.body.cierre;
     let sql_query, sql_query2 = '';
     
+    //Vainita MySQL
     if (req.body.actualizar_cierre) {
         sql_query = `UPDATE cierre SET ? WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = '${id_empresa}');`;
     } else {

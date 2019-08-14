@@ -20,9 +20,10 @@ const values = {
     },
     azure:{
         user: 'PolloAdmin',
-        password: '9e38A45c'
+        password: '9e38A45c',
         server: 'pollo-del-sol.database.windows.net',
-        database: 'pollo-test'
+        database: 'pollo-test',
+        encrypt: true
     }
 }
 
