@@ -115,6 +115,14 @@
                               </div>
                             </div>
                           </div>
+                          <% if (!employee.email_verified) { %>
+                          <div class="row">
+                            <div class="col-md-12">
+                              <p id="result-message" style="color:red">El empleado no ha verificado su correo electrónico</p>
+                              <button type="submit" formmethod="POST" formaction="/sendEmailVerification/<%- employee.correo%>" class="btn btn-primary btn-sm">Enviar correo de verificación</button>
+                            </div>
+                          </div>
+                          <% }%>
                           <%}%>
                       </div>
                     </div>

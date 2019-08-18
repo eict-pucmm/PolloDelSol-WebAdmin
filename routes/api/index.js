@@ -16,6 +16,23 @@ app.get('/',(req, res) => {
     res.status(200).send({error: false, message: 'API working sucessfully'});
 });
 
+app.post('/verifyEmail', (req, res) => {
+
+    req.getConnection((error, conn) => {
+        if (!error) {
+            conn.query(`UPDATE empleado SET email_verified = 1 WHERE correo = ?`, req.body.correo, (err, results) => {
+                if (!err) {
+                    res.status(200).send({error: false, result: results, message: 'Empleado ha verificado su correo'});
+                } else {
+                    res.status(500).send({error: true, message: err});
+                }
+            });
+        } else {
+            res.status(500).send({error: true, message: error});
+        }
+    });
+});
+
 app.get('/puntos', (req, res) => {
     
     req.getConnection((error, conn) => {
