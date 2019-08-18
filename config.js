@@ -15,8 +15,8 @@ const values = {
     },
     nodemailer: {
         service: 'gmail',
-        user: 'manueleduardo0320@gmail.com',
-        password: 'manuel0320&',
+        user: 'pollo.del.sol.test@gmail.com',
+        password: 'pollo-test',
         token_secret: 'pollo',
         duration: 60 * 60,  //one hour
     },
