@@ -16,11 +16,11 @@ app.get('/',(req, res) => {
     res.status(200).send({error: false, message: 'API working sucessfully'});
 });
 
-app.post('/verifyEmail/(:correo)', (req, res) => {
+app.post('/verifyEmail', (req, res) => {
 
     req.getConnection((error, conn) => {
         if (!error) {
-            conn.query(`UPDATE empleado SET email_verified = 1 WHERE correo = ?`, req.params.correo, (err, results) => {
+            conn.query(`UPDATE empleado SET email_verified = 1 WHERE correo = ?`, req.body.correo, (err, results) => {
                 if (!err) {
                     res.status(200).send({error: false, result: results, message: 'Empleado ha verificado su correo'});
                 } else {

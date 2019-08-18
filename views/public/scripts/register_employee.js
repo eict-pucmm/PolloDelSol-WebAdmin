@@ -49,9 +49,4 @@ if (document.getElementById('reg-button').innerHTML === 'Modificar empleado') {
     document.getElementById('nombre').readonly = true;
     document.getElementById('correo').readonly = true;
     document.getElementById('contrasena-field').style.display = 'none';
-    document.getElementById('correo-field').style.display = 'none';
-}
-
-function switchModal(id, state) {
-  document.getElementById(id).style.display = state;
 }

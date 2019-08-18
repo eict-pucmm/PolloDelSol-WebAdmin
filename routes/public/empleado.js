@@ -94,12 +94,13 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
         
             axios.post(`${url}/api/empleado/registrar`, {empleado: empleado, contrasena: contrasena})
             .then( () => {
-                axios.post(`${url}/sendEmailVerification`, {correo: empleado.correo})
-                .then(result => {
-                    req.flash('success', 'Empleado registrado satisfactoriamente. Se ha enviado un correo de verificación');
-                })
+                axios.post(`${url}/sendEmailVerification/${empleado.correo}`)
+                .then(() => console.log(`Email verification sent to ${empleado.correo}`))
                 .catch(err => console.log(err))
-            }).catch(err => {
+            }).then( () => {
+                req.flash('success', 'Empleado registrado satisfactoriamente. Se ha enviado un correo de verificación');
+            })
+            .catch(err => {
                 console.log(err)
                 req.flash('error', err);
             }).finally(() => {

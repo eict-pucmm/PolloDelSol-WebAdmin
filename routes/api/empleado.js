@@ -124,6 +124,8 @@ app.post('/login', async (req, res, next) => {
                 res.status(412).send({error: true, message: 'El correo no pertenece a un administrador/a'});
             } else if (!employee.activo) {
                 res.status(412).send({error: true, message: 'El empleado con éste correo no está activado'});
+            } else if (!employee.email_verified) {
+                res.status(412).send({error: true, message: 'El empleado debe validar su correo electrónico'});
             } else {
                 let credencial = {};
                 await axios.get(`${config.values.server.url}/api/empleado/credencial/${employee.id_empleado}`)

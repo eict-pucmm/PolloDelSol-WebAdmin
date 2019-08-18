@@ -11,12 +11,14 @@ const values = {
         // url to call API
         // set to http://localhost:5000 if working locally
         // set to http://pollo-del-sol.herokuapp.com if deploying to heroku
-        url: `http://localhost:5000`
+        url: `http://pollo-del-sol.herokuapp.com`
     },
     nodemailer: {
         service: 'gmail',
         user: 'manueleduardo0320@gmail.com',
-        password: 'manuel0320&'
+        password: 'manuel0320&',
+        token_secret: 'pollo',
+        duration: 60 * 60,  //one hour
     },
     cloudinary: {
         cloud_name: 'pollo-del-sol',
@@ -24,8 +26,11 @@ const values = {
         api_secret: 'ZvhqmTdEn5Xbnqlvn-wjagJ11cA'
     }
 }
-
 let loggedIn = false;
 let employee = {}
 
-module.exports = {values: values, loggedIn: loggedIn, employee: employee};
+module.exports = {
+    values: values, 
+    loggedIn: loggedIn, 
+    employee: employee,
+};
