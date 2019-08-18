@@ -11,7 +11,12 @@ const values = {
         // url to call API
         // set to http://localhost:5000 if working locally
         // set to http://pollo-del-sol.herokuapp.com if deploying to heroku
-        url: `http://pollo-del-sol.herokuapp.com`
+        url: `http://localhost:5000`
+    },
+    nodemailer: {
+        service: 'gmail',
+        user: 'manueleduardo0320@gmail.com',
+        password: 'manuel0320&'
     },
     cloudinary: {
         cloud_name: 'pollo-del-sol',

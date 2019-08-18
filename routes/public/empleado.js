@@ -16,8 +16,6 @@ const storage = cloudinaryStorage({
     allowedFormats: ['jpg', 'png'],
     transformation: [{height: 500, crop: 'limit' }],
 });
-console.log('Initialized Cloudinary on employee public api');
-
 const parser = multer({ storage: storage });
 
 app.get('/', (req, res, next) => {
@@ -33,8 +31,6 @@ app.get('/', (req, res, next) => {
     }else {
         res.redirect('/login')
     }
-
-    
 });
 
 app.get('/registrar', (req, res, next) => {
@@ -97,9 +93,14 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
             empleado.avatar = req.file ? req.file.url : '';
         
             axios.post(`${url}/api/empleado/registrar`, {empleado: empleado, contrasena: contrasena})
-            .then( () => {      
-                req.flash('success', 'Empleado registrado satisfactoriamente. Se ha enviado un correo de verificación')
+            .then( () => {
+                axios.post(`${url}/sendEmailVerification`, {correo: empleado.correo})
+                .then(result => {
+                    req.flash('success', 'Empleado registrado satisfactoriamente. Se ha enviado un correo de verificación');
+                })
+                .catch(err => console.log(err))
             }).catch(err => {
+                console.log(err)
                 req.flash('error', err);
             }).finally(() => {
                 res.redirect('/empleado/registrar')
