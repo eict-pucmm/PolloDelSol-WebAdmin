@@ -206,9 +206,10 @@ app.post('/register/combo', async (req, res) => {
             const pool = await poolPromise
             const comboResult = await pool.request()
                 .input('id_combo',sql.NVarChar,combo.id_combo)
-                .input('guarnicion',sql.int,combo.max_guarnicion)
-                .input('bebida',sql.int,combo.max_bebida)
+                .input('guarnicion',sql.Int,combo.max_guarnicion)
+                .input('bebida',sql.Int,combo.max_bebida)
                 .query(`INSERT INTO combo VALUES (@id_combo, @guarnicion, @bebida)`)
+            console.log("combo registrado")
             var values = [];
             itemCombo.forEach(item => {
                 var aux = [];
@@ -216,14 +217,21 @@ app.post('/register/combo', async (req, res) => {
                 aux.push(item.id_item)
                 values.push(aux)
             });
+            const table = new sql.Table('itemcombo')
+            table.columns.add('id_combo', sql.VarChar(15));
+            table.columns.add('id_item', sql.VarChar(15));
+            values.forEach(pair => {
+                table.rows.add(pair[0], pair[1])
+            });
             const itemcomboResult = await pool.request()
-                .query('INSERT INTO itemcombo VALUES ?', [values])
-                
+                .bulk(table)
+            
             res.status(200).send({error: false, message: 'Item registered successfully'});
         } catch (err) {
             console.log(err)
             res.status(500).send({error: true, message: err});
         } 
+
         //Vainita MySQL
         /*req.getConnection((error, conn) => {
             if (!error) {
@@ -249,7 +257,7 @@ app.post('/register/combo', async (req, res) => {
     }
 });
 
-app.post('/edit/(:id_item)', (req, res) => {
+app.post('/edit/(:id_item)', async (req, res) => {
     
     const id_item = req.params.id_item;
     const item = req.body.data;
@@ -257,7 +265,25 @@ app.post('/edit/(:id_item)', (req, res) => {
     if (!item || !id_item) {
         res.status(400).send({error: true, message: 'Please provide an item and item id'});
     } else {
-        req.getConnection((error, conn) => {
+        try {
+            const pool = await poolPromise
+            const resultes = await pool.request()
+                .input('id_item',sql.NVarChar,id_item)
+                .input('nombre',sql.NVarChar,item.nombre)
+                .input('desc',sql.NVarChar,item.descripcion)
+                .input('categoria',sql.Int,item.id_categoria)
+                .input('subcategoria',sql.Int,item.id_subcategoria)
+                .input('precio',sql.Decimal,item.precio)
+                .input('eliminado',sql.Bit,item.eliminado)
+                .query(`UPDATE item SET nombre=@nombre, descripcion=@desc, id_categoria=@categoria, id_subcategoria=@subcategoria, precio=@precio, eliminado=@eliminado WHERE id_item = @id_item`)
+            res.status(200).send({error: false, result: resultes.recordset,message: "Item modificado exitosamente"});
+        } catch (err) {
+            console.log(err)
+            res.status(500).send({error: true, message: err});
+        } 
+        
+        //Vainita MySQL
+        /*req.getConnection((error, conn) => {
             if (!error) {
                 conn.query(`UPDATE item SET ? WHERE id_item = ?`, [item, id_item], (err, results) => {
                     if (!err) {
@@ -269,11 +295,11 @@ app.post('/edit/(:id_item)', (req, res) => {
             } else {
                 res.status(500).send({error: true, message: error});
             }
-        });
+        });*/
     }
 });
 
-app.post('/combo/edit', (req, res) => {
+app.post('/combo/edit', async (req, res) => {
 
     console.log(req.body);
 
@@ -284,7 +310,41 @@ app.post('/combo/edit', (req, res) => {
     if (!combo || !itemCombo) {
         res.status(400).send({error: true, message: 'Please provide combo data'});
     } else {
-        req.getConnection((error, conn) => {
+        try {
+            const pool = await poolPromise
+            const comboResult = await pool.request()
+                .input('id_combo',sql.NVarChar,combo.id_combo)
+                .input('guarnicion',sql.Int,combo.max_guarnicion)
+                .input('bebida',sql.Int,combo.max_bebida)
+                .query(`UPDATE combo SET max_guarnicion = @guarnicion, max_bebida = @bebida WHERE id_combo = @id_combo`)
+            
+            const deleteItemCombo = await pool.request()
+                .input('id_combo',sql.NVarChar,combo.id_combo)
+                .query('DELETE FROM itemcombo WHERE id_combo = @id_combo')
+            var values = [];
+            itemCombo.forEach(item => {
+                var aux = [];
+                aux.push(item.id_combo)
+                aux.push(item.id_item)
+                values.push(aux)
+            });
+            const table = new sql.Table('itemcombo')
+            table.columns.add('id_combo', sql.VarChar(15));
+            table.columns.add('id_item', sql.VarChar(15));
+            values.forEach(pair => {
+                table.rows.add(pair[0], pair[1])
+            });
+            const itemcomboResult = await pool.request()
+                .bulk(table)
+                
+            res.status(200).send({error: false, message: 'Item registered successfully'});
+        } catch (err) {
+            console.log(err)
+            res.status(500).send({error: true, message: err});
+        } 
+
+        //Vainita MySQL
+        /*req.getConnection((error, conn) => {
             if (!error) {
                 conn.query(`UPDATE combo SET ? WHERE id_combo = ?`, [combo, combo.id_combo], (err, results) => {
                     resultados.push(results);
@@ -311,7 +371,7 @@ app.post('/combo/edit', (req, res) => {
             } else {
                 res.status(500).send({error: true, message: error});
             }
-        });
+        });*/
     }
 });
 

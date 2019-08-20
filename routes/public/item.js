@@ -174,7 +174,10 @@ app.get('/edit/(:id_item)', (req, res, next) => {
                         combo = comboData.data.combo[0];
                         itemCombo = comboData.data.itemCombo;
                     })
+                console.log(combo)
+                console.log(itemCombo)
             }
+            
         }).catch(err => console.log(err));
 
     axios.get(`${config.values.server.url}/api/item/get?subcategoria=Guarnicion`)
@@ -254,7 +257,7 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
                 if (updateCombo) {
-                    axios.post(`${config.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
+                    axios.post(`${config.values.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
                     .then(comboRes => {console.log(comboRes)})
                     .catch(err => console.log(err));
                 }
