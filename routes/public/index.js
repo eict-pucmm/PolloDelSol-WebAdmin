@@ -33,7 +33,7 @@ app.post('/sendEmailVerification/(:email)', (req, res) => {
     const token = jwt.sign({
             email: req.params.email
         },
-        config.values.nodemailer.token_secret, 
+        config.values.server.secret, 
         {
             expiresIn: config.values.nodemailer.duration
         }
@@ -179,7 +179,7 @@ app.post('/sendEmailVerification/(:email)', (req, res) => {
 
 app.get('/verifyEmail/(:token)', (req, res) => {
 
-    const decoded = jwt.verify(req.params.token, config.values.nodemailer.token_secret);
+    const decoded = jwt.verify(req.params.token, config.values.server.secret);
 
     axios.post(`${config.values.server.url}/api/verifyEmail`, {correo: decoded.email})
     .then( () => {

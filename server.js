@@ -7,18 +7,17 @@ const mysql             = require('mysql');                 //MYSQL database API
 const expressFlash      = require('express-flash')
 const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session');
-const config            = require('./config');              //config values for server and database
 const cors              = require('cors');
-
+const config            = require('./config');              //config values for server and database
 //visual routes
 const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
 const empleadoRoute     = require('./routes/public/empleado');
 const empresaRoute      = require('./routes/public/empresa');
-const platoRoute      = require('./routes/public/platodeldia');
+const platoRoute        = require('./routes/public/platodeldia');
 const menuRoute         = require('./routes/public/menu');
 const loginRoute        = require('./routes/public/login');
-//api routes
+//api route
 const indexApi          = require('./routes/api/index');
 
 let app = express();
@@ -30,9 +29,9 @@ app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(expressFlash());
-app.use(cookieParser('molena'));
+app.use(cookieParser(config.values.server.secret));
 app.use(expressSession({ 
-    secret: 'molena',
+    secret: config.values.server.secret,
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 60000 }
@@ -54,6 +53,7 @@ app.use('/login', loginRoute);
 app.use('/platodeldia', platoRoute);
 app.use('/api', indexApi);
 app.use(express.static(__dirname + '/views/public'));
-app.listen(process.env.PORT || config.values.server.port, function () {
+
+app.listen(process.env.PORT || config.values.server.port, () => {
     console.log(`Server running at ${config.values.server.url}`);
 });
