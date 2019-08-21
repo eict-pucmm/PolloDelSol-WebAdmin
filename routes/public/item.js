@@ -8,7 +8,7 @@ const config = require('../../config');
 let app = express();
 let regItem;
 
-cloudinary.config(config.values.cloudinary);
+cloudinary.config(config.cloudinary);
 
 const storage = cloudinaryStorage({
     cloudinary: cloudinary,
@@ -20,13 +20,13 @@ const storage = cloudinaryStorage({
 const parser = multer({ storage: storage });
 
 app.get('/', (req, res, next) => {
-
-    if(config.loggedIn){
-        axios.get(`${config.values.server.url}/api/item/get`)
+    
+    if(req.session.loggedIn){
+        axios.get(`${config.server.url}/api/item/get`)
         .then(result => {
             return result.data.items;
         }).then(items => {
-            axios.get(`${config.values.server.url}/api/item/categories`)
+            axios.get(`${config.server.url}/api/item/categories`)
             .then(result => {
                 return {data: items, categorias: result.data.categorias, subcategorias: result.data.subcategorias};
             }).then(datos => {
@@ -35,7 +35,7 @@ app.get('/', (req, res, next) => {
             .catch(err => res.send(err))
         }).catch(err => res.send(err));
     }else {
-        res.redirect('/login')
+        res.redirect('/login');
     }
 
     
@@ -58,17 +58,17 @@ app.get('/register', (req, res, next) => {
             activo: 0
         }
     }
-    if(config.loggedIn){
-        axios.get(`${config.values.server.url}/api/item/get?categoria=Individual&subcategoria=Guarnicion&activo=0`)
+    if(req.session.loggedIn){
+        axios.get(`${config.server.url}/api/item/get?categoria=Individual&subcategoria=Guarnicion&activo=0`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida&activo=0`)
+            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida&activo=0`)
                 .then(result2 => {
                     return result2;
                 })
                 .then(bebidas => {
-                    axios.get(`${config.values.server.url}/api/item/categories`)
+                    axios.get(`${config.server.url}/api/item/categories`)
                     .then(result => {
                         return {
                             action: 'Registrar item', 
@@ -121,7 +121,7 @@ app.post('/register', parser.single('image'), (req, res, next) => {
     regItem.categoria = req.body['selected-category'];
 
     if (!errors) {
-        axios.post(`${config.values.server.url}/api/item/register`, {data: item})
+        axios.post(`${config.server.url}/api/item/register`, {data: item})
         .then( () => {
             req.flash('success', 'Item registrado satisfactoriamente');
         }).then( () => {
@@ -144,7 +144,7 @@ app.post('/register', parser.single('image'), (req, res, next) => {
                     itemCombo.push({id_combo: item.id_item, id_item: req.body.guarniciones});
                 }
 
-                axios.post(`${config.values.server.url}/api/item/register/combo`, {combo: combo, itemCombo: itemCombo})
+                axios.post(`${config.server.url}/api/item/register/combo`, {combo: combo, itemCombo: itemCombo})
                     .then(result => {})
                     .catch(err => console.log(err));
             }
@@ -164,12 +164,12 @@ app.get('/edit/(:id_item)', (req, res, next) => {
 
     let item, combo = '', itemCombo = '';
 
-    if(config.loggedIn) {
-        axios.get(`${config.values.server.url}/api/item/get?id_item=${req.params.id_item}`)
+    if(req.session.loggedIn) {
+        axios.get(`${config.server.url}/api/item/get?id_item=${req.params.id_item}`)
         .then(result => {
             item = result.data.items[0];
             if (result.data.items[0].categoria == 'Combo') {
-                axios.get(`${config.values.server.url}/api/item/get/combo?id_combo=${result.data.items[0].id_item}`)
+                axios.get(`${config.server.url}/api/item/get/combo?id_combo=${result.data.items[0].id_item}`)
                     .then(comboData => {
                         combo = comboData.data.combo[0];
                         itemCombo = comboData.data.itemCombo;
@@ -177,13 +177,13 @@ app.get('/edit/(:id_item)', (req, res, next) => {
             }
         }).catch(err => console.log(err));
 
-    axios.get(`${config.values.server.url}/api/item/get?subcategoria=Guarnicion`)
+    axios.get(`${config.server.url}/api/item/get?subcategoria=Guarnicion`)
         .then(result => {
             return result;
         }).then(guarniciones => {
-            axios.get(`${config.values.server.url}/api/item/get?subcategoria=Bebida`)
+            axios.get(`${config.server.url}/api/item/get?subcategoria=Bebida`)
                 .then(bebidas => {
-                    axios.get(`${config.values.server.url}/api/item/categories`)
+                    axios.get(`${config.server.url}/api/item/categories`)
                     .then(result => {
                         return {
                             action: 'Modificar item', 
@@ -253,12 +253,12 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
     item.imagen = req.file ? req.file.url : req.body.imagen;
 
     if (!errors) {
-        axios.post(`${config.values.server.url}/api/item/edit/${req.params.id_item}`, {data: item})
+        axios.post(`${config.server.url}/api/item/edit/${req.params.id_item}`, {data: item})
         .then( response => {
             if (!response.data.error) {
                 req.flash('success', response.data.message);
                 if (updateCombo) {
-                    axios.post(`${config.values.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
+                    axios.post(`${config.server.url}/api/item/combo/edit`, {combo: comboData, itemCombo: itemCombo})
                     .then(comboRes => console.log(comboRes.response.data.message))
                     .catch(err => console.log(err.response.data.message));
                 }

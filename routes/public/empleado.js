@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const url = require('../../config').values.server.url;
+const url = require('../../config').server.url;
 const multer = require('multer');
 const cloudinary = require('cloudinary');
 const cloudinaryStorage = require('multer-storage-cloudinary');
@@ -8,7 +8,7 @@ const config = require('../../config');
 
 let app = express();
 
-cloudinary.config(config.values.cloudinary);
+cloudinary.config(config.cloudinary);
 
 const storage = cloudinaryStorage({
     cloudinary: cloudinary,
@@ -19,8 +19,8 @@ const storage = cloudinaryStorage({
 const parser = multer({ storage: storage });
 
 app.get('/', (req, res, next) => {
-    console.log(config.loggedIn)
-    if(config.loggedIn){
+    
+    if(req.session.loggedIn){
 
         axios.get(`${url}/api/empleado/buscar`).
         then(result => {
@@ -29,13 +29,13 @@ app.get('/', (req, res, next) => {
             res.send(error)
         })
     }else {
-        res.redirect('/login')
+        res.redirect('/login');
     }
 });
 
 app.get('/registrar', (req, res, next) => {
     
-    if(config.loggedIn){
+    if(req.session.loggedIn){
         res.render('empleado/register', {
             action: 'Registrar empleado',
             employee: {
@@ -116,7 +116,7 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
 app.get('/modificar/(:id_empleado)', (req, res, next) => {
 
 
-    if(config.loggedIn){
+    if(req.session.loggedIn){
         axios.get(`${url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
         .then(result => {
             res.render('empleado/register', {

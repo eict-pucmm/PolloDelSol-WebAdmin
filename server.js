@@ -5,7 +5,6 @@ const bodyParser        = require('body-parser');           //read http POST dat
 const methodOverride    = require('method-override');       //use http verbs (POST, DELETE) where they are not supported
 const mysql             = require('mysql');                 //MYSQL database API
 const expressFlash      = require('express-flash')
-const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session');
 const cors              = require('cors');
 const config            = require('./config');              //config values for server and database
@@ -23,18 +22,17 @@ const indexApi          = require('./routes/api/index');
 let app = express();
 
 app.set('view engine', 'ejs');
-app.use(myConnection(mysql, config.values.database, 'pool'));
+app.use(myConnection(mysql, config.database, 'pool'));
 app.use(cors());
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(expressFlash());
-app.use(cookieParser(config.values.server.secret));
 app.use(expressSession({ 
-    secret: config.values.server.secret,
-    resave: false,
+    secret: config.server.secret,
+    resave: true,
     saveUninitialized: true,
-    cookie: { maxAge: 60000 }
+    cookie: { maxAge: 360000 }
 }));
 app.use(methodOverride((req, res) => {
     if ((req.body) && (typeof req.body === 'object') && ('_method' in req.body)) {
@@ -54,6 +52,6 @@ app.use('/platodeldia', platoRoute);
 app.use('/api', indexApi);
 app.use(express.static(__dirname + '/views/public'));
 
-app.listen(process.env.PORT || config.values.server.port, () => {
-    console.log(`Server running at ${config.values.server.url}`);
+app.listen(process.env.PORT || config.server.port, () => {
+    console.log(`Server running at ${config.server.url}`);
 });

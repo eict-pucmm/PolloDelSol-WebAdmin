@@ -1,15 +1,20 @@
 const express = require('express');
 const axios   = require('axios');
-const url = require('../../config').values.server.url;
+const url = require('../../config').server.url;
 
 let app = express();
 
 app.get('/', (req, res, next) => {
-    axios.get(`${url}/api/platodeldia/`)
+    
+    if (req.session.loggedIn) {
+        axios.get(`${url}/api/platodeldia/`)
         .then(result => {
             res.render('menu/platodeldia', {data: result.data.menu})
         })
         .catch(err => res.send(err))
+    } else {
+        res.redirect('/login');
+    }
 });
 
 app.post('/register', (req, res) => {

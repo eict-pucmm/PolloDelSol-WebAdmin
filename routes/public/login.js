@@ -1,14 +1,14 @@
 const express = require('express');
 const axios =   require('axios');
-const url =     require('../../config').values.server.url;
+const url =     require('../../config').server.url;
 const config =  require('../../config')
 
 let app =       express();
 
 app.get('/', (req, res, next) => {
-	config.loggedIn = false;
+	req.session.loggedIn = false;
 	res.render('login', {
-		correo: config.employee ? config.employee.correo : '',
+		correo: '',
 		contrasena: '',
 	})
 });
@@ -26,8 +26,9 @@ app.post('/', (req, res, next) => {
 
 		axios.post(`${url}/api/empleado/login`, {email: email, passwd: passwd})
 		.then( (response) => {
+			req.session.loggedIn = true;
+			req.session.empleado = response.data.empleado;
 			res.redirect('/');
-			setTimeout(() => {config.loggedIn = false}, 3600000)
 		}).catch( (err) => {
 			req.flash('error', err.response.data.message);
 			res.render('login', {
@@ -38,7 +39,7 @@ app.post('/', (req, res, next) => {
 
 	}else {
 		req.flash('error', errors[0].msg);
-		res.redirect('/login/')
+		res.redirect('/login/');
 	}
 });
 

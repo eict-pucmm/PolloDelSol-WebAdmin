@@ -9,8 +9,9 @@ const checkIfString = myString => {
 }
 
 app.get('/', (req, res) => {
-    if(config.loggedIn) {
-        axios.get(`${config.values.server.url}/api/menu`)
+    
+    if(req.session.loggedIn) {
+        axios.get(`${config.server.url}/api/menu`)
         .then(result => {
             res.render('menu/gestionar', {
                 menus: result.data.menus,
@@ -18,7 +19,7 @@ app.get('/', (req, res) => {
             });
         }).catch(err => console.log(err));
     }else {
-        res.redirect('/login')
+        res.redirect('/login');
     }
     
 });
@@ -30,7 +31,7 @@ app.post('/register', (req, res) => {
     let errors = req.validationErrors();
 
     if (!errors) {
-        axios.post(`${config.values.server.url}/api/menu/register`, {name: req.sanitize('nombre').escape().trim(), plato_del_dia: 0})
+        axios.post(`${config.server.url}/api/menu/register`, {name: req.sanitize('nombre').escape().trim(), plato_del_dia: 0})
         .then( () => {
             req.flash('success', 'Menu registrado satisfactoriamente');
         }).catch(err => {
@@ -46,14 +47,14 @@ app.post('/register', (req, res) => {
 
 app.get('/edit/(:id_menu)', (req, res) => {
 
-    if (config.loggedIn) {
-        axios.get(`${config.values.server.url}/api/item/get?activo=1`)
+    if (req.session.loggedIn) {
+        axios.get(`${config.server.url}/api/item/get?activo=1`)
         .then(combos => {
-            axios.get(`${config.values.server.url}/api/item/categories`)
+            axios.get(`${config.server.url}/api/item/categories`)
             .then(result => {
-                axios.get(`${config.values.server.url}/api/menu?id_menu=${req.params.id_menu}`)
+                axios.get(`${config.server.url}/api/menu?id_menu=${req.params.id_menu}`)
                 .then(menu => {
-                    axios.get(`${config.values.server.url}/api/menu/items?id_menu=${req.params.id_menu}`)
+                    axios.get(`${config.server.url}/api/menu/items?id_menu=${req.params.id_menu}`)
                         .then(menu_items => {
                             res.render('menu/edit', {
                                 categorias: result.data.categorias,
@@ -91,7 +92,7 @@ app.post('/edit/(:id_menu)', (req, res) => {
             data.menu.activo = 0;
         }
 
-        axios.post(`${config.values.server.url}/api/menu/edit/${req.params.id_menu}`, data)
+        axios.post(`${config.server.url}/api/menu/edit/${req.params.id_menu}`, data)
         .then(response => {
             req.flash('success', response.data.message)
         })

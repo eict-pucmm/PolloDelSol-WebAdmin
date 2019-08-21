@@ -113,22 +113,22 @@ app.post('/login', async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.passwd;
 
-    await axios.get(`${config.values.server.url}/api/empleado/buscar?correo=${email}`)
+    await axios.get(`${config.server.url}/api/empleado/buscar?correo=${email}`)
     .then(async (result) => {
         if (!result.data.employee) {
             res.status(412).send({error: true, message: 'No se encontró un empleado con ese correo'});
         } else {
-            const employee = result.data.employee[0];
+            const empleado = result.data.employee[0];
 
-            if (employee.rol !== 'Administrador') {
+            if (empleado.rol !== 'Administrador') {
                 res.status(412).send({error: true, message: 'El correo no pertenece a un administrador/a'});
-            } else if (!employee.activo) {
+            } else if (!empleado.activo) {
                 res.status(412).send({error: true, message: 'El empleado con éste correo no está activado'});
-            } else if (!employee.email_verified) {
+            } else if (!empleado.email_verified) {
                 res.status(412).send({error: true, message: 'El empleado debe validar su correo electrónico'});
             } else {
                 let credencial = {};
-                await axios.get(`${config.values.server.url}/api/empleado/credencial/${employee.id_empleado}`)
+                await axios.get(`${config.server.url}/api/empleado/credencial/${empleado.id_empleado}`)
                 .then(result => {
                     credencial = result.data.credencial[0];
                 })
@@ -138,9 +138,11 @@ app.post('/login', async (req, res, next) => {
                 await bcrypt.compare(password, hashedPass)
                 .then((result, error) => {
                     if(result) {
-                        config.loggedIn = true;
-                        config.employee = employee;
-                        res.status(200).send({error: false, result: result, message: 'Incio de sesión satisfactorio'});
+                        res.status(200).send({error: false, 
+                            result: result, 
+                            message: 'Incio de sesión satisfactorio',
+                            empleado: empleado,
+                        });
                     } else {
                         console.log(error);
                         res.status(500).send({error: true, message: error})
@@ -150,8 +152,6 @@ app.post('/login', async (req, res, next) => {
         }
     })
     .catch(err => {console.log(err)});
-
-    
 });
 
 module.exports = app;

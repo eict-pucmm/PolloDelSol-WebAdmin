@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const url = require('../../config').values.server.url;
+const url = require('../../config').server.url;
 
 let app = express();
 

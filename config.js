@@ -1,4 +1,4 @@
-const values = {
+module.exports = {
     database: {
         host: 'us-cdbr-iron-east-02.cleardb.net',
         user: 'b0ccbe5cbcfbd1',
@@ -12,7 +12,7 @@ const values = {
         // set to http://localhost:5000 if working locally
         // set to http://pollo-del-sol.herokuapp.com if deploying to heroku
         url: `http://pollo-del-sol.herokuapp.com`,
-        secret: 'pollo'
+        secret: 'pollo!del@sol#'
     },
     nodemailer: {
         service: 'gmail',
@@ -26,11 +26,3 @@ const values = {
         api_secret: 'ZvhqmTdEn5Xbnqlvn-wjagJ11cA'
     }
 }
-let loggedIn = false;
-let employee = {}
-
-module.exports = {
-    values: values, 
-    loggedIn: loggedIn, 
-    employee: employee,
-};

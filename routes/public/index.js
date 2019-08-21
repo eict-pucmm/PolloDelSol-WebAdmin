@@ -5,27 +5,28 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 
 const transporter = nodemailer.createTransport({
-    service: config.values.nodemailer.service,
+    service: config.nodemailer.service,
     auth: {
-        user: config.values.nodemailer.user,
-        pass: config.values.nodemailer.password
+        user: config.nodemailer.user,
+        pass: config.nodemailer.password
     }
 });
 
 let app = express();
 
 app.get('/', (req, res) => {
-    if (config.loggedIn) {
-        axios.get(`${config.values.server.url}/api/puntos`)
-        .then(result => {
-            res.render('index', {
-                valor_puntos: result.data.valor_puntos,
-            });
-        })
-        .catch(err => console.log(err));
-    } else {
-        res.redirect('/login')
-    }
+  
+  if (req.session.loggedIn) {
+      axios.get(`${config.server.url}/api/puntos`)
+      .then(result => {
+          res.render('index', {
+              valor_puntos: result.data.valor_puntos,
+          });
+      })
+      .catch(err => console.log(err));
+  } else {
+      res.redirect('/login');
+  }
 });
 
 app.post('/sendEmailVerification/(:email)', (req, res) => {
@@ -33,15 +34,15 @@ app.post('/sendEmailVerification/(:email)', (req, res) => {
     const token = jwt.sign({
             email: req.params.email
         },
-        config.values.server.secret, 
+        config.server.secret, 
         {
-            expiresIn: config.values.nodemailer.duration
+            expiresIn: config.nodemailer.duration
         }
     );
     
     const options = {
         to: req.params.email,
-        from: config.values.nodemailer.user,
+        from: config.nodemailer.user,
         subject: 'Verificar correo',
         html: `<!DOCTYPE html>
         <html xmlns="http://www.w3.org/1999/xhtml">
@@ -152,12 +153,12 @@ app.post('/sendEmailVerification/(:email)', (req, res) => {
                             <table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0">
                               <tr>
                                 <td align="center">
-                                    <a href="${config.values.server.url}/verifyEmail/${token}" class="button">Verificar correo</a>
+                                    <a href="${config.server.url}/verifyEmail/${token}" class="button">Verificar correo</a>
                                 </td>
                               </tr>
                             </table>
                             <p>Si tiene problemas para presionar el boton, haga click en el siguiente enlace: </p>
-                            <p><a href="${config.values.server.url}/verifyEmail/${token}">${config.values.server.url}/verifyEmail/${token}</a></p>
+                            <p><a href="${config.server.url}/verifyEmail/${token}">${config.server.url}/verifyEmail/${token}</a></p>
                             <p>Este enlace vencerá en una hora.</p>
                           </td>
                         </tr>
@@ -179,9 +180,9 @@ app.post('/sendEmailVerification/(:email)', (req, res) => {
 
 app.get('/verifyEmail/(:token)', (req, res) => {
 
-    const decoded = jwt.verify(req.params.token, config.values.server.secret);
+    const decoded = jwt.verify(req.params.token, config.server.secret);
 
-    axios.post(`${config.values.server.url}/api/verifyEmail`, {correo: decoded.email})
+    axios.post(`${config.server.url}/api/verifyEmail`, {correo: decoded.email})
     .then( () => {
         res.render('email_verification');
     })
@@ -189,7 +190,7 @@ app.get('/verifyEmail/(:token)', (req, res) => {
 });
 
 app.post('/puntos', (req, res) => {
-    axios.post(`${config.values.server.url}/api/puntos`, {puntos: req.body.puntos})
+    axios.post(`${config.server.url}/api/puntos`, {puntos: req.body.puntos})
     .then(result => res.redirect('/'))
     .catch(err => console.log(err));
 });
