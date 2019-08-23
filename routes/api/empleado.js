@@ -2,11 +2,13 @@ const express   = require('express');
 const axios     = require('axios');
 const config    = require('../../config');
 const bcrypt    = require('bcrypt');
+const {poolPromise} = require('../../db')
+const sql = require('mssql')
 // let logIn       = require('../../config').loggedIn.loggedIn;
 let h;
 let app = express();
 
-app.get('/buscar', (req, res, next) => {
+app.get('/buscar', async (req, res, next) => {
 
     let sql_query = `SELECT * FROM empleado`;
     
@@ -14,9 +16,23 @@ app.get('/buscar', (req, res, next) => {
         sql_query += ` WHERE empleado.id_empleado = ${req.query.id_empleado}`;
     }
     if (req.query.correo) {
-        sql_query += ` WHERE empleado.correo = "${req.query.correo}"`;
+        sql_query += ` WHERE empleado.correo = '${req.query.correo}'`;
     }
-    req.getConnection((error,conn) => {
+
+    //Vainita SQL SERVER
+    try {
+        const pool = await poolPromise
+        const empleadores = await pool.request()
+            .query(sql_query)
+        
+        res.status(200).send({error: false, employee: empleadores.recordset});
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({error: true, message: err});
+    }
+    
+    //Vainita MySQL
+    /*req.getConnection((error,conn) => {
         if(!error) {
             conn.query(sql_query, (err, rows, fields) => {
                 if(!err) {
@@ -32,17 +48,31 @@ app.get('/buscar', (req, res, next) => {
         }else {
             res.status(500).send({error: true, message: error});
         }   
-    })
+    })*/
 });
 
-app.get('/buscarContrasena', (req,res,next) => {
+app.get('/buscarContrasena', async (req,res,next) => {
     let sql_query = `SELECT * FROM credencial`;
 
     if(req.query.id_empleado) {
         sql_query += ` WHERE credencial.id_empleado = ${req.query.id_empleado}`
     }
 
-    req.getConnection((error,conn) => {
+    //Vainita SQL SERVER
+
+    try {
+        const pool = await poolPromise
+        const credencialres = await pool.request()
+            .query(sql_query)
+        
+        res.status(200).send({error: false, credencial: credencialres.recordset});
+    } catch (err) {
+        console.log(err)
+        res.status(500).send({error: true, message: err});
+    }
+
+    //Vainita MySQL
+    /*req.getConnection((error,conn) => {
         if(!error) {
             conn.query(sql_query, (err, rows, fields) => {
                 if(!err){
@@ -58,7 +88,7 @@ app.get('/buscarContrasena', (req,res,next) => {
         } else {
             res.status(500).send({error: true, message: err});
         }
-    });
+    });*/
 });
 
 app.post('/registrar', async (req,res) => {
@@ -78,7 +108,44 @@ app.post('/registrar', async (req,res) => {
         res.status(400).send({error: true, message: 'Please provide an employee'});
     } else {
         console.log("Employee data: ",employee)
-        req.getConnection((error, conn) => {
+        
+        //Vainita SQL SERVER
+        try {
+            const pool = await poolPromise
+            const empleadores = await pool.request()
+                .input('nombre',sql.NVarChar, employee.nombre)
+                .input('correo',sql.NVarChar, employee.correo)
+                .input('rol', sql.NVarChar,employee.rol)
+                .input('avatar', sql.NVarChar, employee.avatar)
+                .input('verificado', sql.Bit, 0)
+                .input('eliminado', sql.Bit, employee.eliminado)
+                .query(`INSERT INTO EMPLEADO VALUES (@avatar, @nombre, @correo, @rol, @eliminado, @verificado); SELECT @@IDENTITY AS ID`)
+            try {
+                console.log("Lets hash")
+                h = await bcrypt.hash(employee1.contrasena, 10);
+            } catch (error) {
+                console.log(error)
+            }
+            let credencial = {
+                id_empleado: empleadores.recordset[0].ID,
+                hash_password: h,
+                fecha: new Date().toISOString().slice(0, 19).replace('T', ' ')
+            }
+            console.log(credencial);
+            const credentialres = await pool.request()
+                .input('id_empleado',sql.NVarChar, credencial.id_empleado)
+                .input('hash', sql.Binary(60), new Buffer(credencial.hash_password))
+                .input('fecha', sql.NVarChar, credencial.fecha)
+                .query(`INSERT INTO CREDENCIAL VALUES (@id_empleado, @hash, CONVERT(DATE, @fecha, 21));`)
+            
+            res.status(200).send({error: false, result: empleadores.recordset,message: "Empleado registrado exitosamente"});
+        } catch (err) {
+            console.log(err)
+            res.status(500).send({error: true, message: err});
+        }
+
+        //Vainita MySQL
+        /*req.getConnection((error, conn) => {
             if( !error ) {
                 conn.query(`INSERT INTO empleado SET ?`, employee, async (err, results) => {
                     console.log("Inside Query 1")
@@ -116,11 +183,11 @@ app.post('/registrar', async (req,res) => {
             } else {
                 res.status(500).send({error: true, message: error});
             }
-        });
+        });*/
     }
 });
 
-app.post('/modificar/(:id_empleado)', (req,res) => {
+app.post('/modificar/(:id_empleado)', async (req,res) => {
 
     const id_empleado = req.params.id_empleado;
     const empleado = req.body.data;
@@ -128,7 +195,23 @@ app.post('/modificar/(:id_empleado)', (req,res) => {
     if(!empleado || !id_empleado) {
         res.status(400).send({error: true, message: 'Please provide an employee and employee id'});
     } else {
-        req.getConnection((error, conn) => {
+        try {
+            const pool = await poolPromise
+            const updateempleadores = await pool.request()
+                .input('nombre',sql.NVarChar, empleado.nombre)
+                .input('correo',sql.NVarChar, empleado.correo)
+                .input('rol', sql.NVarChar,empleado.rol)
+                .input('avatar', sql.NVarChar, empleado.avatar)
+                .input('eliminado', sql.Bit, empleado.eliminado)
+                .query(`UPDATE EMPLEADO SET avatar = @avatar, nombre = @nombre, correo = @correo, rol = @rol, eliminado = @eliminado WHERE id_empleado = ${id_empleado}`)
+            
+            res.status(200).send({error: false, result: updateempleadores.recordset});
+        } catch (err) {
+            console.log(err)
+            res.status(500).send({error: true, message: err});
+        }
+        //Vainita MySQL
+        /*req.getConnection((error, conn) => {
             if (!error) {
                 conn.query(`UPDATE empleado SET ? WHERE id_empleado = ?`, [empleado, id_empleado], (err, results) => {
                     if (!err) {
@@ -140,21 +223,40 @@ app.post('/modificar/(:id_empleado)', (req,res) => {
             } else {
                 res.status(500).send({error: true, message: error});
             }
-        });
+        });*/
     }
 });
 
-app.post('/eliminar/(:id_empleado)', (req, res, next) => {
+app.post('/eliminar/(:id_empleado)', async (req, res, next) => {
 
     let employee;
 
     axios.get(`${config.values.server.url}/api/empleado/buscar?id_empleado=${req.params.id_empleado}`)
     .then(result => {
-        employee = result.data.employee[0];
+        employee = result.data.result[0];
     })
     .catch(err => {console.log(err)})
-    .finally(() => {
-        req.getConnection((error,conn) => {
+    .finally( async () => {
+        try {
+            const pool = await poolPromise
+            if (employee.empleado === 0) {
+                const credencialres = await pool.request()
+                    .input("id_empleado",sql.Integer,employee.id_empleado)
+                    .query(`UPDATE empleado SET eliminado = 1 WHERE id_empleado = @id_empleado`)
+            
+                res.status(200).send({error: false, credencial: credencialres.recordset});
+            } else {
+                const credencialres = await pool.request()
+                    .input("id_empleado",sql.Integer,employee.id_empleado)
+                    .query(`UPDATE empleado SET eliminado = 0 WHERE id_empleado = @id_empleado`)
+            
+                res.status(200).send({error: false, credencial: credencialres.recordset});
+            }
+        } catch (err) {
+            console.log(err)
+            res.status(500).send({error: true, message: err});
+        }
+        /*req.getConnection((error,conn) => {
             if(!error){
                 if(employee.eliminado === 0) {
                     conn.query(`UPDATE empleado SET eliminado = 1 WHERE id_empleado = ?`, employee.id_empleado, (err, result) => {
@@ -176,7 +278,7 @@ app.post('/eliminar/(:id_empleado)', (req, res, next) => {
             } else {
                 res.status(500).send({error: true, message: error});
             }
-        })
+        })*/
     })
 });
 
