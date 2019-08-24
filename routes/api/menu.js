@@ -19,25 +19,6 @@ app.get('/', async (req, res) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     }
-
-    /*req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(sql_query, (err, rows, fields) => {
-                if (!err) {
-                    if (rows.length > 0) {
-                        res.status(200).send({error: false, menus: rows});
-                    } else {
-                        res.status(204).send({error: false, message: 'Server request successful but data was not found'});
-                    }
-                } else {
-                    res.status(500).send({error: true, message: err});
-                }
-            });
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });*/
-
 });
 
 app.get('/items', async (req, res) => {
@@ -63,23 +44,6 @@ app.get('/items', async (req, res) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     }
-    /*req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(sql_query, (err, rows, fields) => {
-                if (!err) {
-                    if (rows.length > 0) {
-                        res.status(200).send({error: false, menu_items: rows});
-                    } else {
-                        res.status(204).send({error: false, message: 'Server request successful but data was not found'});
-                    }
-                } else {
-                    res.status(500).send({error: true, message: err});
-                }
-            });
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });*/
 });
 
 app.post('/register', async (req, res) => {
@@ -95,20 +59,6 @@ app.post('/register', async (req, res) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     }
-
-    /*req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(sql_query, (err, results) => {
-                if (!err) {
-                    res.status(200).send({error: false, result: results, message: 'Menu registered sucessfully'});
-                } else {
-                    res.status(500).send({error: true, message: err});
-                }
-            });
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });*/
 });
 
 app.post('/edit/(:id_menu)', async (req, res) => {
@@ -143,40 +93,6 @@ app.post('/edit/(:id_menu)', async (req, res) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     }
-
-    /*req.getConnection((error, conn) => {
-        if (!error) {
-            if (toDelete && (toDelete.length > 0)) {
-                toDelete.forEach(id => {
-                    conn.query(`DELETE FROM menuitem WHERE id_item = '${id}' AND id_menu = ${req.params.id_menu};`, (err, results) => {
-                        if (!err) {
-                            console.log(`UNLINKED ITEM: ${id} TO MENU: ${req.params.id_menu}`);
-                        }
-                    })
-                });
-            }
-
-            if (toInsert && (toInsert.length > 0)) {
-                toInsert.forEach(id => {
-                    conn.query(`INSERT INTO menuitem VALUES (${req.params.id_menu}, '${id}');`, (err, results) => {
-                        if (!err) {
-                            console.log(`LINKED ITEM: ${id} TO MENU: ${req.params.id_menu}`);
-                        }
-                    })
-                });
-            }
-            
-            conn.query(`UPDATE menu SET nombre = ?, activo = ? WHERE id_menu = ?;`, [req.body.nombre, req.body.activo, req.params.id_menu], (err, results) => {
-                if (!err) {
-                    res.status(200).send({error: false, message: 'El menú ha sido editado satisfactoriamente'});
-                } else {
-                    console.log(err);
-                }
-            })
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });*/
 });
 
 module.exports = app;

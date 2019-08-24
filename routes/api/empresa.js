@@ -10,7 +10,7 @@ app.get('/', async (req, res, next) => {
     try {
         const pool = await poolPromise
         const result = await pool.request()
-            .query(`select 
+            .query(`select
             cliente.id_cliente, 
             cliente.nombre, 
             cliente.correo_electronico, 
@@ -49,34 +49,6 @@ app.get('/', async (req, res, next) => {
     } catch (err) {
         res.status(500).send({error: true, message: err});
     } 
-
-
-
-    //Vainita MySQL
-    /*let sql_query = `SELECT cliente.id_cliente, cliente.nombre, cliente.correo_electronico, cliente.telefono, empresa.id_empresa, empresa.rnc, empresa.aprobada, empresa.eliminado, cierre.dia_ajustado AS dia_de_cierre, cierre.tipo_de_cierre, COUNT(empresausuario.id_empresa) AS cant_empleados
-        FROM cliente, empresa, cierre, empresacierre, empresausuario
-        WHERE cliente.id_cliente = empresa.id_cliente
-            AND empresacierre.id_empresa = empresa.id_empresa
-            AND empresacierre.id_cierre = cierre.id_cierre
-            AND empresausuario.id_empresa = empresa.id_empresa`;
-    
-    sql_query += req.query.id_empresa ? ` AND empresa.id_empresa = '${req.query.id_empresa}'` : ``;
-
-    sql_query += ` GROUP BY cliente.nombre`;
-
-    req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(sql_query, function (err, rows, fields) {
-                if (!err) {
-                    res.status(200).send({error: false, empresa: rows});
-                } else {
-                    res.status(500).send({error: true, message: err});
-                }
-            });
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    })*/
 });
 
  
@@ -119,31 +91,11 @@ app.post('/edit/(:id_empresa)', async (req, res) => {
                     .input('id_empresa', sql.NVarChar, id_empresa)
                     .query(sql_query2)
             }
-            
             res.status(200).send({error: false, result: empresares.recordset,message: "Item modificado exitosamente"});
         } catch (err) {
             console.log(err)
             res.status(500).send({error: true, message: err});
         }
-        //Vainita MySQL
-        /*req.getConnection((error, conn) => {
-            if (!error) {
-                conn.query(`UPDATE empresa SET ? WHERE id_empresa = ?`, [empresa, id_empresa], (err1, res1) => {
-                    if (!err1) {
-                        conn.query(sql_query, cierre, (err2, res2) => {
-                            if(!err2){
-                                if (sql_query2 != '') {
-                                    conn.query(sql_query2, (err2, res2) => {});
-                                }
-                                res.status(200).send({error: false, message: 'Empresa modificada exitosamente'});
-                            }
-                        });
-                    }
-                });
-            } else {
-                res.status(500).send({error: true, message: error});
-            }
-        });*/
     }
 });
 

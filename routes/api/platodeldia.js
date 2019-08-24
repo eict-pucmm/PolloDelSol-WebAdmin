@@ -20,17 +20,6 @@ app.get('/', async (req, res, next) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     }
-    /*req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(sql_query, (err, rows, fields) => {
-                if(!err) {
-                    res.status(200).send({error: false, menu: rows});
-                }
-            });
-        } else {
-            res.status(500).send({error: true, message: err});
-        }
-    });*/
 });
 
 app.get('/edit/(:id_menu)', async (req, res, next) => {
@@ -49,17 +38,6 @@ app.get('/edit/(:id_menu)', async (req, res, next) => {
                 console.log(err)
                 res.status(500).send({error: true, message: err});
             }
-            /*req.getConnection((error, conn) => {
-                if (!error) {
-                    conn.query(`SELECT * FROM platodeldia WHERE id_menu = ?`, req.params.id_menu, (err, rows, fields) => {
-                        if (!err) {
-                            res.status(200).send({error: false, items: items.data.items, menu: menu.data.menu[0], plato: rows});
-                        }
-                    });
-                } else {
-                    res.status(500).send({error: true, message: err});
-                }
-            })*/
         })
         .catch(err => err);
     })
@@ -103,27 +81,6 @@ app.post('/edit/(:id_menu)', async (req, res, next) => {
             console.log(err)
             res.status(500).send({error: true, message: err});
         }
-        /*req.getConnection((error, conn) => {
-            if (!error) {
-                platos.forEach(plate => {
-                    conn.query(sql_query, [plate, plate.id_menu, plate.dia], (err, results) => {
-                        resultados.push(results);
-                        errores.push(err);
-                    });  
-                });
-                conn.query(`UPDATE menu SET nombre = ?, activo = ? WHERE id_menu = ?;`, [req.body.data.nombre, req.body.data.activo, req.params.id_menu], (err, results) => {
-                    resultados.push(results);
-                    errores.push(err);
-                });
-                if (errores.length > 0) {
-                    res.status(500).send({error: true, message: errores});
-                }else{
-                    res.status(200).send({error: false, result: resultados, message: 'Menu modificado exitosamente'});
-                }
-            } else {
-                res.status(500).send({error: true, message: error});
-            }
-        });*/
     }
 });
 

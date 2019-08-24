@@ -28,39 +28,6 @@ app.get('/categories', async (req, res) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     } 
-
-
-    //Vainita MySQL
-    // let categorias = [], subcategorias = [];
-    // let sql_query = `SELECT * FROM categoria`;
-
-    // sql_query += req.query.nombre ? ` AND categoria.nombre = '${req.query.nombre}'` : ``;
-    // sql_query += req.query.id_categoria ? ` AND categoria.id_categoria = ${req.query.id_categoria}` : ``;
-    
-    // req.getConnection((error, conn) => {
-    //     if (!error) {
-    //         conn.query(sql_query, (err, rows, fields) => {
-    //             if (!err) {
-    //                 if (rows.length > 0) {
-    //                     rows.forEach(cat => {
-    //                         if (cat.id_categoria_padre == null) {
-    //                             categorias.push(cat);
-    //                         } else {
-    //                             subcategorias.push(cat);
-    //                         }
-    //                     });
-    //                     res.status(200).send({error: false, categorias: categorias, subcategorias: subcategorias});
-    //                 } else {
-    //                     res.status(204).send({error: false, message: 'Server request successful but data was not found'});
-    //                 }
-    //             } else {
-    //                 res.status(500).send({error: true, message: err});
-    //             }
-    //         });
-    //     } else {
-    //         res.status(500).send({error: true, message: error});
-    //     }
-    // });
 });
 
 app.get('/get', async (req, res) => {
@@ -84,24 +51,6 @@ app.get('/get', async (req, res) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     } 
-    //Vainita MySQL
-    /*req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(sql_query, (err, rows, fields) => {
-                if (!err) {
-                    if (rows.length > 0) {
-                        res.status(200).send({error: false, items: rows});
-                    } else {
-                        res.status(204).send({error: false, message: 'Server request successful but data was not found'});
-                    }
-                } else {
-                    res.status(500).send({error: true, message: err});
-                }
-            });
-        }else{
-            res.status(500).send({error: true, message: error});
-        }
-    })*/
 });
 
 app.get('/get/combo', async (req, res) => {
@@ -120,35 +69,6 @@ app.get('/get/combo', async (req, res) => {
         console.log(err)
         res.status(500).send({error: true, message: err});
     } 
-    
-    //Vainita MySQL
-    /*req.getConnection((error, conn) => {
-        if (!error) {
-            conn.query(selectComboQuery, (err, combo, fields) => {
-                if (!err) {
-                    if (combo.length > 0) {
-                        conn.query(selectItemComboQuery, (err, rows, fields) => {
-                            if (!err) {
-                                if (rows.length > 0) {
-                                    res.status(200).send({error: false, combo: combo, itemCombo: rows});
-                                } else {
-                                    res.status(204).send({error: false, message: 'Server request successful but data was not found'});
-                                }
-                            } else {
-                                res.status(500).send({error: true, message: err});
-                            }
-                        });
-                    } else {
-                        res.status(204).send({error: false, message: 'Server request successful but data was not found'});
-                    }
-                } else {
-                    res.status(500).send({error: true, message: err});
-                }
-            });
-        } else {
-            res.status(500).send({error: true, message: error});
-        }
-    });*/
 });
 
 app.post('/register', async (req, res) => {
@@ -176,21 +96,7 @@ app.post('/register', async (req, res) => {
         } catch (err) {
             console.log(err)
             res.status(500).send({error: true, message: err});
-        } 
-        //Vainita MySQL
-        /*req.getConnection((error, conn) => {
-            if (!error) {
-                conn.query(`INSERT INTO item SET ?`, item, (err, results) => {
-                    if (!err) {
-                        res.status(200).send({error: false, result: results, message: 'Item registered sucessfully'});
-                    } else {
-                        res.status(500).send({error: true, message: err});
-                    }
-                })
-            } else {
-                res.status(500).send({error: true, message: error});
-            }
-        });*/
+        }
     }
 });
 
@@ -231,29 +137,6 @@ app.post('/register/combo', async (req, res) => {
             console.log(err)
             res.status(500).send({error: true, message: err});
         } 
-
-        //Vainita MySQL
-        /*req.getConnection((error, conn) => {
-            if (!error) {
-                conn.query(`INSERT INTO combo SET ?`, combo, (err, results) => {
-                    if (!err) {
-                        res.status(200).send({error: false, result: results, message: 'Combo registered sucessfully'});
-                    } else {
-                        res.status(500).send({error: true, message: err});
-                    }
-                })
-
-                itemCombo.forEach(entry => {
-                    conn.query(`INSERT INTO itemcombo SET ?`, entry, (err, results) => {
-                        if (err) {
-                            res.status(500).send({error: true, message: err});
-                        }
-                    })
-                });
-            } else {
-                res.status(500).send({error: true, message: error});
-            }
-        });*/
     }
 });
 
@@ -280,22 +163,7 @@ app.post('/edit/(:id_item)', async (req, res) => {
         } catch (err) {
             console.log(err)
             res.status(500).send({error: true, message: err});
-        } 
-        
-        //Vainita MySQL
-        /*req.getConnection((error, conn) => {
-            if (!error) {
-                conn.query(`UPDATE item SET ? WHERE id_item = ?`, [item, id_item], (err, results) => {
-                    if (!err) {
-                        res.status(200).send({error: false, result: results, message: 'Item modificado exitosamente'});
-                    } else {
-                        res.status(500).send({error: true, message: err});
-                    }
-                });
-            } else {
-                res.status(500).send({error: true, message: error});
-            }
-        });*/
+        }
     }
 });
 
@@ -342,36 +210,6 @@ app.post('/combo/edit', async (req, res) => {
             console.log(err)
             res.status(500).send({error: true, message: err});
         } 
-
-        //Vainita MySQL
-        /*req.getConnection((error, conn) => {
-            if (!error) {
-                conn.query(`UPDATE combo SET ? WHERE id_combo = ?`, [combo, combo.id_combo], (err, results) => {
-                    resultados.push(results);
-                    errores.push(err);
-                })
-
-                conn.query(`DELETE FROM itemcombo WHERE id_combo = ?`, combo.id_combo, (err, results) => {
-                    resultados.push(results);
-                    errores.push(err);
-                });
-
-                itemCombo.forEach(entry => {
-                    conn.query(`INSERT INTO itemcombo SET ?`, entry, (err, results) => {
-                        resultados.push(results);
-                        errores.push(err);
-                    })
-                });
-
-                if (errores.length > 0) {
-                    res.status(500).send({error: true, message: errores});
-                } else {
-                    res.status(200).send({error: false, result: resultados, message: 'Combo registered sucessfully'});
-                }
-            } else {
-                res.status(500).send({error: true, message: error});
-            }
-        });*/
     }
 });
 
