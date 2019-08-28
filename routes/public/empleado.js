@@ -2,29 +2,72 @@ const express = require('express');
 const axios = require('axios');
 const url = require('../../config').values.server.url;
 const multer = require('multer');
-const cloudinary = require('cloudinary');
-const cloudinaryStorage = require('multer-storage-cloudinary');
 const config = require('../../config');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-let h;
+const storageAzure = require('azure-storage');
+const blobService = storageAzure.createBlobService(config.values.access_key.AccountName, config.values.access_key.AccountKey);
+const nombreContenedor = "profilepic";
+const path = require('path');
+const fsExtra = require('fs-extra');
 
 let app = express();
 
-cloudinary.config(config.values.cloudinary);
+const storage = multer.diskStorage({
+    destination: './tmp',//__dirname,
+     filename: function (req, file, cb) {
+       cb(null, Date.now() + '-' + file.originalname)
+     }
+  })
 
-const storage = cloudinaryStorage({
-    cloudinary: cloudinary,
-    folder: 'empleado',
-    allowedFormats: ['jpg', 'png'],
-    transformation: [{height: 500, crop: 'limit' }],
-});
-console.log('Initialized Cloudinary on employee public api');
+//used to list containers and verify if theres none for employee's profile pic
+const listContainers = async () => {
+    return new Promise((resolve, reject) => {
+        blobService.listContainersSegmented(null, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `${data.entries.length} containers`, containers: data.entries });
+            }
+        });
+    });
+};
+
+//In any case the db gets erased, creates a new container for employee pictures 
+const createContainer = async (containerName) => {
+    return new Promise((resolve, reject) => {
+        blobService.createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Container '${containerName}' created` });
+            }
+        });
+    });
+};
+
+//Uploads employee image on azure storage . Uses /tmp directory to store image and upload it
+// as a local file. 
+const uploadLocalFile = async (filePath) => {
+    return new Promise((resolve, reject) => {
+        const fullPath = path.resolve(filePath);
+        const blobName = path.basename(filePath);
+        blobService.createBlockBlobFromLocalFile(nombreContenedor, blobName, fullPath, err => {
+            if (err) {
+                console.log("errol", err)
+                reject(err);
+            } else {
+                fsExtra.emptyDirSync('./tmp')
+                resolve({ message: `Local file "${filePath}" is uploaded` });
+            }
+        });
+    });
+};
+
 
 const parser = multer({ storage: storage });
 
 app.get('/', (req, res, next) => {
-    console.log(config.loggedIn)
+
+    // console.log(config.loggedIn)
     if(config.loggedIn){
 
         axios.get(`${url}/api/empleado/buscar`).
@@ -40,7 +83,15 @@ app.get('/', (req, res, next) => {
     
 });
 
-app.get('/registrar', (req, res, next) => {
+app.get('/registrar', async (req, res, next) => {
+
+    let response = await listContainers();
+    const containerDoesNotExist = response.containers.findIndex((container) => container.name === nombreContenedor) === -1;
+
+    if (containerDoesNotExist) {
+        await createContainer(nombreContenedor);
+        console.log(`Container ${nombreContenedor} is created`);
+    }
     
     if(config.loggedIn){
         res.render('empleado/register', {
@@ -58,9 +109,10 @@ app.get('/registrar', (req, res, next) => {
     }
 });
 
-app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next) => {
+app.post('/registrar', parser.single('ProfilePicSelect'),async (req, res, next) => {
 
     const file = req.file;
+    // console.log(file)
 
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('correo', 'El correo no puede estar vacío').notEmpty();
@@ -97,7 +149,10 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
                 }
             );
         } else {
-            employee.avatar = file.url;
+            let response = await uploadLocalFile(req.file.path)
+            console.log(response.message)
+
+            employee.avatar = blobService.getUrl(nombreContenedor,path.basename(req.file.path));
         
             axios.post(`${url}/api/empleado/registrar`, {data: employee})
             .then( () => {      

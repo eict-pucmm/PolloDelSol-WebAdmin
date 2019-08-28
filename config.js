@@ -24,6 +24,10 @@ const values = {
         server: 'pollo-del-sol.database.windows.net',
         database: 'pollo-test',
         encrypt: true
+    },
+    access_key: {
+        AccountName: 'polloblob',
+        AccountKey: 's8KLso+rdEMHCUo+fhur15ccXO4slNJTYkBBeh6xcq+Gefcz2n7nvxGaMjnfboK91fU6pxF7BM7tfPfF3RqFiw=='
     }
 }
 

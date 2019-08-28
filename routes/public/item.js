@@ -1,23 +1,68 @@
 const express = require('express');
 const axios   = require('axios');
 const multer = require("multer");
-const cloudinary = require("cloudinary");
-const cloudinaryStorage = require("multer-storage-cloudinary");
 const config = require('../../config');
+const storageAzure = require('azure-storage');
+const blobService = storageAzure.createBlobService(config.values.access_key.AccountName, config.values.access_key.AccountKey);
+const nombreContenedor = "itempic";
+const path = require('path');
+const fsExtra = require('fs-extra');
 
 let app = express();
 let regItem;
 
-cloudinary.config(config.values.cloudinary);
-
-const storage = cloudinaryStorage({
-    cloudinary: cloudinary,
-    folder: 'item',
-    allowedFormats: ['jpg', 'png'],
-    transformation: [{ height: 500, crop: 'limit' }]}
-);
+const storage = multer.diskStorage({
+    destination: './tmp',//__dirname,
+     filename: function (req, file, cb) {
+       cb(null, Date.now() + '-' + file.originalname)
+     }
+  })
 
 const parser = multer({ storage: storage });
+
+//used to list containers and verify if theres none for item's pic
+const listContainers = async () => {
+    return new Promise((resolve, reject) => {
+        blobService.listContainersSegmented(null, (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `${data.entries.length} containers`, containers: data.entries });
+            }
+        });
+    });
+};
+
+//In any case the db gets erased, creates a new container for item pictures 
+const createContainer = async (containerName) => {
+    return new Promise((resolve, reject) => {
+        blobService.createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({ message: `Container '${containerName}' created` });
+            }
+        });
+    });
+};
+
+//Uploads item image on azure storage . Uses /tmp directory to store image and upload it
+// as a local file. 
+const uploadLocalFile = async (filePath) => {
+    return new Promise((resolve, reject) => {
+        const fullPath = path.resolve(filePath);
+        const blobName = path.basename(filePath);
+        blobService.createBlockBlobFromLocalFile(nombreContenedor, blobName, fullPath, err => {
+            if (err) {
+                console.log("errol", err)
+                reject(err);
+            } else {
+                fsExtra.emptyDirSync('./tmp')
+                resolve({ message: `Local file "${filePath}" is uploaded` });
+            }
+        });
+    });
+};
 
 app.get('/', (req, res, next) => {
 
@@ -42,7 +87,15 @@ app.get('/', (req, res, next) => {
 
 });
 
-app.get('/register', (req, res, next) => {
+app.get('/register', async (req, res, next) => {
+
+    let response = await listContainers();
+    const containerDoesNotExist = response.containers.findIndex((container) => container.name === nombreContenedor) === -1;
+
+    if (containerDoesNotExist) {
+        await createContainer(nombreContenedor);
+        console.log(`Container ${nombreContenedor} is created`);
+    }
 
     let item;
     if (regItem) {
@@ -94,7 +147,7 @@ app.get('/register', (req, res, next) => {
     
 });
 
-app.post('/register', parser.single('image'), (req, res, next) => {
+app.post('/register', parser.single('image'), async (req, res, next) => {
 
     req.assert('id-item', 'El Id no puede estar vacío').notEmpty();
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
@@ -106,6 +159,9 @@ app.post('/register', parser.single('image'), (req, res, next) => {
         req.assert('guarniciones', 'Debe seleccionar al menos una opcion de guarnición').notEmpty();
     }
 
+    let response = await uploadLocalFile(req.file.path)
+    console.log(response.message)
+
     let errors = req.validationErrors();
     let item = {
         id_item: req.sanitize('id-item').escape().trim(),
@@ -115,7 +171,7 @@ app.post('/register', parser.single('image'), (req, res, next) => {
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
         eliminado: 0,
-        imagen: req.file.url
+        imagen: blobService.getUrl(nombreContenedor,path.basename(req.file.path))
     }
     regItem = Object.assign({}, item);
     regItem.categoria = req.body['selected-category'];
@@ -211,7 +267,9 @@ app.get('/edit/(:id_item)', (req, res, next) => {
     
 });
 
-app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
+app.post('/edit/(:id_item)', parser.single('image'), async (req, res, next) => {
+
+    console.log("><><><><><><><><><><",req.file)
 
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('descripcion', 'La descripcion no puede estar vacía').notEmpty();
@@ -227,6 +285,7 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
         eliminado: req.body.eliminado !== undefined ? 0 : 1,
+        imagen: ''
     }
 
     if (req.body['selected-category'] == 'Combo') {
@@ -249,7 +308,20 @@ app.post('/edit/(:id_item)', parser.single('image'), (req, res, next) => {
         }
     }
 
-    item.imagen = req.file ? req.file.url : req.body.imagen;
+    // item.imagen = req.file ? req.file.url : req.body.imagen;
+        if(req.file === undefined) {
+            
+            console.log("no req. file")
+            item.imagen = req.body.imagen;
+
+        }else {
+
+            let response = await uploadLocalFile(req.file.path)
+            console.log(response.message)
+
+            item.imagen = blobService.getUrl(nombreContenedor,path.basename(req.file.path));
+            console.log(">>",item.imagen)
+        }
 
     if (!errors) {
         axios.post(`${config.values.server.url}/api/item/edit/${item.id_item}`, {data: item})

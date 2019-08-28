@@ -11,7 +11,7 @@
             <% if (action === 'Registrar item') {%>
             <form method="POST" action="/item/register" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
             <% } else if (action === 'Modificar item') { %>
-            <form method="POST" action="/item/edit/<%-item.id_item%>" onkeydown="return event.key != 'Enter';">
+            <form method="POST" action="/item/edit/<%-item.id_item%>" enctype="multipart/form-data" onkeydown="return event.key != 'Enter';">
             <% } %>
               <div class="row">
                 <div class="col-3 grid-margin stretch-card mx-auto">
