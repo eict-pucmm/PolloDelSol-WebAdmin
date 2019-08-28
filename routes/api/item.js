@@ -144,12 +144,20 @@ app.post('/edit/(:id_item)', async (req, res) => {
     
     const id_item = req.params.id_item;
     const item = req.body.data;
+    var image = item.imagen
 
     if (!item || !id_item) {
         res.status(400).send({error: true, message: 'Please provide an item and item id'});
+        
     } else {
         try {
             const pool = await poolPromise
+            if (!image) {
+                var imageres = await pool.request()
+                    .input('id_item',sql.NVarChar,id_item)
+                    .query(`SELECT imagen from item where id_item = @id_item`)
+                image = imageres.recordset[0].imagen
+            }
             const resultes = await pool.request()
                 .input('id_item',sql.NVarChar,id_item)
                 .input('nombre',sql.NVarChar,item.nombre)
@@ -158,7 +166,8 @@ app.post('/edit/(:id_item)', async (req, res) => {
                 .input('subcategoria',sql.Int,item.id_subcategoria)
                 .input('precio',sql.Decimal,item.precio)
                 .input('eliminado',sql.Bit,item.eliminado)
-                .query(`UPDATE item SET nombre=@nombre, descripcion=@desc, id_categoria=@categoria, id_subcategoria=@subcategoria, precio=@precio, eliminado=@eliminado WHERE id_item = @id_item`)
+                .input('imagen',sql.NVarChar,image)
+                .query(`UPDATE item SET nombre=@nombre, descripcion=@desc, id_categoria=@categoria, id_subcategoria=@subcategoria, precio=@precio, eliminado=@eliminado, imagen=@imagen WHERE id_item = @id_item`)
             res.status(200).send({error: false, result: resultes.recordset,message: "Item modificado exitosamente"});
         } catch (err) {
             console.log(err)
