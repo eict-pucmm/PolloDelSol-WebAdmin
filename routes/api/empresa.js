@@ -1,16 +1,22 @@
 const express = require('express');
 const {poolPromise} = require('../../db')
 let app = express();
+/*
+*   El config no se usa, lo pueden quitar
+*/
 const config = require('../../config');
 const sql = require('mssql')
 
 
 app.get('/', async (req, res, next) => {
     //Vainita SQL SERVER
+    /*
+    *   El verdaadero SELECT XDxdXDXDxdxd 
+    */
     try {
         const pool = await poolPromise
         const result = await pool.request()
-            .query(`select
+            .query(`SELECT
             cliente.id_cliente, 
             cliente.nombre, 
             cliente.correo_electronico, 
@@ -21,19 +27,19 @@ app.get('/', async (req, res, next) => {
             empresa.eliminado, 
             cierre.dia_ajustado dia_de_cierre, 
             cierre.tipo_de_cierre, 
-            count(empresausuario.id_empresa) cant_empleados
-        from 
+            COUNT(empresausuario.id_empresa) cant_empleados
+        FROM 
             cliente, 
             empresa, 
             cierre, 
             empresacierre, 
             empresausuario
-        where 
+        WHERE 
             cliente.id_cliente = empresa.id_cliente
-            and empresacierre.id_empresa = empresa.id_empresa
-            and empresacierre.id_cierre = cierre.id_cierre
-            and empresausuario.id_empresa = empresa.id_empresa
-        group by
+            AND empresacierre.id_empresa = empresa.id_empresa 
+            AND empresacierre.id_cierre = cierre.id_cierre 
+            AND empresausuario.id_empresa = empresa.id_empresa
+        GROUP BY
             cliente.id_cliente, 
             cliente.nombre, 
             cliente.correo_electronico, 
@@ -53,6 +59,9 @@ app.get('/', async (req, res, next) => {
 
  
 app.post('/edit/(:id_empresa)', async (req, res) => {
+    /*
+    *   Los console.log(). Si los dejan ponganle una vaina profesional o qsy 
+    */
     const id_empresa = req.params.id_empresa;
     const empresa = req.body.empresa;
     const cierre = req.body.cierre;
@@ -67,12 +76,15 @@ app.post('/edit/(:id_empresa)', async (req, res) => {
         try {
             const pool = await poolPromise
             const empresares = await pool.request()
-                .input('aproved',sql.Bit, empresa.aprobada)
-                .input('id_empresa',sql.NVarChar, id_empresa)
+                .input('aproved', sql.Bit, empresa.aprobada)
+                .input('id_empresa', sql.NVarChar, id_empresa)
                 .query(`UPDATE empresa SET aprobada = @aproved WHERE id_empresa = @id_empresa`)
             
             if (req.body.actualizar_cierre) {
                 sql_query = `UPDATE cierre SET dia_de_cierre = CAST('@dia_de_cierre' AS DATE), dia_ajustado = dbo.ajustarDia(CONVERT(date,'2019-08-29',23)), tipo_de_cierre = @tipo_de_cierre WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = @id_empresa)`;
+                /*
+                *   Usen let, no var. Creo que desde ES5 recomiendan usar let en vez de var
+                */
                 var cierreres = await pool.request()
                     .input('id_empresa', sql.NVarChar, id_empresa)
                     .input('dia_de_cierre', sql.NVarChar, cierre.dia_de_cierre)

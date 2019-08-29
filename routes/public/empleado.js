@@ -4,6 +4,11 @@ const url = require('../../config').values.server.url;
 const multer = require('multer');
 const config = require('../../config');
 const storageAzure = require('azure-storage');
+/*
+*   Maña mia, y creo que es buena practica: primero poner los import/require y despues todo lo otro.
+*   Basicamente la instancia de blobService y @nombreContenedor ponerla despues de importar todo
+*   El blobService veo que se usa en varias rutas, se podria poner en el config.js
+*/
 const blobService = storageAzure.createBlobService(config.values.access_key.AccountName, config.values.access_key.AccountKey);
 const nombreContenedor = "profilepic";
 const path = require('path');
@@ -109,7 +114,11 @@ app.get('/registrar', async (req, res, next) => {
     }
 });
 
-app.post('/registrar', parser.single('ProfilePicSelect'),async (req, res, next) => {
+/*
+*   Klk aqui. Mas para abajo veo que se sube a Azure pero todavia esta puesto la parte de cloudinary???
+*   Limpien el proyecto de Cloudinary
+*/
+app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next) => {
 
     const file = req.file;
     // console.log(file)
@@ -171,7 +180,7 @@ app.post('/registrar', parser.single('ProfilePicSelect'),async (req, res, next) 
     }
 });
 
-app.get('/modificar/(:id_empleado)', (req,res,next) =>{
+app.get('/modificar/(:id_empleado)', (req, res, next) =>{
 
 
     if(config.loggedIn){
@@ -203,6 +212,9 @@ app.get('/modificar/(:id_empleado)', (req,res,next) =>{
 
 });
 
+/*
+*   Aqui falta la subir/actualizar imagen en caso de que se cambie (entiendo que se puede modificar la imagen)
+*/
 app.post('/modificar/(:id_empleado)', (req, res, next) => {
 
     const file = req.file;

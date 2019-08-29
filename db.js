@@ -9,6 +9,11 @@ const poolPromise = new sql.ConnectionPool(config.values.azure)
   })
   .catch(err => console.log('Database Connection Failed! Bad Config: ', err))
 
+
+  /*
+  *   @sql no se usa en ningun lado y es lo mismo que importar @mssql
+  *   No tienen que exportar sql, solo poolPromise
+  */
 module.exports = {
   sql, poolPromise
 }

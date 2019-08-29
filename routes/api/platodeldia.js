@@ -47,6 +47,9 @@ app.get('/edit/(:id_menu)', async (req, res, next) => {
 app.post('/edit/(:id_menu)', async (req, res, next) => {
 
     const platos = req.body.data.platos;
+    /*
+    *   Pueden borrar esto ya que no se usan
+    */
     const sql_query = ``;
     let resultados = [], errores = [];
     
@@ -61,12 +64,12 @@ app.post('/edit/(:id_menu)', async (req, res, next) => {
             platos.forEach(async (plate) => {
                 const platoitemres = await pool.request()
                     .input("arroz", sql.NVarChar, plate.id_arroz)
-                    .input("habichuela",sql.NVarChar, plate.id_habichuela)
-                    .input("carne",sql.NVarChar, plate.id_carne)
-                    .input("guarnicion",sql.NVarChar, plate.id_guarnicion)
-                    .input("ensalada",sql.NVarChar, plate.id_ensalada)
-                    .input("dia",sql.Int,plate.dia)
-                    .input("menu",sql.Int,plate.id_menu)
+                    .input("habichuela", sql.NVarChar, plate.id_habichuela)
+                    .input("carne", sql.NVarChar, plate.id_carne)
+                    .input("guarnicion", sql.NVarChar, plate.id_guarnicion)
+                    .input("ensalada", sql.NVarChar, plate.id_ensalada)
+                    .input("dia", sql.Int, plate.dia)
+                    .input("menu", sql.Int, plate.id_menu)
                     .query(`UPDATE platodeldia SET id_arroz=@arroz, id_habichuela=@habichuela, id_carne=@carne, id_guarnicion=@guarnicion, id_ensalada=@ensalada WHERE id_menu = @menu AND dia = @dia`)
                 
             });

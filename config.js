@@ -1,4 +1,7 @@
 const values = {
+    /*
+    *   Los valores de MySQL se pueden borrar, y dejar los de Azure
+    */
     database: {
         host: 'us-cdbr-iron-east-02.cleardb.net',
         user: 'b0ccbe5cbcfbd1',
@@ -25,6 +28,9 @@ const values = {
         database: 'pollo-test',
         encrypt: true
     },
+    /*
+    *   Ponganle nombre mas explicito, como Azure_Blob o qsy
+    */
     access_key: {
         AccountName: 'polloblob',
         AccountKey: 's8KLso+rdEMHCUo+fhur15ccXO4slNJTYkBBeh6xcq+Gefcz2n7nvxGaMjnfboK91fU6pxF7BM7tfPfF3RqFiw=='

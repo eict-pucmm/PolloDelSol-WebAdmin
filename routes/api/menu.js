@@ -30,9 +30,7 @@ app.get('/items', async (req, res) => {
                 AND item.id_subcategoria = subcategoria.id_categoria) AS combo, menuitem`
     
     sql_query += req.query.activo ? ', menu' : '';
-        
     sql_query += ` WHERE combo.id_item = menuitem.id_item`;
-    
     sql_query += req.query.activo ? ` AND menuitem.id_menu = menu.id_menu AND menu.activo = ${req.query.activo}` : ` AND menuitem.id_menu = ${req.query.id_menu}`;
 
     try {
@@ -84,9 +82,9 @@ app.post('/edit/(:id_menu)', async (req, res) => {
             });
         }
         const menures = await pool.request()
-            .input("nombre",sql.NVarChar,req.body.nombre)
-            .input("activo",sql.Bit,req.body.activo)
-            .input("id_menu",sql.Int,req.params.id_menu)
+            .input("nombre", sql.NVarChar, req.body.nombre)
+            .input("activo", sql.Bit, req.body.activo)
+            .input("id_menu", sql.Int, req.params.id_menu)
             .query(`UPDATE menu SET nombre = @nombre, activo = @activo WHERE id_menu = @id_menu;`)
         res.status(200).send({error: false, menus: menures.recordset});
     } catch (err) {

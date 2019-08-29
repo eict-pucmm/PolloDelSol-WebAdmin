@@ -3,13 +3,11 @@ const myConnection      = require('express-myconnection');  //consistent api for
 const expressValidator  = require('express-validator');     //used for form validation
 const bodyParser        = require('body-parser');           //read http POST data
 const methodOverride    = require('method-override');       //use http verbs (POST, DELETE) where they are not supported
-const mysql             = require('mysql');                 //MYSQL database API
 const expressFlash      = require('express-flash')
 const cookieParser      = require('cookie-parser');
 const expressSession    = require('express-session');
 const config            = require('./config');              //config values for server and database
 const cors              = require('cors');
-const mssql             = require('mssql')
 //visual routes
 const indexRoute        = require('./routes/public/index');
 const itemRoute         = require('./routes/public/item');
@@ -24,7 +22,6 @@ const indexApi          = require('./routes/api/index');
 let app = express();
 
 app.set('view engine', 'ejs');
-app.use(myConnection(mysql, config.values.database, 'pool'));
 app.use(cors());
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));

@@ -7,10 +7,17 @@ const sql = require('mssql')
 let app = express();
 
 app.get('/categories', async (req, res) => {
+
     let sql_query = `SELECT * FROM categoria`;
     let categorias = [], subcategorias = [];
+    /*
+    *   Aqui hay un error, no hay WHERE
+    */
     sql_query += req.query.nombre ? ` AND categoria.nombre = '${req.query.nombre}'` : ``;
     sql_query += req.query.id_categoria ? ` AND categoria.id_categoria = ${req.query.id_categoria}` : ``;
+    /*
+    *   Por lo que veo, el punto y coma no es necesario al final en SQL
+    */
     sql_query += ';'
     try {
         const pool = await poolPromise
@@ -83,14 +90,14 @@ app.post('/register', async (req, res) => {
         try {
             const pool = await poolPromise
             const result = await pool.request()
-                .input('id_item',sql.NVarChar,item.id_item)
-                .input('nombre',sql.NVarChar,item.nombre)
-                .input('desc',sql.NVarChar,item.descripcion)
-                .input('categoria',sql.Int,item.id_categoria)
-                .input('subcategoria',sql.Int,item.id_subcategoria)
-                .input('precio',sql.Decimal,item.precio)
-                .input('eliminado',sql.Bit,item.eliminado)
-                .input('imagen',sql.NVarChar,item.imagen)
+                .input('id_item', sql.NVarChar, item.id_item)
+                .input('nombre', sql.NVarChar, item.nombre)
+                .input('desc', sql.NVarChar, item.descripcion)
+                .input('categoria', sql.Int, item.id_categoria)
+                .input('subcategoria', sql.Int, item.id_subcategoria)
+                .input('precio', sql.Decimal, item.precio)
+                .input('eliminado', sql.Bit, item.eliminado)
+                .input('imagen', sql.NVarChar, item.imagen)
                 .query(`INSERT INTO item VALUES (@id_item, @nombre, @desc, @categoria, @subcategoria, @precio, @eliminado, @imagen)`)
             res.status(200).send({error: false, message: 'Item registered successfully'});
         } catch (err) {
@@ -111,18 +118,25 @@ app.post('/register/combo', async (req, res) => {
         try {
             const pool = await poolPromise
             const comboResult = await pool.request()
-                .input('id_combo',sql.NVarChar,combo.id_combo)
-                .input('guarnicion',sql.Int,combo.max_guarnicion)
-                .input('bebida',sql.Int,combo.max_bebida)
+                .input('id_combo', sql.NVarChar, combo.id_combo)
+                .input('guarnicion', sql.Int, combo.max_guarnicion)
+                .input('bebida', sql.Int, combo.max_bebida)
                 .query(`INSERT INTO combo VALUES (@id_combo, @guarnicion, @bebida)`)
             console.log("combo registrado")
             var values = [];
             itemCombo.forEach(item => {
+                /*
+                *   Se puede hacer mas corto esto, sin crear aux
+                *   values.push([item.id_combo, item.id_combo]);
+                */
                 var aux = [];
                 aux.push(item.id_combo)
                 aux.push(item.id_item)
                 values.push(aux)
             });
+            /*
+            *   El tonkiti, expliquenme klk con esto
+            */
             const table = new sql.Table('itemcombo')
             table.columns.add('id_combo', sql.VarChar(15));
             table.columns.add('id_item', sql.VarChar(15));
@@ -159,14 +173,14 @@ app.post('/edit/(:id_item)', async (req, res) => {
                 image = imageres.recordset[0].imagen
             }
             const resultes = await pool.request()
-                .input('id_item',sql.NVarChar,id_item)
-                .input('nombre',sql.NVarChar,item.nombre)
-                .input('desc',sql.NVarChar,item.descripcion)
-                .input('categoria',sql.Int,item.id_categoria)
-                .input('subcategoria',sql.Int,item.id_subcategoria)
-                .input('precio',sql.Decimal,item.precio)
-                .input('eliminado',sql.Bit,item.eliminado)
-                .input('imagen',sql.NVarChar,image)
+                .input('id_item', sql.NVarChar, id_item)
+                .input('nombre', sql.NVarChar, item.nombre)
+                .input('desc', sql.NVarChar, item.descripcion)
+                .input('categoria', sql.Int, item.id_categoria)
+                .input('subcategoria', sql.Int, item.id_subcategoria)
+                .input('precio', sql.Decimal, item.precio)
+                .input('eliminado', sql.Bit, item.eliminado)
+                .input('imagen', sql.NVarChar, image)
                 .query(`UPDATE item SET nombre=@nombre, descripcion=@desc, id_categoria=@categoria, id_subcategoria=@subcategoria, precio=@precio, eliminado=@eliminado, imagen=@imagen WHERE id_item = @id_item`)
             res.status(200).send({error: false, result: resultes.recordset,message: "Item modificado exitosamente"});
         } catch (err) {
@@ -182,6 +196,9 @@ app.post('/combo/edit', async (req, res) => {
 
     const combo = req.body.combo;
     const itemCombo = req.body.itemCombo;
+    /*
+    *   Pueden quitar los arreglos si no se usan
+    */
     let errores = [], resultados = [];
 
     if (!combo || !itemCombo) {
@@ -190,13 +207,13 @@ app.post('/combo/edit', async (req, res) => {
         try {
             const pool = await poolPromise
             const comboResult = await pool.request()
-                .input('id_combo',sql.NVarChar,combo.id_combo)
-                .input('guarnicion',sql.Int,combo.max_guarnicion)
-                .input('bebida',sql.Int,combo.max_bebida)
+                .input('id_combo', sql.NVarChar, combo.id_combo)
+                .input('guarnicion', sql.Int, combo.max_guarnicion)
+                .input('bebida', sql.Int, combo.max_bebida)
                 .query(`UPDATE combo SET max_guarnicion = @guarnicion, max_bebida = @bebida WHERE id_combo = @id_combo`)
             
             const deleteItemCombo = await pool.request()
-                .input('id_combo',sql.NVarChar,combo.id_combo)
+                .input('id_combo', sql.NVarChar, combo.id_combo)
                 .query('DELETE FROM itemcombo WHERE id_combo = @id_combo')
             var values = [];
             itemCombo.forEach(item => {

@@ -6,8 +6,6 @@ const menuAPI       = require('./menu');
 const platoAPI      = require('./platodeldia');
 let app = express();
 
-
-
 app.get('/',(req, res) => {
     console.log("API running");
 });

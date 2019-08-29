@@ -1,5 +1,8 @@
 const express = require('express');
 const axios =   require('axios');
+/*
+*   Es redundante importar un valor del config.js y el config.js completo
+*/
 const url =     require('../../config').values.server.url;
 const config =  require('../../config')
 
@@ -15,7 +18,7 @@ app.get('/', function (req, res, next) {
         })
 });
 
-app.post('/', function(req,res,next){
+app.post('/', function(req, res, next){
         console.log("login inside")
 
         req.assert('emailuser','El usuario no puede estar vacío').notEmpty();

@@ -4,9 +4,16 @@ const config    = require('../../config');
 const bcrypt    = require('bcrypt');
 const {poolPromise} = require('../../db')
 const sql = require('mssql')
+/*
+*   No dejen codigo comentado   
+*/
 // let logIn       = require('../../config').loggedIn.loggedIn;
 let h;
 let app = express();
+
+/*
+*   No se lleven del gusto y pongan los punto y coma (;) 
+*/
 
 app.get('/buscar', async (req, res, next) => {
 
@@ -22,8 +29,7 @@ app.get('/buscar', async (req, res, next) => {
     //Vainita SQL SERVER
     try {
         const pool = await poolPromise
-        const empleadores = await pool.request()
-            .query(sql_query)
+        const empleadores = await pool.request().query(sql_query)
         
         res.status(200).send({error: false, employee: empleadores.recordset});
     } catch (err) {
@@ -33,7 +39,8 @@ app.get('/buscar', async (req, res, next) => {
     
 });
 
-app.get('/buscarContrasena', async (req,res,next) => {
+app.get('/buscarContrasena', async (req, res, next) => {
+
     let sql_query = `SELECT * FROM credencial`;
 
     if(req.query.id_empleado) {
@@ -44,8 +51,7 @@ app.get('/buscarContrasena', async (req,res,next) => {
 
     try {
         const pool = await poolPromise
-        const credencialres = await pool.request()
-            .query(sql_query)
+        const credencialres = await pool.request().query(sql_query)
         
         res.status(200).send({error: false, credencial: credencialres.recordset});
     } catch (err) {
@@ -56,6 +62,12 @@ app.get('/buscarContrasena', async (req,res,next) => {
 
 app.post('/registrar', async (req,res) => {
 
+    /*
+    *   Esta demas sacar req.body.data y ponerlo en una variable, y despues pasarlo a otra
+    *   Si req.body.data solo tiene los datos de empleado solo tienen que hacer: const employee = req.body.data
+    *   Sino, hacen const employee = { aqui ponen los keys y values }
+    */
+   
     const employee1 = req.body.data;
     const employee = {
         id_empleado: employee1.id_empleado,
@@ -65,6 +77,9 @@ app.post('/registrar', async (req,res) => {
         eliminado:   employee1.eliminado,
         avatar:      employee1.avatar,
     }
+    /* 
+    *   No pongan console.log() a lo loco, a menos que esten debugeando. Si ya funciona y no van a debugear borren eso
+    */
     console.log(employee1)
 
     if(!employee){
@@ -75,8 +90,8 @@ app.post('/registrar', async (req,res) => {
         try {
             const pool = await poolPromise
             const empleadores = await pool.request()
-                .input('nombre',sql.NVarChar, employee.nombre)
-                .input('correo',sql.NVarChar, employee.correo)
+                .input('nombre', sql.NVarChar, employee.nombre)
+                .input('correo', sql.NVarChar, employee.correo)
                 .input('rol', sql.NVarChar,employee.rol)
                 .input('avatar', sql.NVarChar, employee.avatar)
                 .input('verificado', sql.Bit, 0)
@@ -111,6 +126,9 @@ app.post('/registrar', async (req,res) => {
 app.post('/modificar/(:id_empleado)', async (req,res) => {
 
     const id_empleado = req.params.id_empleado;
+    /*
+    *   Nice
+    */
     const empleado = req.body.data;
 
     if(!empleado || !id_empleado) {
@@ -134,6 +152,9 @@ app.post('/modificar/(:id_empleado)', async (req,res) => {
     }
 });
 
+/*
+*   Esta ruta no va
+*/
 app.post('/eliminar/(:id_empleado)', async (req, res, next) => {
 
     let employee;
@@ -193,7 +214,6 @@ app.post('/login/(:emailuser)/(:contrasena)', async (req,res,next) => {
                         config.loggedIn = true;
                         config.employee = employee
                         res.status(200).send({error: false, result: result, message: `Usuario ${employee.nombre} ha iniciado sesion`});
-                        
                     }
                 }else {
                     console.log(error)
