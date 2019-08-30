@@ -3,18 +3,12 @@ const axios = require('axios');
 const url = require('../../config').values.server.url;
 const multer = require('multer');
 const config = require('../../config');
-const storageAzure = require('azure-storage');
-/*
-*   Maña mia, y creo que es buena practica: primero poner los import/require y despues todo lo otro.
-*   Basicamente la instancia de blobService y @nombreContenedor ponerla despues de importar todo
-*   El blobService veo que se usa en varias rutas, se podria poner en el config.js
-*/
-const blobService = storageAzure.createBlobService(config.values.access_key.AccountName, config.values.access_key.AccountKey);
-const nombreContenedor = "profilepic";
 const path = require('path');
 const fsExtra = require('fs-extra');
 
 let app = express();
+
+const nombreContenedor = "profilepic";
 
 const storage = multer.diskStorage({
     destination: './tmp',//__dirname,
@@ -26,7 +20,7 @@ const storage = multer.diskStorage({
 //used to list containers and verify if theres none for employee's profile pic
 const listContainers = async () => {
     return new Promise((resolve, reject) => {
-        blobService.listContainersSegmented(null, (err, data) => {
+        config.blobService.listContainersSegmented(null, (err, data) => {
             if (err) {
                 reject(err);
             } else {
@@ -39,7 +33,7 @@ const listContainers = async () => {
 //In any case the db gets erased, creates a new container for employee pictures 
 const createContainer = async (containerName) => {
     return new Promise((resolve, reject) => {
-        blobService.createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
+        config.blobService.createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
             if (err) {
                 reject(err);
             } else {
@@ -55,7 +49,7 @@ const uploadLocalFile = async (filePath) => {
     return new Promise((resolve, reject) => {
         const fullPath = path.resolve(filePath);
         const blobName = path.basename(filePath);
-        blobService.createBlockBlobFromLocalFile(nombreContenedor, blobName, fullPath, err => {
+        config.blobService.createBlockBlobFromLocalFile(nombreContenedor, blobName, fullPath, err => {
             if (err) {
                 console.log("errol", err)
                 reject(err);
@@ -72,7 +66,6 @@ const parser = multer({ storage: storage });
 
 app.get('/', (req, res, next) => {
 
-    // console.log(config.loggedIn)
     if(config.loggedIn){
 
         axios.get(`${url}/api/empleado/buscar`).
@@ -114,14 +107,9 @@ app.get('/registrar', async (req, res, next) => {
     }
 });
 
-/*
-*   Klk aqui. Mas para abajo veo que se sube a Azure pero todavia esta puesto la parte de cloudinary???
-*   Limpien el proyecto de Cloudinary
-*/
 app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next) => {
 
     const file = req.file;
-    // console.log(file)
 
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('correo', 'El correo no puede estar vacío').notEmpty();
@@ -161,7 +149,7 @@ app.post('/registrar', parser.single('ProfilePicSelect'), async (req, res, next)
             let response = await uploadLocalFile(req.file.path)
             console.log(response.message)
 
-            employee.avatar = blobService.getUrl(nombreContenedor,path.basename(req.file.path));
+            employee.avatar = config.blobService.getUrl(nombreContenedor,path.basename(req.file.path));
         
             axios.post(`${url}/api/empleado/registrar`, {data: employee})
             .then( () => {      
@@ -212,12 +200,9 @@ app.get('/modificar/(:id_empleado)', (req, res, next) =>{
 
 });
 
-/*
-*   Aqui falta la subir/actualizar imagen en caso de que se cambie (entiendo que se puede modificar la imagen)
-*/
-app.post('/modificar/(:id_empleado)', (req, res, next) => {
+app.post('/modificar/(:id_empleado)', parser.single('ProfilePicSelect'), async (req, res, next) => {
 
-    const file = req.file;
+
 
     req.assert('nombre', 'El nombre no puede estar vacío').notEmpty();
     req.assert('correo', 'El correo no puede estar vacío').notEmpty();
@@ -234,9 +219,13 @@ app.post('/modificar/(:id_empleado)', (req, res, next) => {
             eliminado:            req.body.eliminado !== undefined ? 0 : 1,
         };
 
-        if (req.file) {
-            employee.avatar = file.url;
-        }  
+        if (req.file === undefined) {
+            employee.avatar = req.body.avatar;
+        }else {
+            let response = await uploadLocalFile(req.file.path)
+            
+            employee.avatar = config.blobService.getUrl(nombreContenedor,path.basename(req.file.path));
+        }
 
         axios.post(`${url}/api/empleado/modificar/${req.params.id_empleado}`, {data: employee})
         .then( () => {

@@ -14,7 +14,7 @@
           <form class="forms-sample" method="POST" action="/empleado/registrar" enctype="multipart/form-data">
         <% } else if (action === 'Modificar empleado') { %>
           <input name="id_empleado" type="text" style="display: none;" value="<%= employee.id_empleado %>"/>
-          <form class="forms-sample" method="POST" action="/empleado/modificar/<%=employee.id_empleado%>">
+          <form class="forms-sample" method="POST" action="/empleado/modificar/<%=employee.id_empleado%>" enctype="multipart/form-data">
         <% } %>
             <div class="row">
                   <div class="col-3 grid-margin stretch-card text-center">
@@ -23,7 +23,11 @@
                         <h4 class="card-title">Imagen</h4>
                         <div class="row">
                           <div class="col-md-12">
-                            <img src="/images/ProfilePic.png" name="ProfilePic" id="ProfilePic" class="register-img"/>
+                            <% if (employee.avatar) {%>
+                            <img src="<%-employee.avatar%>" name="ProfilePic" id="ProfilePic" class="register-img"/>
+                            <%} else {%>
+                            <img src="/images/placeholder.jpg" name="ProfilePic" id="ProfilePic" class="register-img"/>
+                            <%}%>
                           </div>
                         </div>
                         <div class="row">
