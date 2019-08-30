@@ -1,3 +1,5 @@
+const storageAzure = require('azure-storage');
+const blobService = storageAzure.createBlobService('polloblob', 's8KLso+rdEMHCUo+fhur15ccXO4slNJTYkBBeh6xcq+Gefcz2n7nvxGaMjnfboK91fU6pxF7BM7tfPfF3RqFiw==');
 const values = {
     /*
     *   Los valores de MySQL se pueden borrar, y dejar los de Azure
@@ -40,4 +42,4 @@ const values = {
 let loggedIn = false;
 let employee = {}
 
-module.exports = {values: values, loggedIn: loggedIn, employee: employee};
+module.exports = {values: values, loggedIn: loggedIn, employee: employee, blobService: blobService};

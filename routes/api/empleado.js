@@ -130,17 +130,25 @@ app.post('/modificar/(:id_empleado)', async (req,res) => {
     *   Nice
     */
     const empleado = req.body.data;
+    let avatar = empleado.avatar;
 
     if(!empleado || !id_empleado) {
         res.status(400).send({error: true, message: 'Please provide an employee and employee id'});
     } else {
         try {
             const pool = await poolPromise
+            if(!avatar) {
+                var avatarres = await pool.request()
+                .input('id_empleado', sql.NVarChar, id_empleado)
+                .query(`SELECT avatar from empleado where id_empleado = @id_empleado`);
+
+                avatar = avatarres.recordset[0].avatar;
+            }
             const updateempleadores = await pool.request()
                 .input('nombre',sql.NVarChar, empleado.nombre)
                 .input('correo',sql.NVarChar, empleado.correo)
                 .input('rol', sql.NVarChar,empleado.rol)
-                .input('avatar', sql.NVarChar, empleado.avatar)
+                .input('avatar', sql.NVarChar, avatar)
                 .input('eliminado', sql.Bit, empleado.eliminado)
                 .query(`UPDATE EMPLEADO SET avatar = @avatar, nombre = @nombre, correo = @correo, rol = @rol, eliminado = @eliminado WHERE id_empleado = ${id_empleado}`)
             

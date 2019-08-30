@@ -2,14 +2,13 @@ const express = require('express');
 const axios   = require('axios');
 const multer = require("multer");
 const config = require('../../config');
-const storageAzure = require('azure-storage');
-const blobService = storageAzure.createBlobService(config.values.access_key.AccountName, config.values.access_key.AccountKey);
-const nombreContenedor = "itempic";
 const path = require('path');
 const fsExtra = require('fs-extra');
 
 let app = express();
 let regItem;
+
+const nombreContenedor = "itempic";
 
 const storage = multer.diskStorage({
     destination: './tmp',//__dirname,
@@ -23,7 +22,7 @@ const parser = multer({ storage: storage });
 //used to list containers and verify if theres none for item's pic
 const listContainers = async () => {
     return new Promise((resolve, reject) => {
-        blobService.listContainersSegmented(null, (err, data) => {
+        config.blobService.listContainersSegmented(null, (err, data) => {
             if (err) {
                 reject(err);
             } else {
@@ -36,7 +35,7 @@ const listContainers = async () => {
 //In any case the db gets erased, creates a new container for item pictures 
 const createContainer = async (containerName) => {
     return new Promise((resolve, reject) => {
-        blobService.createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
+        config.blobService.createContainerIfNotExists(containerName, { publicAccessLevel: 'blob' }, err => {
             if (err) {
                 reject(err);
             } else {
@@ -52,7 +51,7 @@ const uploadLocalFile = async (filePath) => {
     return new Promise((resolve, reject) => {
         const fullPath = path.resolve(filePath);
         const blobName = path.basename(filePath);
-        blobService.createBlockBlobFromLocalFile(nombreContenedor, blobName, fullPath, err => {
+        config.blobService.createBlockBlobFromLocalFile(nombreContenedor, blobName, fullPath, err => {
             if (err) {
                 console.log("errol", err)
                 reject(err);
@@ -171,7 +170,7 @@ app.post('/register', parser.single('image'), async (req, res, next) => {
         id_subcategoria: parseInt(req.sanitize('subcategoria-cbx').escape().trim()),
         precio: req.sanitize('precio').escape().trim(),
         eliminado: 0,
-        imagen: blobService.getUrl(nombreContenedor,path.basename(req.file.path))
+        imagen: config.blobService.getUrl(nombreContenedor,path.basename(req.file.path))
     }
     regItem = Object.assign({}, item);
     regItem.categoria = req.body['selected-category'];
@@ -319,7 +318,7 @@ app.post('/edit/(:id_item)', parser.single('image'), async (req, res, next) => {
             let response = await uploadLocalFile(req.file.path)
             console.log(response.message)
 
-            item.imagen = blobService.getUrl(nombreContenedor,path.basename(req.file.path));
+            item.imagen = config.blobService.getUrl(nombreContenedor,path.basename(req.file.path));
             console.log(">>",item.imagen)
         }
 
