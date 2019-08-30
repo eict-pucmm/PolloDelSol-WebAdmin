@@ -1,18 +1,10 @@
 const express = require('express');
 const {poolPromise} = require('../../db')
 let app = express();
-/*
-*   El config no se usa, lo pueden quitar
-*/
-const config = require('../../config');
 const sql = require('mssql')
 
 
 app.get('/', async (req, res, next) => {
-    //Vainita SQL SERVER
-    /*
-    *   El verdaadero SELECT XDxdXDXDxdxd 
-    */
     try {
         const pool = await poolPromise
         const result = await pool.request()
@@ -50,7 +42,6 @@ app.get('/', async (req, res, next) => {
             empresa.eliminado, 
             cierre.dia_ajustado, 
             cierre.tipo_de_cierre;`)      
-    
         res.status(200).send({error: false, empresa: result.recordset});
     } catch (err) {
         res.status(500).send({error: true, message: err});
@@ -59,15 +50,9 @@ app.get('/', async (req, res, next) => {
 
  
 app.post('/edit/(:id_empresa)', async (req, res) => {
-    /*
-    *   Los console.log(). Si los dejan ponganle una vaina profesional o qsy 
-    */
     const id_empresa = req.params.id_empresa;
     const empresa = req.body.empresa;
     const cierre = req.body.cierre;
-    console.log(id_empresa)
-    console.log(cierre)
-    console.log(empresa)
     let sql_query, sql_query2 = '';
  
     if (!empresa || !id_empresa) {
@@ -82,23 +67,20 @@ app.post('/edit/(:id_empresa)', async (req, res) => {
             
             if (req.body.actualizar_cierre) {
                 sql_query = `UPDATE cierre SET dia_de_cierre = CAST('@dia_de_cierre' AS DATE), dia_ajustado = dbo.ajustarDia(CONVERT(date,'2019-08-29',23)), tipo_de_cierre = @tipo_de_cierre WHERE id_cierre = (SELECT id_cierre FROM empresacierre WHERE id_empresa = @id_empresa)`;
-                /*
-                *   Usen let, no var. Creo que desde ES5 recomiendan usar let en vez de var
-                */
-                var cierreres = await pool.request()
+
+                let cierreres = await pool.request()
                     .input('id_empresa', sql.NVarChar, id_empresa)
                     .input('dia_de_cierre', sql.NVarChar, cierre.dia_de_cierre)
                     .input('tipo_de_cierre', sql.NVarChar,cierre.tipo_de_cierre)
                     .query(sql_query)
             } else {
                 sql_query = `INSERT INTO cierre VALUES ( CAST('@dia_de_cierre' AS DATE), ajustadorDia(dia_de_cierre), ); SELECT @@IDENTITY AS ID`;
-                var cierreres = await pool.request()
+                let cierreres = await pool.request()
                     .input('dia_de_cierre', sql.NVarChar, cierre.dia_de_cierre)
                     .input('tipo_de_cierre', sql.NVarChar,cierre.tipo_de_cierre)
                     .query(sql_query)
-                console.log(cierreres.recordset)
                 sql_query2 = `INSERT INTO empresacierre VALUES (@id_cierre, @id_empresa)`
-                var empresacierreres = await pool.request()
+                let empresacierreres = await pool.request()
                     .input('id_cierre', sql.NVarChar, cierreres.recordset[0].ID)
                     .input('id_empresa', sql.NVarChar, id_empresa)
                     .query(sql_query2)

@@ -50,8 +50,6 @@ app.post('/edit/(:id_menu)', async (req, res, next) => {
     /*
     *   Pueden borrar esto ya que no se usan
     */
-    const sql_query = ``;
-    let resultados = [], errores = [];
     
     if (!platos) {
         res.status(400).send({error: true, message: 'Please provide plato del dia data'});

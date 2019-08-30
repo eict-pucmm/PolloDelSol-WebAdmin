@@ -10,15 +10,7 @@ app.get('/categories', async (req, res) => {
 
     let sql_query = `SELECT * FROM categoria`;
     let categorias = [], subcategorias = [];
-    /*
-    *   Aqui hay un error, no hay WHERE
-    */
-    sql_query += req.query.nombre ? ` AND categoria.nombre = '${req.query.nombre}'` : ``;
-    sql_query += req.query.id_categoria ? ` AND categoria.id_categoria = ${req.query.id_categoria}` : ``;
-    /*
-    *   Por lo que veo, el punto y coma no es necesario al final en SQL
-    */
-    sql_query += ';'
+    sql_query += req.query.id_categoria ? `WHERE categoria.id_categoria = ${req.query.id_categoria}` : ``;
     try {
         const pool = await poolPromise
         const result = await pool.request()
@@ -81,8 +73,6 @@ app.get('/get/combo', async (req, res) => {
 app.post('/register', async (req, res) => {
 
     const item = req.body.data;
-    var values = [];
-    values.push(item.id_item)
 
     if (!item) {
         res.status(400).send({error: true, message: 'Please provide an item'});
@@ -123,20 +113,10 @@ app.post('/register/combo', async (req, res) => {
                 .input('bebida', sql.Int, combo.max_bebida)
                 .query(`INSERT INTO combo VALUES (@id_combo, @guarnicion, @bebida)`)
             console.log("combo registrado")
-            var values = [];
+            let values = [];
             itemCombo.forEach(item => {
-                /*
-                *   Se puede hacer mas corto esto, sin crear aux
-                *   values.push([item.id_combo, item.id_combo]);
-                */
-                var aux = [];
-                aux.push(item.id_combo)
-                aux.push(item.id_item)
-                values.push(aux)
+               values.push([item.id_combo, item.id_combo]);
             });
-            /*
-            *   El tonkiti, expliquenme klk con esto
-            */
             const table = new sql.Table('itemcombo')
             table.columns.add('id_combo', sql.VarChar(15));
             table.columns.add('id_item', sql.VarChar(15));
@@ -158,7 +138,7 @@ app.post('/edit/(:id_item)', async (req, res) => {
     
     const id_item = req.params.id_item;
     const item = req.body.data;
-    var image = item.imagen
+    let image = item.imagen
 
     if (!item || !id_item) {
         res.status(400).send({error: true, message: 'Please provide an item and item id'});
@@ -167,7 +147,7 @@ app.post('/edit/(:id_item)', async (req, res) => {
         try {
             const pool = await poolPromise
             if (!image) {
-                var imageres = await pool.request()
+                let imageres = await pool.request()
                     .input('id_item',sql.NVarChar,id_item)
                     .query(`SELECT imagen from item where id_item = @id_item`)
                 image = imageres.recordset[0].imagen
@@ -196,11 +176,6 @@ app.post('/combo/edit', async (req, res) => {
 
     const combo = req.body.combo;
     const itemCombo = req.body.itemCombo;
-    /*
-    *   Pueden quitar los arreglos si no se usan
-    */
-    let errores = [], resultados = [];
-
     if (!combo || !itemCombo) {
         res.status(400).send({error: true, message: 'Please provide combo data'});
     } else {
@@ -215,12 +190,9 @@ app.post('/combo/edit', async (req, res) => {
             const deleteItemCombo = await pool.request()
                 .input('id_combo', sql.NVarChar, combo.id_combo)
                 .query('DELETE FROM itemcombo WHERE id_combo = @id_combo')
-            var values = [];
-            itemCombo.forEach(item => {
-                var aux = [];
-                aux.push(item.id_combo)
-                aux.push(item.id_item)
-                values.push(aux)
+            let values = [];
+            itemCombo.forEach(item => {             
+                values.push([item.id_combo,item.id_item])
             });
             const table = new sql.Table('itemcombo')
             table.columns.add('id_combo', sql.VarChar(15));
